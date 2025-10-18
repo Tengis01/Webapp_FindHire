@@ -39,8 +39,18 @@
          <p>Өөрийн хүссэн ажилтанаа хай</p>  
       </div>
       <div class="search-bar">
-         <input type="text" placeholder="Ажил хайх...">
+         <section>
+            <select name="job-type" id="job-type">
+               <option value="all-jobs">Бүх ажил</option>
+               <option value="full-time">Бүтэн цагийн</option>
+               <option value="part-time">Хагас цагийн</option>
+               <option value="freelance">Гэрээт</option>
+               <option value="internship">Туршилтын</option>
+            </select>
+         </section>
+         <input type="text" placeholder="Хайх..." >
          <button>Хайх</button>
+      </div>
     </main>
 </body>
 </html>
