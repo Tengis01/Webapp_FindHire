@@ -40,6 +40,7 @@ body{
          nav ul li a {
                text-decoration: none;
                color: #333;
+               cursor: pointer;
          }
          nav ul li a.login-link {
                border-radius: 4px;
@@ -47,6 +48,7 @@ body{
                cursor: pointer;
                background-color: rgb(255, 255, 255);
                border: none;
+               transition: all 0.3s ease-in;
          }
          nav ul li a.login-link:hover {
                background-color: #213448;
@@ -63,6 +65,7 @@ body{
          button:hover {
                background-color: #ffffff;
                color: black;
+               transition: all 0.3s ease-in-out ;
                
          }  
          main{
@@ -70,12 +73,15 @@ body{
             margin: 0 ;
             display: flex;
             flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
          }
          main .main-text{
             align-items: center;
             justify-content: center;
             text-align: center;
-            font-size: 36px;
+            font-size: 50px;
             margin-top: 50px;
          }
          main .search-bar{
@@ -83,11 +89,37 @@ body{
             justify-content: center;
             align-items: center;
             gap: 5px;
+            position: relative;
+            width: 500px;
+            height: 30px;
          }
          main .search-bar input{
-            width: 300px;
-            padding: 8px;
+            width: 500px;
+            height: 30px;
+            padding: 8px 35px 8px 10px;
             font-size: 12px;
-            border-radius: 4px;
+            border-radius: 20px;
             border: 1px solid black;
+         }
+         main .search-bar i{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color:rgb(0, 0, 0);
+            width: 25px;
+            height: 25px;
+
+         }
+         main .search-bar i:hover{
+            cursor: pointer;
+            color: #213448;
+            transform: translateY(-50%) scale(1.2);
+            transition: all 0.3s ease-in;
+            background-color: rgb(175, 175, 175);
+            border: 0.3px solid black;
+            border-radius: 10px;;
          }
