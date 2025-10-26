@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <title>FindHire web</title>
 </head>
+
+
 <body>
     <header>
         <div class="logo">
@@ -43,12 +45,142 @@
          <input type="text" placeholder="Хайх..." >
          <i class="fa fa-search"></i>
       </div>
-      <div class="icon-search">
+      <!--<div class="icon-search">
          <button class=" icon-btn">
            <i class="fa-solid fa-truck"></i>
 
          </button>
-      </div>
+      </div>-->
+
+      <section class="categories" aria-label="Ангилал">
+  <ul class="cat-grid">
+    <!-- 1 Дотор засал -->
+    <li>
+      <button class="cat" type="button">
+        <img src="./icon/paint-roller-2-svgrepo-com.svg" alt="">
+        <span>Дотор засал</span>
+        <ul class="submenu">
+          <li><a href="#">Будалт · өнгө</a></li>
+          <li><a href="#">Хана/тааз засвар</a></li>
+          <li><a href="#">Шал, плита</a></li>
+        </ul>
+      </button>
+    </li>
+
+    <!-- 2 Тавилга угсралт -->
+    <li>
+      <button class="cat" type="button">
+        <img src="./icon/wrench-svgrepo-com.svg" alt="">
+        <span>Тавилга угсралт</span>
+        <ul class="submenu">
+          <li><a href="#">Гэр ахуйн</a></li>
+          <li><a href="#">Оффис суурилуулалт</a></li>
+          <li><a href="#">Зөөвөр/угсрах</a></li>
+        </ul>
+      </button>
+    </li>
+
+    <!-- 3 Цэвэрлэгээ -->
+    <li>
+      <button class="cat" type="button">
+        <img src="./icon/cleaning-svgrepo-com.svg" alt="">
+        <span>Цэвэрлэгээ</span>
+        <ul class="submenu">
+          <li><a href="#">Ерөнхий их</a></li>
+          <li><a href="#">Орон сууц/байшин</a></li>
+          <li><a href="#">Оффис, объект</a></li>
+        </ul>
+      </button>
+    </li>
+
+    <!-- 4 Нүүлгэлт -->
+    <li>
+      <button class="cat" type="button">
+        <img src="./icon/moving-truck-svgrepo-com.svg" alt="">
+        <span>Нүүлгэлт</span>
+        <ul class="submenu">
+          <li><a href="#">Сав баглаа</a></li>
+          <li><a href="#">Ажлын хүч</a></li>
+          <li><a href="#">Хот дотор/хооронд</a></li>
+        </ul>
+      </button>
+    </li>
+
+    <!-- 5 Сантехник -->
+    <li>
+      <button class="cat" type="button">
+        <img src="./icon/plumber-svgrepo-com.svg" alt="">
+        <span>Сантехник</span>
+        <ul class="submenu">
+          <li><a href="#">Дотоод шугам</a></li>
+          <li><a href="#">Гал тогоо/угаалтуур</a></li>
+          <li><a href="#">Суултуур, ванн</a></li>
+        </ul>
+      </button>
+    </li>
+
+    <!-- 6 Гадна талбай -->
+    <li>
+      <button class="cat" type="button">
+        <img src="./icon/gardening-grass-svgrepo-com.svg" alt="">
+        <span>Гадна талбай</span>
+        <ul class="submenu">
+          <li><a href="#">Зүлэг хадах</a></li>
+          <li><a href="#">Цас цэвэрлэх</a></li>
+          <li><a href="#">Явган зам/хашаа</a></li>
+        </ul>
+      </button>
+    </li>
+
+    <!-- 7 Цахилгаан -->
+    <li>
+      <button class="cat" type="button">
+        <img src="./icon/lightning-svgrepo-com.svg" alt="">
+        <span>Цахилгаан</span>
+        <ul class="submenu">
+          <li><a href="#">Гэрэлтүүлэг</a></li>
+          <li><a href="#">Розетка/унтраалга</a></li>
+          <li><a href="#">Засвар үйлчилгээ</a></li>
+        </ul>
+      </button>
+    </li>
+  </ul>
+</section>
+
+
+    <!-- Features (3 box) -->
+    <section class="features" aria-label="Манай зорилго">
+      <article class="feature">
+        <p class="badge">1</p>
+        <h3>Найдвартай</h3>
+        <p>Баталгаат профайл, нотлогдсон мэдээлэл дээр үндэслэн тохирох ажилтныг санал болгоно.</p>
+      </article>
+      <article class="feature">
+        <p class="badge">2</p>
+        <h3>Хурдан</h3>
+        <p>Хэдхэн түлхүүр үгээр хайж, ангиллаар нь шүүн хурдан олоорой.</p>
+      </article>
+      <article class="feature">
+        <p class="badge">3</p>
+        <h3>Итгэлтэй</h3>
+        <p>Үнэлгээ, сэтгэгдэлд тулгуурлан шийдвэрээ итгэлтэй гарга.</p>
+      </article>
+    </section>
+
+    <!-- Popular (жишээ 4) -->
+    <section class="popular" aria-label="Алдартай ажлууд">
+      <article class="job"><figure><div class="thumb" role="img" aria-label="Ажлын зураг"></div><figcaption><h4>Ажлын нэр</h4><p class="meta">500+ хайлт · 4.2 </p></figcaption></figure></article>
+      <article class="job"><figure><div class="thumb" role="img" aria-label="Ажлын зураг"></div><figcaption><h4>Ажлын нэр</h4><p class="meta">650+ хайлт · 4.4 </p></figcaption></figure></article>
+      <article class="job"><figure><div class="thumb" role="img" aria-label="Ажлын зураг"></div><figcaption><h4>Ажлын нэр</h4><p class="meta">300+ хайлт · 4.0 </p></figcaption></figure></article>
+      <article class="job"><figure><div class="thumb" role="img" aria-label="Ажлын зураг"></div><figcaption><h4>Ажлын нэр</h4><p class="meta">820+ хайлт · 4.6 </p></figcaption></figure></article>
+    </section>
+
+    <!-- Reviews (жишээ 3) -->
+    <section class="reviews" aria-label="Сэтгэгдэл">
+      <article class="review"><p>“Олсон жолооч маань ажлаа маш хурдан, чанартай хийсэн.”</p><p class="stars"><span class="filled">★</span><span class="filled">★</span><span class="filled">★</span><span class="filled">★</span>★</p></article>
+      <article class="review"><p>“Хайлтын санал болголт нь яг тохирсон хүнийг авчирдаг.”</p><p class="stars"><span class="filled">★</span><span class="filled">★</span><span class="filled">★</span>★★</p></article>
+      <article class="review"><p>“Итгэлтэй платформ. Дахин ашиглана.”</p><p class="stars"><span class="filled">★</span><span class="filled">★</span><span class="filled">★</span><span class="filled">★</span><span class="filled">★</span></p></article>
+    </section>
     </main>
 </body>
 </html>
