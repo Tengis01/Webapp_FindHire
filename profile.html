@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="profile.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <title>FindHire web</title>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="./flower.png" alt="">
+            <a href="">FindHire</a>
+         </div>
+         <div>
+         <nav>
+            <ul>
+
+               <li>
+                  <a href="">
+                     Бидний тухай
+                  </a>
+               </li>
+               <li>
+                  <a href="" class="login-link">
+                     Нэвтрэх/Бүртгүүлэх
+                  </a>
+               </li>
+               <li>
+                  <a href="">
+                     <button>Ажилд орох</button>
+                  </a>
+               </li>
+            </ul>
+         </nav>
+ </div>
+ </header>
+    <main>
+      <main class="profile-layout">
+        <div class="left-panel">
+            <div class="taniltsuulga">Танилцуулга</div>
+            <div class="info-row">
+                <div class="info-box">Хүйс</div>
+                <div class="info-box">Насны бүлэг</div>
+
+            </div>
+            <div class="ajliin-tuuh">Ажлын түүх</div>
+
+            <section class="feedback-container">
+                <div class="feedback-box"> 
+                    <div class="box ajliin-tuuuh feedback-section">Сэтгэгдэл
+                <p class="feedback-text">Сэтгэгдэл бичих жишээ...</p> 
+
+            </div>
+                </div>
+                <div class="feedback-box"> 
+                        <div class="box ajliin-tuuuh feedback-section">Сэтгэгдэл
+                    <p class="feedback-text">Сэтгэгдэл бичих жишээ...</p>
+                </div>
+                    </div>
+                    <div class="feedback-box">
+                            <div class="box ajliin-tuuuh feedback-section">Сэтгэгдэл
+                        <p class="feedback-text">Сэтгэгдэл бичих жишээ...</p>
+                    </div>
+        </section>
+            
+                
+            </div>
+            
+
+        </div>
+
+
+        <div class="right-panel">
+            <img id="profile-img" src="plumber.png" alt="Profile Image">
+           
+            <div class="name-box">Нэр</div>
+            <id="contact">Холбоо барих</button>
+
+            <div class="rating">
+                <button class="star">&#9734;</button>
+                <button class="star">&#9734;</button>
+                <button class="star">&#9734;</button>
+                <button class="star">&#9734;</button>
+                <button class="star">&#9734;</button>
+            </div>
+                <p class="current_rating"> 0 of 5</p>
+
+        </div>
+    </main>
+    <script>
+        const stars = document.querySelectorAll('.star');
+        const currentRatingText = document.querySelector('.current_rating');
+
+        stars.forEach((star, index) => {
+            star.addEventListener('click', () => {
+                const rating = index + 1;
+                currentRatingText.textContent = `${rating} of 5`;
+
+                stars.forEach((s, i) => {
+                    s.innerHTML = i < rating ? '&#9733;' : '&#9734;';
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
