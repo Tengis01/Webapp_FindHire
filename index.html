@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
+    <script type="module" src="./com/ch-feature-card.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <title>FindHire web</title>
 </head>
@@ -150,21 +151,9 @@
 
     <!-- Features (3 box) -->
     <section class="features" aria-label="Манай зорилго">
-      <article class="feature">
-        <p class="badge">1</p>
-        <h3>Найдвартай</h3>
-        <p>Баталгаат профайл, нотлогдсон мэдээлэл дээр үндэслэн тохирох ажилтныг санал болгоно.</p>
-      </article>
-      <article class="feature">
-        <p class="badge">2</p>
-        <h3>Хурдан</h3>
-        <p>Хэдхэн түлхүүр үгээр хайж, ангиллаар нь шүүн хурдан олоорой.</p>
-      </article>
-      <article class="feature">
-        <p class="badge">3</p>
-        <h3>Итгэлтэй</h3>
-        <p>Үнэлгээ, сэтгэгдэлд тулгуурлан шийдвэрээ итгэлтэй гарга.</p>
-      </article>
+      <ch-feature-card budge="1" title="итгэлтэй" desc="үнэлгээ, сэтгэгдэлд тулгуурлан шийдвэрээ итгэлтэй гарга"></ch-feature-card>
+      <ch-feature-card budge="2" title="итгэлтэй" desc="үнэлгээ, сэтгэгдэлд тулгуурлан шийдвэрээ итгэлтэй гарга"></ch-feature-card>
+      <ch-feature-card budge="3" title="итгэлтэй" desc="үнэлгээ, сэтгэгдэлд тулгуурлан шийдвэрээ итгэлтэй гарга"></ch-feature-card>
     </section>
 
     <!-- Popular (жишээ 4) -->

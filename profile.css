@@ -192,13 +192,13 @@ button{
   color:white;
   cursor:pointer;
   border-radius:4px;
-  font-size: 25px;
+  font-size: 17px;
 }
 
 button:hover{
   background-color:#ffffff;
   color:black;
-  transition:all 0.3s ease-in-out;
+  transition:all 0.2s ease-in-out;
 }
 .rating {
     display: block;
