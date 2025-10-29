@@ -4,25 +4,22 @@ class ChFeatureCard extends HTMLElement {
     }
 
     connectedCallback() {
-        re
+        this.render();
     }
 
-        render() {
-            this.innerHTML=`<article class="feature">
-        <p class="badge">3</p>
-        <h3>Итгэлтэй</h3>
-        <p>Үнэлгээ, сэтгэгдэлд тулгуурлан шийдвэрээ итгэлтэй гарга.</p>
-      </article>`;
-        }
-    disconnectedCallback() {
+    render() {
+        this.innerHTML = `
+        <article class="feature">
+            <p class="badge">3</p>
+            <h3>Итгэлтэй</h3>
+            <p>Үнэлгээ, сэтгэгдэлд тулгуурлан шийдвэрээ итгэлтэй гарга.</p>
+        </article>`;
     }
 
-    attributeChangedCallback(name, oldVal, newVal) {
-    }
-
-    adoptedCallback() {
-    }
-
+    disconnectedCallback() {}
+    attributeChangedCallback(name, oldVal, newVal) {}
+    adoptedCallback() {}
 }
 
 window.customElements.define('ch-feature-card', ChFeatureCard);
+

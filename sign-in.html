@@ -4,54 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Нэвтрэх ба Бүртгүүлэх</title>
-    <link rel="stylesheet" href="sign-in.css">
-    <link rel="script" href="profile.js">
+    <style>
+        @import './sign-in.css';
+    </style>
 </head>
 <body>
-    <div class="container">
-
-        <!-- Нэвтрэх хэсэг -->
-        <div class="form-box active" id="box">
-            <form action="">
-                <h2>Нэвтрэх</h2>
-                <input type="email" name="email" placeholder="Мэйл хаяг" required>
-                <input type="password" name="password" placeholder="Нууц үг" required>
-                <button type="submit">Нэвтрэх</button>
-                <p>Шинээр хаяг үүсгэх үү? 
-                    <a href="#" onclick="toggleForms()">Бүртгүүлэх</a>
-                </p>
-            </form>
-        </div>
-
-        <!-- Бүртгүүлэх хэсэг -->
-        <div class="form-box" id="burtguuleh">
-            <form action="">
-                <h2>Бүртгүүлэх</h2>
-                <input type="text" name="lastname" placeholder="Овог" required>
-                <input type="text" name="firstname" placeholder="Нэр" required>
-                <input type="tel" name="phone" placeholder="Утасны дугаар" required>
-                <input type="text" name="address" placeholder="Хаяг" required>
-                <input type="password" name="password" placeholder="Нууц үг" required>
-                <select name="role" required> 
-                    <option value="" disabled selected>Ажилчин эсвэл хэрэглэгч</option>
-                    <option value="Ажилчин">Ажилчин</option>
-                    <option value="Хэрэглэгч">Хэрэглэгч</option>
-                </select> 
-                <button type="submit">Бүртгүүлэх</button>
-                <p>Хаягтай бол? 
-                    <a href="#" onclick="toggleForms()">Нэвтрэх</a>
-                </p>
-            </form>
-        </div>
-
-    </div>
-
-    <script>
-        // Form солих функц
-        function toggleForms() {
-            document.getElementById('box').classList.toggle('active');
-            document.getElementById('burtguuleh').classList.toggle('active');
-        }
-    </script> 
+    <!-- Веб компонентийг ашиглах -->
+    <sign-in></sign-in>
+    
+    <!-- Веб компонентийг импортлох -->
+    <script type="module" src="./sig-in.js"></script>
 </body>
 </html>
