@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css">
     <script type="module" src="./com/ch-feature-card.js"></script>
+    <script type="module" src="./com/ch-job-card.js"></script>
+    <script type="module" src="./com/ch-review-card.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <title>FindHire web</title>
 </head>
@@ -158,18 +160,20 @@
 
     <!-- Popular (жишээ 4) -->
     <section class="popular" aria-label="Алдартай ажлууд">
-      <article class="job"><figure><div class="thumb" role="img" aria-label="Ажлын зураг"></div><figcaption><h4>Ажлын нэр</h4><p class="meta">500+ хайлт · 4.2 </p></figcaption></figure></article>
-      <article class="job"><figure><div class="thumb" role="img" aria-label="Ажлын зураг"></div><figcaption><h4>Ажлын нэр</h4><p class="meta">650+ хайлт · 4.4 </p></figcaption></figure></article>
-      <article class="job"><figure><div class="thumb" role="img" aria-label="Ажлын зураг"></div><figcaption><h4>Ажлын нэр</h4><p class="meta">300+ хайлт · 4.0 </p></figcaption></figure></article>
-      <article class="job"><figure><div class="thumb" role="img" aria-label="Ажлын зураг"></div><figcaption><h4>Ажлын нэр</h4><p class="meta">820+ хайлт · 4.6 </p></figcaption></figure></article>
+      <ch-job-card title="Ажлын нэр" searches="500+ хайлт" rating="4.2"></ch-job-card>
+      <ch-job-card title="Ажлын нэр" searches="650+ хайлт" rating="4.4"></ch-job-card>
+      <ch-job-card title="Ажлын нэр" searches="300+ хайлт" rating="4.0"></ch-job-card>
+      <ch-job-card title="Ажлын нэр" searches="820+ хайлт" rating="4.6"></ch-job-card>
     </section>
+
 
     <!-- Reviews (жишээ 3) -->
     <section class="reviews" aria-label="Сэтгэгдэл">
-      <article class="review"><p>“Олсон жолооч маань ажлаа маш хурдан, чанартай хийсэн.”</p><p class="stars"><span class="filled">★</span><span class="filled">★</span><span class="filled">★</span><span class="filled">★</span>★</p></article>
-      <article class="review"><p>“Хайлтын санал болголт нь яг тохирсон хүнийг авчирдаг.”</p><p class="stars"><span class="filled">★</span><span class="filled">★</span><span class="filled">★</span>★★</p></article>
-      <article class="review"><p>“Итгэлтэй платформ. Дахин ашиглана.”</p><p class="stars"><span class="filled">★</span><span class="filled">★</span><span class="filled">★</span><span class="filled">★</span><span class="filled">★</span></p></article>
+      <ch-review-card text="“Олсон жолооч маань ажлаа маш хурдан, чанартай хийсэн.”" rating="4"></ch-review-card>
+      <ch-review-card text="“Хайлтын санал болголт нь яг тохирсон хүнийг авчирдаг.”" rating="3"></ch-review-card>
+      <ch-review-card text="“Итгэлтэй платформ. Дахин ашиглана.”" rating="5"></ch-review-card>
     </section>
+
     </main>
 </body>
 </html>
