@@ -205,7 +205,7 @@ form button svg {
 }
 
 /* Categories */
-.categories {
+/*.categories {
   margin-top: 14px;
 }
 
@@ -283,7 +283,7 @@ form button svg {
   opacity: 1;
   visibility: visible;
   transform: translateX(-50%) translateY(0);
-}
+}*/
 
 /* Features */
 .features {
