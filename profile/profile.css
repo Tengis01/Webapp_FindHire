@@ -83,7 +83,7 @@ nav ul li a.login-link:hover{
   background-color:#213448;
   color:white;
 }
-.profile-layout {
+main {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -102,7 +102,7 @@ nav ul li a.login-link:hover{
 }
 
 /* Баруун хэсэг */
-.right-panel {
+aside {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -133,14 +133,19 @@ nav ul li a.login-link:hover{
 /* Хүйс ба насны бүлэг */
 .info-row {
     display: flex;
-    justify-content: flex-start;
-    gap: 20px;
-    background-color: #e5e7eb;
-    border: 1px solid #1f2937;
+} 
+.info-age    {
+    padding: 8px 20px;
+    border-radius: 10px;
+    border-radius: var(--muted);
+    text-align: center;
+    font-weight: 500;
+    display: block;
+    gap: 10px   ;
+    float: left;
 }
-
 .info-box {
-    background: var(--light-green);
+    display: block;
     padding: 8px 20px;
     border-radius: 10px;
     text-align: center;
@@ -167,6 +172,7 @@ nav ul li a.login-link:hover{
     border: 5px solid var(--main-blue);
 }
 .feedback-box {
+    display: flex;
     background: var(--muted);
     border-radius: 15px;
     padding: auto;
@@ -174,7 +180,6 @@ nav ul li a.login-link:hover{
     width: 250px;
     text-align: center;
     margin: 10px 0  ;
-    display: block;
 }
 
 /* Нэр */
