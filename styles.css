@@ -204,86 +204,15 @@ form button svg {
   color: #000;
 }
 
-/* Categories */
-/*.categories {
-  margin-top: 14px;
-}
-
 .cat-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, 1fr); 
   gap: 12px;
   max-width: 900px;
-  margin: 0 auto;
-}
-
-.cat-grid li {
+  margin: 20px auto 0;
+  padding: 0;
   list-style: none;
 }
-
-.cat {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  box-shadow: var(--shadow);
-  padding: 12px 8px;
-  position: relative;
-  cursor: pointer;
-}
-
-.cat svg {
-  width: 22px;
-  height: 22px;
-  color: var(--brand);
-}
-
-.cat span {
-  font-size: 12px;
-}
-
-.submenu {
-  position: absolute;
-  left: 50%;
-  top: calc(100% + 10px);
-  transform: translateX(-50%) translateY(6px);
-  min-width: 180px;
-  padding: 10px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  box-shadow: var(--shadow);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  opacity: 0;
-  visibility: hidden;
-  transition: 0.18s ease;
-  z-index: 5;
-}
-
-.submenu a {
-  color: var(--ink);
-  text-decoration: none;
-  font-size: 14px;
-  padding: 6px 8px;
-  border-radius: 6px;
-}
-
-.submenu a:hover {
-  background: var(--soft);
-  color: var(--brand);
-}
-
-.cat:hover .submenu {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(0);
-}*/
 
 /* Features */
 .features {

@@ -17,8 +17,8 @@ class ChCatItem extends HTMLElement {
   }
 
   render() {
-    const name = this.getAttribute("name");
-    const icon = this.getAttribute("icon");
+    const name = this.getAttribute("name") ?? "";
+    const icon = this.getAttribute("icon") ?? "";
     const submenu = this.getAttribute("submenu")
       ? this.getAttribute("submenu").split(", ")
       : [];
@@ -40,10 +40,12 @@ class ChCatItem extends HTMLElement {
           cursor: pointer;
         }
 
-        .cat svg {
+        /* --- ИКОНЫ ХЭМЖЭЭГ ЗӨВ БОЛГОСОН ГОЛ ЗАСВАР --- */
+        .cat img {
           width: 22px;
           height: 22px;
-          color: var(--brand);
+          display: block;
+          object-fit: contain;
         }
 
         .cat span {
@@ -91,7 +93,7 @@ class ChCatItem extends HTMLElement {
       </style>
 
       <button class="cat" type="button">
-        <img src="${icon}" alt="" />
+        <img src="${icon}" alt="${name}" />
         <span>${name}</span>
         <ul class="submenu">
           ${submenu.map((item) => `<li><a href="#">${item}</a></li>`).join("")}
