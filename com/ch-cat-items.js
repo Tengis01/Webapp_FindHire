@@ -23,7 +23,7 @@ class ChCatItem extends HTMLElement {
       ? this.getAttribute("submenu").split(", ")
       : [];
 
-    this.shadowRoot.innerHTML = `
+    this.shadowRoot.innerHTML = /*html*/`
       <style>
         .cat {
           width: 100%;

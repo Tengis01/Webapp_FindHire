@@ -8,7 +8,7 @@ class ChCategories extends HTMLElement {
   }
 
   render() {
-    this.innerHTML = `
+    this.innerHTML = /*html*/`
       <section class="categories" aria-label="Ангилал">
         <ul class="cat-grid">
           <cat-item name="Дотор засал" icon="./icon/paint-roller-2-svgrepo-com.svg" submenu="Будаг, Хана тааз засвар, Шал, плита"></cat-item>
