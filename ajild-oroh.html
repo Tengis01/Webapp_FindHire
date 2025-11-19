@@ -4,9 +4,95 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./ajild-oroh.css">
-    <title>Document</title>
+    <script type="module" src="./com/ch-header.js"></script>
+    <title>Ажилд Орох</title>
 </head>
 <body>
-    
+    <ch-header></ch-header>
+
+
+<form action="burtgel">
+    <h1>Ажлын маягт</h1>
+    <div class="first">
+        <label for="name">Овог</label>
+        <input type="text" id="last" name="last" placeholder="Өөрийн овог" required>
+    </div>
+    <div class="first">
+        <label for="name">Нэр</label>
+        <input type="text" id="name" name="name" placeholder="Өөрийн нэр"  required>
+    </div>
+    <div>
+        <label for="email">Email</label>
+        <input type="email" placeholder="abc@example.com" required name="email" id="email">
+    </div>  
+    <div class="age">
+        <label for="age">Нас</label>
+        <input type="number" placeholder="нас" id="age"
+        name="age" required min="21" max="60">
+    </div>
+    <div>
+        <label for="posotion">Мэргэжлээ сонгоно уу</label>
+        <select name="posotion" id="posotion" required>
+            <option value="select">Сонгох</option>
+            <option value="dotood">
+                Дотоод засал
+            </option>
+            <option value="gadna">
+                Гадаад засал
+            </option>
+            <option value="santehnik">
+                Сантехник
+            </option>
+            <option value="tsahilgaan">
+                Цахилгаанчин
+            </option>
+            <option value="orom">
+                Ханын засал
+            </option>
+            <option value="goyl">
+                Гоёл чимэглэл
+            </option>
+        </select>
+    </div>
+    <div>
+  <label for="experience">Ажлын туршлага:</label>
+  <select id="experience" name="experience"></select>
+    </div>
+        <div>
+        <label for="dugaar">Холбогдох утасны дугаар</label>
+        <input type="dugaar" name="dugaar" id="dugaar"  placeholder="99003322" maxlength="8" pattern="[6-9]{8}" required>
+    </div>
+    <div>
+        <fieldset class="radio-group">
+            <legend>Ажиллах боломж</legend>
+            <div class="radio-row">
+                <div class="radio-item">
+                    <input type="radio" value="full-time" id="avail-full" name="valiability">
+                    <label for="avial-full">Бүтэн цагаар</label>
+                </div>
+                <div class="radio-item">
+                    <input type="radio" value="half-time" id="avail-half" name="valiability">
+                    <label for="avial-half">Хагас цагаар</label>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+    <div class="second">
+        <label for="message">Өөрийн тухай товч</label>
+        <textarea name="message" id="message" placeholder="ooriin tuhai tovch"></textarea>
+    </div>
+    <div class="button">
+        <button class="submit" type="submit">Илгээх</button>
+    </div>
+</form>
 </body>
+<script>
+const select = document.getElementById('experience');
+for(let i = 1; i <= 10; i++){
+  const option = document.createElement('option');
+  option.value = i;        
+  option.text = i + " жил"; 
+  select.add(option);
+}
+</script>
 </html>
