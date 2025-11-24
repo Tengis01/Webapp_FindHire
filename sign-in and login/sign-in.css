@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;1,400;1,700&display=swap");
 :root{
-  --brand:#213448;
-  --ink:#1f2937;
+  --brand: #213448;
+  --ink: #1f2937;
   --muted:#6b7280;
   --line:#e5e7eb;
   --soft:#f8f9fa;
@@ -48,7 +48,7 @@ header .logo a{
 button{
   padding:8px 12px;
   border:none;
-  background-color:#213448;
+  background-color:var(--brand);
   color:white;
   cursor:pointer;
   border-radius:4px;
@@ -142,7 +142,7 @@ button{
     width: 95%;
     border: none;
     padding: 12px;
-    background: #0A4D68;
+    background-color: var(--ink);
     border-radius: 6px ;
     cursor: pointer;
     font-size: 16px;
@@ -162,7 +162,7 @@ p{
 }
 p a{
     text-decoration: none;
-    color: #0A4D68;
+    background-color: var(--ink);
     font-weight: 500;
 }
 p a:hover{
