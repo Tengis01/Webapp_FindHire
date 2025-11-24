@@ -1,25 +1,31 @@
 class ChFeatureCard extends HTMLElement {
-    constructor() {
-        super();
-    }
+  constructor() {
+    super();
+  }
 
-    connectedCallback() {
-        this.render();
-    }
+  connectedCallback() {
+    this.render();
+  }
 
-    render() {
-        this.innerHTML = `
-        <article class="feature">
-            <p class="badge">3</p>
-            <h3>Итгэлтэй</h3>
-            <p>Үнэлгээ, сэтгэгдэлд тулгуурлан шийдвэрээ итгэлтэй гарга.</p>
-        </article>`;
-    }
+  render() {
+    const badge = this.getAttribute("badge") || "";
+    const title = this.getAttribute("title") || "";
+    const desc = this.getAttribute("desc") || "";
 
-    disconnectedCallback() {}
-    attributeChangedCallback(name, oldVal, newVal) {}
-    adoptedCallback() {}
+    this.innerHTML = `
+      <article class="feature">
+        <div class="feature-header">
+          <p class="badge">${badge}</p>
+          <h3>${title}</h3>
+        </div>
+        <p class="feature-desc">${desc}</p>
+      </article>
+    `;
+  }
+
+  disconnectedCallback() {}
+  attributeChangedCallback() {}
+  adoptedCallback() {}
 }
 
-window.customElements.define('ch-feature-card', ChFeatureCard);
-
+window.customElements.define("ch-feature-card", ChFeatureCard);

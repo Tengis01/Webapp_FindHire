@@ -14,82 +14,6 @@ body {
   font-family: Arial, sans-serif;
 }
 
-/*header {
-  background-color: #f8f9fa;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-header img {
-  width: 30px;
-  height: 30px;
-}
-
-header .logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 20px;
-}
-
-header .logo a {
-  text-decoration: none;
-  font-size: 24px;
-  color: #213448;
-  font-weight: bold;
-}
-
-nav {
-  padding: 10px 20px;
-}
-
-nav ul {
-  list-style-type: none;
-  margin: 0;
-  padding: 10px;
-  display: flex;
-  gap: 15px;
-  align-items: center;
-}
-
-nav ul li a {
-  text-decoration: none;
-  color: #333;
-  cursor: pointer;
-}
-
-nav ul li a.login-link {
-  border-radius: 4px;
-  padding: 8px 12px;
-  cursor: pointer;
-  background-color: rgb(255, 255, 255);
-  border: none;
-  transition: all 0.3s ease-in;
-}
-
-nav ul li a.login-link:hover {
-  background-color: #213448;
-  color: white;
-}
-
-button {
-  padding: 8px 12px;
-  border: none;
-  background-color: #213448;
-  color: white;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-button:hover {
-  background-color: #ffffff;
-  color: black;
-  transition: all 0.3s ease-in-out;
-}*/
-
 main {
   padding: 0;
   margin: 0;
@@ -244,131 +168,89 @@ form button svg {
   color: #000;
 }
 
-/* Categories */
-.categories {
-  margin-top: 14px;
-}
-
 .cat-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(7, 1fr); 
   gap: 12px;
   max-width: 900px;
-  margin: 0 auto;
-}
-
-.cat-grid li {
+  margin: 20px auto 0;
+  padding: 0;
   list-style: none;
-}
-
-.cat {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  box-shadow: var(--shadow);
-  padding: 12px 8px;
-  position: relative;
-  cursor: pointer;
-}
-
-.cat svg {
-  width: 22px;
-  height: 22px;
-  color: var(--brand);
-}
-
-.cat span {
-  font-size: 12px;
-}
-
-.submenu {
-  position: absolute;
-  left: 50%;
-  top: calc(100% + 10px);
-  transform: translateX(-50%) translateY(6px);
-  min-width: 180px;
-  padding: 10px;
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  box-shadow: var(--shadow);
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  opacity: 0;
-  visibility: hidden;
-  transition: 0.18s ease;
-  z-index: 5;
-}
-
-.submenu a {
-  color: var(--ink);
-  text-decoration: none;
-  font-size: 14px;
-  padding: 6px 8px;
-  border-radius: 6px;
-}
-
-.submenu a:hover {
-  background: var(--soft);
-  color: var(--brand);
-}
-
-.cat:hover .submenu {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(0);
 }
 
 /* Features */
 .features {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  gap: 16px;
   max-width: 1100px;
-  margin: 48px auto 20px;
+  margin: 32px auto 32px;   /* Категори menu-ээс тодорхой зайтай */
 }
 
+/* Нэг box */
 .feature {
   background: #fff;
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  padding: 24px 22px 26px;
   box-shadow: var(--shadow);
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
+  gap: 6px;
+  align-items: flex-start;      /* Зүүн тийш шахна */
 }
 
+/* Дээд хэсэг → badge + title зэрэгцэх */
+.feature-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+}
+
+/* Том дугаар */
 .badge {
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: var(--brand);
   color: #fff;
   font-weight: 700;
-  margin-bottom: 14px;
-}
-
-.feature h3 {
-  margin: 0 0 8px;
-  font-size: 22px;
-  color: var(--brand);
-}
-
-.feature p {
+  font-size: 16px;
   margin: 0;
-  color: var(--muted);
-  line-height: 1.55;
+  flex-shrink: 0;               /* Badge жижигрэхгүй, тогтвортой */
 }
+
+/* Гарчиг */
+.feature h3 {
+  margin: 0;
+  font-size: 18px;
+  color: var(--brand);
+  line-height: 1.3;
+  flex: 1;                      /* wrap хийж өргөнийг дүүргэнэ */
+  word-break: break-word;       /* Урт байвал дараагийн мөр рүү */
+}
+
+/* Тайбар */
+.feature-desc {
+  margin: 0;
+  color: var(--brand);          /* хүсвэл var(--muted) болгож болно */
+  line-height: 1.5;
+  font-size: 14px;
+  width: 100%;                  /* wrap 100% дотор жигд */
+}
+
+/* RESPONSIVE */
+@media (max-width: 720px) {
+  .features {
+    grid-template-columns: 1fr;
+  }
+}
+
+
 
 /* ==== Popular (Jobs) – илүү тодорхой зай, давхцахгүй ==== */
 .popular {
@@ -387,60 +269,113 @@ form button svg {
   min-width: 0;
 }
 
+/* ==== Popular (Jobs) – шинэ layout ==== */
+
 .job {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
   background: #fff;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
-  padding: 12px;
-  padding-bottom: 44px;
-  overflow: hidden;
-}
-
-.job figure {
+  padding: 14px 16px 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  margin: 0;
-  height: 100%;
+  color: var(--brand);
 }
 
-.job .thumb {
-  width: 100%;
-  aspect-ratio: 16/9;
-  border-radius: 10px;
-  background: linear-gradient(180deg, #dfe7ef, #cbd5e1);
+/* дээд хэсэг: зураг + ажлын нэр + статистик */
+.job-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  color: var(--brand);
 }
 
-.job h4 {
-  margin: 0 0 6px;
+/* хар box – зургийн slot */
+.job-thumb {
+  width: 48px;
+  min-width: 48px;
+  height: 64px;
+  border-radius: 4px;
+  background: #111; /* дараа нь background-image тавьж болно */
+}
+
+.job-main {
+  flex: 1;
+  color: var(--brand);
+}
+
+.job-title {
+  margin: 0 0 4px;
   font-size: 16px;
+  color: var(--brand);
 }
 
-.job .meta {
-  position: absolute;
-  left: 12px;
-  right: 12px;
-  bottom: 10px;
+.job-stats {
   margin: 0;
-  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 13px;
-  padding-right: 22px;
+  color: var(--brand);
 }
 
-.job .meta::after {
-  content: "★";
-  position: absolute;
-  right: 120px;
-  bottom: 0;
-  color: var(--star, #f7c948);
-  font-size: 16px;
-  line-height: 1;
+.job-eye {
+  font-size: 14px;
 }
+
+.rating-star {
+  color: #f7c948;
+}
+
+/* дунд зураас */
+.job-divider {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 4px -4px 2px; /* бага зэрэг хоёр тал руу сунгаж өгнө */
+}
+
+/* доод хэсэг: гүйцэтгэгчийн мэдээлэл + сумнууд */
+.job-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  color: var(--brand);
+}
+
+.job-worker {
+  flex: 1;
+  text-align: center;
+  color: var(--brand);
+}
+
+.job-worker-name {
+  margin: 0 0 2px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--brand);
+}
+
+.job-worker-meta {
+  margin: 0;
+  font-size: 12px;
+  color: var(--brand);
+}
+
+.job-nav {
+  border: none;
+  background: transparent;
+  padding: 4px 6px;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--brand);
+}
+
+.job-nav:hover {
+  color: var(--brand);
+}
+
 
 /* ==== Reviews – popular-той ижил өргөн, илүү дээд зай ==== */
 .reviews {
