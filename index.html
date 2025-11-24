@@ -13,6 +13,7 @@
     </style>
     <script type="module" src="./com/ch-cat-items.js"></script>
     <script type="module" src="./com/ch-categories.js"></script>
+    <script type="module" src="./com/ch-mini-job-card.js"></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
@@ -93,6 +94,33 @@
         ></ch-job-card>
       </section>
 
+      <div class="popupscreen">
+        <aside></aside>
+        <section class="mini_profile">
+          <ch-mini-job-card
+            pic=""
+            name="Ц.Дэлгэрмөрөн"
+            rating="4.6"
+            jobs="30 🤝"
+            description="Ажлын түүх: Дотор заслын ерөнхий мужаанаар 10 жил ажилсан туршлага"
+          ></ch-mini-job-card>
+          <ch-mini-job-card
+            pic=""
+            name="Д.Мөнх-Эрдэнэ"
+            rating="4.1"
+            jobs="27 🤝"
+            description="Ажлын түүх: Бие даасан мужааны ажил эрхэлдэг"
+          ></ch-mini-job-card
+          ><ch-mini-job-card
+            pic=""
+            name="Г.Батболд"
+            rating="4.0"
+            jobs="25 🤝"
+            description="Ажлын түүх: Дотор засалын компанид мужааны туслах 3 жил хийсэн. Түүний дараа 2 жил үндсэн мужаанаар ажиллаж байна."
+          ></ch-mini-job-card>
+        </section>
+      </div>
+
       <!-- Reviews (жишээ 3) -->
       <section class="reviews" aria-label="Сэтгэгдэл">
         <ch-review-card
@@ -111,7 +139,7 @@
     </main>
     <!-- <div class="herhen-ajildag">
       <img src="./how_it_works_pic_updated.webp" alt="">
-
+      
       
     </div> -->
     <footer></footer>

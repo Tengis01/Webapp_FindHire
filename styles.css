@@ -39,35 +39,49 @@ main .main-text {
   border-radius: 8px;
 }
 
-.word{
+.word {
   overflow: hidden;
   display: inline-block;
-  
 }
-.word span{
+.word span {
   display: block;
   height: 100%;
   padding-left: 10px;
   animation: spin_words 8s infinite;
-
-
 }
 @keyframes spin_words {
-  0% { transform: translateY(0%); }
-  20% { transform: translateY(0%); }
+  0% {
+    transform: translateY(0%);
+  }
+  20% {
+    transform: translateY(0%);
+  }
 
-  25% { transform: translateY(-100%); }
-  45% { transform: translateY(-100%); }
+  25% {
+    transform: translateY(-100%);
+  }
+  45% {
+    transform: translateY(-100%);
+  }
 
-  50% { transform: translateY(-200%); }
-  70% { transform: translateY(-200%); }
+  50% {
+    transform: translateY(-200%);
+  }
+  70% {
+    transform: translateY(-200%);
+  }
 
-  75% { transform: translateY(-300%); }
-  95% { transform: translateY(-300%); }
+  75% {
+    transform: translateY(-300%);
+  }
+  95% {
+    transform: translateY(-300%);
+  }
 
-  100% { transform: translateY(0%); } /* эхэндээ буцна */
+  100% {
+    transform: translateY(0%);
+  } /* эхэндээ буцна */
 }
-
 
 main .search-bar {
   display: flex;
@@ -170,7 +184,7 @@ form button svg {
 
 .cat-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr); 
+  grid-template-columns: repeat(7, 1fr);
   gap: 12px;
   max-width: 900px;
   margin: 20px auto 0;
@@ -184,7 +198,7 @@ form button svg {
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
   max-width: 1100px;
-  margin: 32px auto 32px;   /* Категори menu-ээс тодорхой зайтай */
+  margin: 32px auto 32px; /* Категори menu-ээс тодорхой зайтай */
 }
 
 /* Нэг box */
@@ -197,7 +211,7 @@ form button svg {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  align-items: flex-start;      /* Зүүн тийш шахна */
+  align-items: flex-start; /* Зүүн тийш шахна */
 }
 
 /* Дээд хэсэг → badge + title зэрэгцэх */
@@ -221,7 +235,7 @@ form button svg {
   font-weight: 700;
   font-size: 16px;
   margin: 0;
-  flex-shrink: 0;               /* Badge жижигрэхгүй, тогтвортой */
+  flex-shrink: 0; /* Badge жижигрэхгүй, тогтвортой */
 }
 
 /* Гарчиг */
@@ -230,17 +244,17 @@ form button svg {
   font-size: 18px;
   color: var(--brand);
   line-height: 1.3;
-  flex: 1;                      /* wrap хийж өргөнийг дүүргэнэ */
-  word-break: break-word;       /* Урт байвал дараагийн мөр рүү */
+  flex: 1; /* wrap хийж өргөнийг дүүргэнэ */
+  word-break: break-word; /* Урт байвал дараагийн мөр рүү */
 }
 
 /* Тайбар */
 .feature-desc {
   margin: 0;
-  color: var(--brand);          /* хүсвэл var(--muted) болгож болно */
+  color: var(--brand); /* хүсвэл var(--muted) болгож болно */
   line-height: 1.5;
   font-size: 14px;
-  width: 100%;                  /* wrap 100% дотор жигд */
+  width: 100%; /* wrap 100% дотор жигд */
 }
 
 /* RESPONSIVE */
@@ -249,8 +263,6 @@ form button svg {
     grid-template-columns: 1fr;
   }
 }
-
-
 
 /* ==== Popular (Jobs) – илүү тодорхой зай, давхцахгүй ==== */
 .popular {
@@ -376,7 +388,6 @@ form button svg {
   color: var(--brand);
 }
 
-
 /* ==== Reviews – popular-той ижил өргөн, илүү дээд зай ==== */
 .reviews {
   display: grid;
@@ -468,3 +479,106 @@ form button svg {
   display: block;
 }
 /* (өмнө нь .cat svg гэж бичсэн бол хамт үлдээсэн ч болно) */
+
+.popupscreen {
+  display: flex;
+  border: 1px solid black;
+  border-radius: 8px;
+  width: 1100px;
+  height: 700px;
+}
+
+.popupscreen > aside {
+  height: 680px;
+  width: 200px;
+  border: 1px solid black;
+  border-radius: 8px;
+  margin: 7px;
+}
+
+.mini_profile {
+  border: 1px solid black;
+  border-radius: 8px;
+  width: 860px;
+  height: auto; /* контентод тааруулна */
+  margin: 7px;
+  padding: 12px;
+
+  display: flex;
+  flex-wrap: wrap; /* wrap хийх */
+  gap: 12px; /* card хооронд зай */
+  justify-content: space-between; /* 3 card хооронд зай тэнцүү */
+}
+
+.mini_profile .mini-job {
+  flex: 0 1 calc(33.333% - 8px);
+  max-width: 230px; /* хүсвэл өөрчилж болно */
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 12px 16px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Дээд хэсэг */
+.mini_profile .mini-job .job-top {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+/* thumbnail */
+.mini_profile .mini-job .job-thumb {
+  width: 46px;
+  height: 58px;
+  background: #111;
+  border-radius: 5px;
+  flex-shrink: 0;
+}
+
+/* нэр */
+.mini_profile .mini-job .job-title {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* ⭐ рейтинг + jobs */
+.mini_profile .mini-job .job-stats {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.9;
+  display: flex;
+  gap: 8px;
+}
+
+/* divider */
+.mini_profile .mini-job .job-divider {
+  border: 0;
+  border-top: 1px solid var(--line);
+  margin: 0;
+}
+
+/* description */
+.mini_profile .mini-job .job-description {
+  font-size: 13px;
+  line-height: 1.4;
+  margin: 0;
+  flex: 1;
+}
+
+/* ▼ доош товч — description ДООР байрлана */
+.mini_profile .mini-job .job-nav-down {
+  align-self: center;
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 4px;
+}
+.mini_profile .mini-job .job-nav-down:hover {
+  opacity: 0.6;
+}

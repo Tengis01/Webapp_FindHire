@@ -12,7 +12,7 @@ class ChJobCard extends HTMLElement {
     const views = this.getAttribute("searches") || "500";
     const rating = parseFloat(this.getAttribute("rating") || "0");
     const worker = this.getAttribute("worker") || "Ц. Дэлгэрмөрөн";
-    const jobs = this.getAttribute("jobs") || "Гүйцэтгэсэн ажил 30";
+    const jobs = this.getAttribute("jobs") || "";
 
     this.innerHTML = /* html */ `
       <article class="job">
