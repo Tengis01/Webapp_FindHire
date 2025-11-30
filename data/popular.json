@@ -1,0 +1,36 @@
+{
+  "popularJobs": [
+    {
+      "id": 1,
+      "title": "Дотор засал",
+      "searches": 500,
+      "rating": 4.2,
+      "worker": "Ц. Дэлгэрмөрөн",
+      "completedJobs": 30
+    },
+    {
+      "id": 2,
+      "title": "Тавилга угсралт",
+      "searches": 650,
+      "rating": 4.4,
+      "worker": "Б. Мөнх-Оргил",
+      "completedJobs": 18
+    },
+    {
+      "id": 3,
+      "title": "Цэвэрлэгээ",
+      "searches": 300,
+      "rating": 4.0,
+      "worker": "С. Хулан",
+      "completedJobs": 45
+    },
+    {
+      "id": 4,
+      "title": "Нүүлгэлт",
+      "searches": 820,
+      "rating": 4.6,
+      "worker": "Ж. Тэмүүлэн",
+      "completedJobs": 27
+    }
+  ]
+}

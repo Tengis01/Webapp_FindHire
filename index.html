@@ -16,6 +16,9 @@
     <script type="module" src="./com/ch-mini-job-card.js"></script>
     <script type="module" src="./com/ch-popup-screen.js"></script>
     <script type="module" src="./com/popup-controller.js"></script>
+    <script type="module" src="./load/load-popular.js"></script>
+    <script type="module" src="./load/load-features.js"></script>
+    <script type="module" src="./load/load_review.js"></script>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
@@ -45,56 +48,11 @@
       <ch-categories></ch-categories>
 
       <!-- Features (3 box) -->
-      <section class="features" aria-label="Манай зорилго">
-        <ch-feature-card
-          badge="1"
-          title="Итгэлтэй"
-          desc="үнэлгээ, сэтгэгдэлд тулгуурлан шийдвэрээ итгэлтэй гарга"
-        ></ch-feature-card>
-        <ch-feature-card
-          badge="2"
-          title="Хурдан"
-          desc="Хэдхэн хайлтаар хамгийн ойр, тохирох мэргэжилтнийг олно."
-        ></ch-feature-card>
-        <ch-feature-card
-          badge="3"
-          title="Хялбар"
-          desc="Нэг л дороос харьцуулж, санал илгээж, ажлаа баталгаажуул."
-        ></ch-feature-card>
-      </section>
+      <section class="features" id="features-section" aria-label="Манай зорилго"></section>
 
-      <!-- Popular (жишээ 4) -->
+      <!-- Popular -->
+      <section class="popular" id="popular-section" aria-label="Алдартай ажилтнууд"></section>
 
-      <section class="popular" aria-label="Алдартай ажлууд">
-        <ch-job-card
-          title="Дотор засал"
-          searches="500"
-          rating="4.2"
-          worker="Ц. Дэлгэрмөрөн"
-          jobs="Гүйцэтгэсэн ажил 30"
-        ></ch-job-card>
-        <ch-job-card
-          title="Тавилга угсралт"
-          searches="650"
-          rating="4.4"
-          worker="Б. Мөнх-Оргил"
-          jobs="Гүйцэтгэсэн ажил 18"
-        ></ch-job-card>
-        <ch-job-card
-          title="Цэвэрлэгээ"
-          searches="300"
-          rating="4.0"
-          worker="С. Хулан"
-          jobs="Гүйцэтгэсэн ажил 45"
-        ></ch-job-card>
-        <ch-job-card
-          title="Нүүлгэлт"
-          searches="820"
-          rating="4.6"
-          worker="Ж. Тэмүүлэн"
-          jobs="Гүйцэтгэсэн ажил 27"
-        ></ch-job-card>
-      </section>
 
       <ch-popup-screen id="profiles-popup">
         <ch-mini-job-card
@@ -171,25 +129,10 @@
       </ch-popup-screen>
 
       <!-- Reviews (жишээ 3) -->
-      <section class="reviews" aria-label="Сэтгэгдэл">
-        <ch-review-card
-          text="“Олсон жолооч маань ажлаа маш хурдан, чанартай хийсэн.”"
-          rating="4"
-        ></ch-review-card>
-        <ch-review-card
-          text="“Хайлтын санал болголт нь яг тохирсон хүнийг авчирдаг.”"
-          rating="3"
-        ></ch-review-card>
-        <ch-review-card
-          text="“Итгэлтэй платформ. Дахин ашиглана.”"
-          rating="5"
-        ></ch-review-card>
-      </section>
+      <section class="reviews" id="reviews-section" aria-label="Сэтгэгдэл"></section>
     </main>
     <!-- <div class="herhen-ajildag">
       <img src="./how_it_works_pic_updated.webp" alt="">
-      
-      
     </div> -->
     <footer></footer>
   </body>
