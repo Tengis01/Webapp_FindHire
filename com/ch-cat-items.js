@@ -40,7 +40,7 @@ class ChCatItem extends HTMLElement {
           cursor: pointer;
         }
 
-        /* --- ИКОНЫ ХЭМЖЭЭГ ЗӨВ БОЛГОСОН ГОЛ ЗАСВАР --- */
+        /* --- ХЭМЖЭЭГ ЗӨВ БОЛГОСОН ГОЛ ЗАСВАР --- */
         .cat img {
           width: 22px;
           height: 22px;
@@ -93,7 +93,7 @@ class ChCatItem extends HTMLElement {
       </style>
 
       <button class="cat" type="button">
-        <img src="${icon}" alt="${name}" />
+        <img src="${icon}" alt="${name}"/>
         <span>${name}</span>
         <ul class="submenu">
           ${submenu.map((item) => `<li><a href="#">${item}</a></li>`).join("")}
