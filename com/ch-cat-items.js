@@ -40,7 +40,6 @@ class ChCatItem extends HTMLElement {
           cursor: pointer;
         }
 
-        /* --- ХЭМЖЭЭГ ЗӨВ БОЛГОСОН ГОЛ ЗАСВАР --- */
         .cat img {
           width: 22px;
           height: 22px;

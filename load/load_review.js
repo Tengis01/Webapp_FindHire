@@ -1,6 +1,6 @@
 async function loadReviews() {
     try {
-      const res = await fetch("./data/review.json");
+      const res = await fetch("./data/review.json"); //
       const data = await res.json();
 
       const container = document.getElementById("reviews-section");

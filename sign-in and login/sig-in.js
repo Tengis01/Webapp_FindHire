@@ -31,7 +31,7 @@ class Signin extends HTMLElement {
                 <div class="form-box active" id="box">
                     <form id="login-form">
                         <h2>Нэвтрэх</h2>
-                        <input type="email" name="email" placeholder="Мэйл хаяг" required>
+                        <input type="phone" name="Утасны дугаар" placeholder="Утасны дугаар" required>
                         <input type="password" name="password" placeholder="Нууц үг" required>
                         <button type="submit">Нэвтрэх</button>
                         <p>Шинээр хаяг үүсгэх үү? 
