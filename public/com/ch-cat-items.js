@@ -5,7 +5,7 @@ class ChCatItem extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ["name", "icon", "submenu"];
+    return ["name", "icon", "submenu", "category"];
   }
 
   connectedCallback() {
@@ -19,11 +19,12 @@ class ChCatItem extends HTMLElement {
   render() {
     const name = this.getAttribute("name") ?? "";
     const icon = this.getAttribute("icon") ?? "";
+    const category = this.getAttribute("category") ?? name;
     const submenu = this.getAttribute("submenu")
       ? this.getAttribute("submenu").split(", ")
       : [];
 
-    this.shadowRoot.innerHTML = /*html*/`
+    this.shadowRoot.innerHTML = /*html*/ `
       <style>
         .cat {
           width: 100%;
@@ -95,22 +96,39 @@ class ChCatItem extends HTMLElement {
         <img src="${icon}" alt="${name}"/>
         <span>${name}</span>
         <ul class="submenu">
-          ${submenu.map((item) => `<li><a href="#">${item}</a></li>`).join("")}
+          ${submenu
+            .map(
+              (item) =>
+                `<li><a href="#" data-main="${category}" data-sub="${item.trim()}">${item}</a></li>`
+            )
+            .join("")}
         </ul>
       </button>
     `;
+
+    this._attachLinkListeners();
+  }
+
+  _attachLinkListeners() {
+    const links = this.shadowRoot.querySelectorAll(".submenu a");
+    links.forEach((link) => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+
+        const mainCat = link.getAttribute("data-main");
+        const subCat = link.getAttribute("data-sub");
+        const title = link.textContent.trim();
+
+        console.log("🔗 Category link clicked:", { mainCat, subCat, title });
+
+        if (typeof window.openWorkersPopup === "function") {
+          window.openWorkersPopup(mainCat, subCat, title);
+        } else {
+          console.error("❌ openWorkersPopup function not found!");
+        }
+      });
+    });
   }
 }
 
 customElements.define("cat-item", ChCatItem);
-
-// Жишээ: Бүх subcategory товчлуур дээр
-document.querySelectorAll("[data-sub]").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const main = btn.dataset.main || "Барилга ба засвар";
-    const sub = btn.dataset.sub || btn.textContent.trim();
-    const title = btn.textContent.trim();
-
-    openWorkersPopup(main, sub, title);
-  });
-});

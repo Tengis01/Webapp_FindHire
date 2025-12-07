@@ -1,76 +1,120 @@
 import express from "express";
 import cors from "cors";
-import { fileURLToPath } from "node:url"; // Changed to node:url
-import { dirname, join } from "node:path"; // Changed to node:path
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const rootDir = join(__dirname, ".."); // Going back to ICSI301/
+const rootDir = join(__dirname, "..");
 
 const app = express();
 const PORT = 3000;
 
 app.use(cors());
-
-// Serve all static files from the "public" folder
 app.use(express.static(join(rootDir, "public")));
 
-// Serve index.html when localhost:3000 is accessed
 app.get("/", (req, res) => {
   res.sendFile(join(rootDir, "public", "index.html"));
 });
 
-// Dynamic API to filter workers
+// Ажилчдыг шүүж авах API
 app.get("/api/workers", async (req, res) => {
   try {
-    const fs = await import("node:fs/promises"); // Changed to node:fs/promises
-    const data = await fs.readFile(join(rootDir, "data", "workers.json"), "utf-8");
-    let workers = JSON.parse(data);
+    const fs = await import("node:fs/promises");
+    const data = await fs.readFile(
+      join(rootDir, "public", "data", "workers.json"),
+      "utf-8"
+    );
+    const jsonData = JSON.parse(data);
+    let workers = jsonData.workers || jsonData;
 
-    const { main_category, sub_category, search } = req.query;
+    const { main, sub, search } = req.query;
 
-    if (main_category) {
-      workers = workers.filter(w => w.main_category?.trim() === main_category.trim());
+    console.log("API Request:", { main, sub, search });
+    console.log("Total workers:", workers.length);
+
+    // category талбараар шүүнэ
+    if (main) {
+      workers = workers.filter(
+        (w) => w.category?.trim().toLowerCase() === main.trim().toLowerCase()
+      );
+      console.log(`After main filter: ${workers.length}`);
     }
-    if (sub_category) {
-      workers = workers.filter(w => w.sub_category?.trim() === sub_category.trim());
+
+    // subcategories array-с олно
+    if (sub) {
+      workers = workers.filter((w) => {
+        if (!w.subcategories || !Array.isArray(w.subcategories)) return false;
+        return w.subcategories.some(
+          (sc) => sc.trim().toLowerCase() === sub.trim().toLowerCase()
+        );
+      });
+      console.log(`After sub filter: ${workers.length}`);
     }
+
     if (search) {
       const term = search.toLowerCase();
-      workers = workers.filter(w => 
-        w.name.toLowerCase().includes(term) ||
-        w.description.toLowerCase().includes(term)
+      workers = workers.filter(
+        (w) =>
+          w.name.toLowerCase().includes(term) ||
+          w.description.toLowerCase().includes(term)
       );
     }
 
-    res.json(workers);
+    // Response форматыг mini-job-card-д тохируулах
+    const formatted = workers.map((w) => ({
+      name: w.name,
+      rating: String(w.rating),
+      jobs: `${w.jobs} ${w.emoji || "🤝"}`,
+      description: w.description,
+      pic: w.pic || "",
+      category: w.category,
+      subcategories: w.subcategories,
+    }));
+
+    console.log(`Sending ${formatted.length} workers`);
+    res.json(formatted);
   } catch (err) {
-    console.error(err);
-    res.status(500).json([]); // Handle the error or don't catch it if you prefer
+    console.error("API Error:", err);
+    res.status(500).json({ error: err.message });
   }
 });
 
-// API for popular workers (for load-popular.js)
+// Популяр ажилчдын API
 app.get("/api/popular", async (req, res) => {
   try {
-    const fs = await import("node:fs/promises"); // Changed to node:fs/promises
-    const data = await fs.readFile(join(rootDir, "data", "workers.json"), "utf-8");
-    const workers = JSON.parse(data);
-
-    res.json(
-      workers
-        .sort((a, b) => b.rating - a.rating || Number.parseInt(b.jobs) - Number.parseInt(a.jobs)) // Changed parseInt to Number.parseInt
-        .slice(0, 15)
+    const fs = await import("node:fs/promises");
+    const data = await fs.readFile(
+      join(rootDir, "public", "data", "workers.json"),
+      "utf-8"
     );
+    const jsonData = JSON.parse(data);
+    const workers = jsonData.workers || jsonData;
+
+    const sorted = workers
+      .sort((a, b) => b.rating - a.rating || b.jobs - a.jobs)
+      .slice(0, 15);
+
+    const formatted = sorted.map((w) => ({
+      name: w.name,
+      rating: String(w.rating),
+      jobs: `${w.jobs} ${w.emoji || "🤝"}`,
+      description: w.description,
+      pic: w.pic || "",
+      category: w.category,
+      subcategories: w.subcategories,
+    }));
+
+    res.json(formatted);
   } catch (err) {
-    console.error(err);
-    res.json([]);
+    console.error("Popular API Error:", err);
+    res.status(500).json({ error: err.message });
   }
 });
 
 app.listen(PORT, () => {
   console.log("");
-  console.log("🚀 FindHire server is up and running!");
+  console.log("🚀 FindHire сервер амжилттай аслаа!");
   console.log(`🔗 http://localhost:${PORT}`);
   console.log("");
 });
