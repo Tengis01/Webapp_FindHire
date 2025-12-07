@@ -1,5 +1,5 @@
 // com/popup-controller.js
-// Popup-ийг удирдах бүх функцууд
+// Popup-ийг удирдах бүх функцууд + URL routing
 
 window.addEventListener("DOMContentLoaded", () => {
   const popup = document.getElementById("profiles-popup");
@@ -87,14 +87,42 @@ window.addEventListener("DOMContentLoaded", () => {
     return filtered;
   }
 
+  // 🆕 URL-ээс параметрүүдийг уншиж popup нээх
+  function loadFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const menu = params.get("menu");
+    const submenu = params.get("submenu");
+
+    if (menu && submenu) {
+      console.log("📍 Loading from URL:", { menu, submenu });
+      // URL аль хэдийн байгаа тул updateURL = false
+      window.openWorkersPopup(menu, submenu, submenu, false);
+    }
+  }
+
   // Global function to be called for opening workers popup
+  // 🆕 updateURL параметр нэмсэн (default: true)
   window.openWorkersPopup = async function (
     main_category,
     sub_category,
-    title = sub_category
+    title = sub_category,
+    updateURL = true
   ) {
     try {
       console.log("🔍 Opening popup:", { main_category, sub_category });
+
+      // 🆕 URL update хийх
+      if (updateURL) {
+        const url = new URL(window.location);
+        url.searchParams.set("menu", main_category);
+        url.searchParams.set("submenu", sub_category);
+        window.history.pushState(
+          { menu: main_category, submenu: sub_category },
+          "",
+          url
+        );
+        console.log("🔗 URL updated:", url.search);
+      }
 
       // API параметрүүдийг зөв илгээх - main болон sub гэж
       const res = await fetch(
@@ -145,6 +173,37 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   };
 
+  // 🆕 Browser back/forward товч дарахад
+  window.addEventListener("popstate", (event) => {
+    if (event.state && event.state.menu && event.state.submenu) {
+      console.log("⬅️ Browser navigation:", event.state);
+      // URL аль хэдийн өөрчлөгдсөн тул updateURL = false
+      window.openWorkersPopup(
+        event.state.menu,
+        event.state.submenu,
+        event.state.submenu,
+        false
+      );
+    } else {
+      // Үндсэн хуудас руу буцах
+      popup.close();
+      console.log("🏠 Back to home");
+    }
+  });
+
+  // 🆕 Popup хаахад URL цэвэрлэх
+  const originalClose = popup.close.bind(popup);
+  popup.close = function () {
+    const url = new URL(window.location);
+    if (url.searchParams.has("menu") || url.searchParams.has("submenu")) {
+      url.searchParams.delete("menu");
+      url.searchParams.delete("submenu");
+      window.history.pushState({}, "", url);
+      console.log("🔗 URL cleared");
+    }
+    originalClose();
+  };
+
   // бүх cat-item авч, тэдний shadow доторх submenu-гийн <a>–уудыг олно
   const catItems = document.querySelectorAll("cat-item");
 
@@ -163,7 +222,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
         // Хэрэв data attribute байвал popup нээх
         if (mainCat && subCat) {
-          window.openWorkersPopup(mainCat, subCat, title);
+          window.openWorkersPopup(mainCat, subCat, title); // updateURL = true (default)
         } else {
           // Хэрэв байхгүй бол зүгээр popup нээх (хуучин арга)
           popup.open();
@@ -178,4 +237,7 @@ window.addEventListener("DOMContentLoaded", () => {
       popup.close();
     }
   });
+
+  // 🆕 Хуудас ачааллагдахад URL-ээс popup нээх
+  loadFromURL();
 });
