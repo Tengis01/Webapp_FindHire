@@ -114,7 +114,7 @@ app.get("/api/popular", async (req, res) => {
 
 app.listen(PORT, () => {
   console.log("");
-  console.log("🚀 FindHire сервер амжилттай аслаа!");
-  console.log(`🔗 http://localhost:${PORT}`);
+  console.log("FindHire сервер амжилттай аслаа!");
+  console.log(`http://localhost:${PORT}`);
   console.log("");
 });

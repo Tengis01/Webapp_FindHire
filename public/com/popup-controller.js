@@ -4,11 +4,11 @@
 window.addEventListener("DOMContentLoaded", () => {
   const popup = document.getElementById("profiles-popup");
   if (!popup) {
-    console.error("❌ profiles-popup олдсонгүй!");
+    console.error("profiles-popup олдсонгүй!");
     return;
   }
 
-  console.log("✅ Popup controller loaded");
+  console.log("Popup controller loaded");
 
   const nameInput = popup.shadowRoot.querySelector("#filter-name");
   const ratingSelect = popup.shadowRoot.querySelector("#filter-rating");
@@ -23,7 +23,7 @@ window.addEventListener("DOMContentLoaded", () => {
       popup.firstChild.remove();
     }
 
-    console.log(`📦 Rendering ${workers.length} cards`);
+    console.log(`Rendering ${workers.length} cards`);
 
     // 2. Add new cards inside <ch-popup-screen>
     for (const worker of workers) {
@@ -87,21 +87,21 @@ window.addEventListener("DOMContentLoaded", () => {
     return filtered;
   }
 
-  // 🆕 URL-ээс параметрүүдийг уншиж popup нээх
+  // URL-ээс параметрүүдийг уншиж popup нээх
   function loadFromURL() {
     const params = new URLSearchParams(window.location.search);
     const menu = params.get("menu");
     const submenu = params.get("submenu");
 
     if (menu && submenu) {
-      console.log("📍 Loading from URL:", { menu, submenu });
+      console.log("Loading from URL:", { menu, submenu });
       // URL аль хэдийн байгаа тул updateURL = false
       window.openWorkersPopup(menu, submenu, submenu, false);
     }
   }
 
   // Global function to be called for opening workers popup
-  // 🆕 updateURL параметр нэмсэн (default: true)
+  // updateURL параметр нэмсэн (default: true)
   window.openWorkersPopup = async function (
     main_category,
     sub_category,
@@ -109,9 +109,9 @@ window.addEventListener("DOMContentLoaded", () => {
     updateURL = true
   ) {
     try {
-      console.log("🔍 Opening popup:", { main_category, sub_category });
+      console.log("Opening popup:", { main_category, sub_category });
 
-      // 🆕 URL update хийх
+      // URL update хийх
       if (updateURL) {
         const url = new URL(window.location);
         url.searchParams.set("menu", main_category);
@@ -121,7 +121,7 @@ window.addEventListener("DOMContentLoaded", () => {
           "",
           url
         );
-        console.log("🔗 URL updated:", url.search);
+        console.log("URL updated:", url.search);
       }
 
       // API параметрүүдийг зөв илгээх - main болон sub гэж
@@ -136,7 +136,7 @@ window.addEventListener("DOMContentLoaded", () => {
       }
 
       const workers = await res.json();
-      console.log("✅ Received workers:", workers.length);
+      console.log("Received workers:", workers.length);
 
       currentWorkers = workers;
 
@@ -155,7 +155,7 @@ window.addEventListener("DOMContentLoaded", () => {
       ratingSelect.onchange = applyFilters;
       expSelect.onchange = applyFilters;
     } catch (err) {
-      console.error("❌ Error opening popup:", err);
+      console.error("Error opening popup:", err);
       // Show error message to user
       while (popup.firstChild) popup.firstChild.remove();
 
@@ -173,10 +173,10 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  // 🆕 Browser back/forward товч дарахад
+  //  Browser back/forward товч дарахад
   window.addEventListener("popstate", (event) => {
     if (event.state && event.state.menu && event.state.submenu) {
-      console.log("⬅️ Browser navigation:", event.state);
+      console.log("Browser navigation:", event.state);
       // URL аль хэдийн өөрчлөгдсөн тул updateURL = false
       window.openWorkersPopup(
         event.state.menu,
@@ -187,11 +187,11 @@ window.addEventListener("DOMContentLoaded", () => {
     } else {
       // Үндсэн хуудас руу буцах
       popup.close();
-      console.log("🏠 Back to home");
+      console.log("Back to home");
     }
   });
 
-  // 🆕 Popup хаахад URL цэвэрлэх
+  //  Popup хаахад URL цэвэрлэх
   const originalClose = popup.close.bind(popup);
   popup.close = function () {
     const url = new URL(window.location);
@@ -199,7 +199,7 @@ window.addEventListener("DOMContentLoaded", () => {
       url.searchParams.delete("menu");
       url.searchParams.delete("submenu");
       window.history.pushState({}, "", url);
-      console.log("🔗 URL cleared");
+      console.log("URL cleared");
     }
     originalClose();
   };
@@ -218,7 +218,7 @@ window.addEventListener("DOMContentLoaded", () => {
         const subCat = link.dataset.sub || link.getAttribute("data-sub");
         const title = link.textContent.trim();
 
-        console.log("🔗 Link clicked:", { mainCat, subCat, title });
+        console.log("Link clicked:", { mainCat, subCat, title });
 
         // Хэрэв data attribute байвал popup нээх
         if (mainCat && subCat) {
@@ -238,6 +238,6 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // 🆕 Хуудас ачааллагдахад URL-ээс popup нээх
+  // Хуудас ачааллагдахад URL-ээс popup нээх
   loadFromURL();
 });
