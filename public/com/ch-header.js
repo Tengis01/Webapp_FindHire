@@ -105,10 +105,10 @@ class ChHeader extends HTMLElement {
               <a href="">Бидний тухай</a>
             </li>
             <li>
-              <a href="" class="login-link">Нэвтрэх/Бүртгүүлэх</a>
+              <a href="./login/sign-in.html" class="login-link">Нэвтрэх</a>
             </li>
             <li>
-              <a href="">
+              <a href="./login/ajil-oroh.html">
                 <button>Ажилд орох</button>
               </a>
             </li>

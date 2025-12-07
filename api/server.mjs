@@ -17,6 +17,14 @@ app.get("/", (req, res) => {
   res.sendFile(join(rootDir, "public", "index.html"));
 });
 
+app.get("/login/sign-in.html", (req, res) => {
+  res.sendFile(join(rootDir, "public", "login", "sign-in.html"));
+});
+
+app.get("/login/ajil-oroh.html", (req, res) => {
+  res.sendFile(join(rootDir, "public", "login", "ajil-oroh.html"));
+});
+
 // Ажилчдыг шүүж авах API
 app.get("/api/workers", async (req, res) => {
   try {
@@ -80,7 +88,7 @@ app.get("/api/workers", async (req, res) => {
   }
 });
 
-// Популяр ажилчдын API
+/* Популяр ажилчдын API
 app.get("/api/popular", async (req, res) => {
   try {
     const fs = await import("node:fs/promises");
@@ -110,7 +118,7 @@ app.get("/api/popular", async (req, res) => {
     console.error("Popular API Error:", err);
     res.status(500).json({ error: err.message });
   }
-});
+});*/
 
 app.listen(PORT, () => {
   console.log("");
