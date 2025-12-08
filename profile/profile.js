@@ -5,7 +5,8 @@ class Profile extends HTMLElement {
 
   connectedCallback() {
     this.render();
-    this.setupRating(); // render хийгдсэний дараа л rating ажиллана
+    this.setupRating();
+    this.setupModal();   // <<< Popup ажиллуулах
   }
 
   render() {
@@ -49,14 +50,36 @@ class Profile extends HTMLElement {
         <aside>
           <img id="profile-img" src="./plumber.png" alt="Profile Image">
           <div class="name-box">Нэр</div>
-          <button id="contact">Холбоо барих</button>
-
+          
+          <button id="request-btn">Хүсэлт илгээх</button>
+          <button id="request-btn">Холбоо барих</button>
           <div class="rating">
             ${[1,2,3,4,5].map(()=>'<button class="star">&#9734;</button>').join('')}
           </div>
           <p class="current_rating">0 of 5</p>
-        </>
+        </aside>
+
       </main>
+
+        
+      <div id="request-modal" class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>Хүсэлт илгээх</h2>
+
+          <label>Таны нэр</label>
+          <input type="text" id="req-name" placeholder="Нэрээ оруулна уу">
+
+          <label>Утасны дугаар</label>
+          <input type="text" id="req-phone" placeholder="Утас оруулна уу">
+
+          <label>Хүсэлт / мессеж</label>
+          <textarea id="req-message" placeholder="Хүсэлтээ бичнэ үү"></textarea>
+          <input type="file" name="zurag">
+
+          <button id="send-request">Илгээх</button>
+        </div>
+      </div>
     `;
   }
 
@@ -73,6 +96,37 @@ class Profile extends HTMLElement {
           s.innerHTML = i < rating ? '&#9733;' : '&#9734;';
         });
       });
+    });
+  }
+
+  setupModal() {
+    const modal = this.querySelector("#request-modal");
+    const openBtn = this.querySelector("#request-btn");
+    const closeBtn = this.querySelector(".close");
+    const sendBtn = this.querySelector("#send-request");
+
+    openBtn.addEventListener("click", () => {
+      modal.style.display = "flex";
+    });
+
+    closeBtn.addEventListener("click", () => {
+      modal.style.display = "none";
+    });
+
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) modal.style.display = "none";
+    });
+
+    sendBtn.addEventListener("click", () => {
+      const data = {
+        name: this.querySelector("#req-name").value,
+        phone: this.querySelector("#req-phone").value,
+        message: this.querySelector("#req-message").value
+      };
+
+      console.log("Хүсэлт:", data);
+      alert("Хүсэлт илгээгдлээ!");
+      modal.style.display = "none";
     });
   }
 }
