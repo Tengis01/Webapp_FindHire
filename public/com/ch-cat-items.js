@@ -39,6 +39,14 @@ class ChCatItem extends HTMLElement {
           padding: 12px 8px;
           position: relative;
           cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .cat:hover {
+          transform: scale(1.08);
+          background: #f0f4ff;
+          border-color: var(--brand);
+          box-shadow: 0 8px 24px rgba(33, 52, 72, 0.15);
         }
 
         .cat img {
@@ -46,19 +54,30 @@ class ChCatItem extends HTMLElement {
           height: 22px;
           display: block;
           object-fit: contain;
+          transition: transform 0.3s ease;
+        }
+
+        .cat:hover img {
+          transform: scale(1.15);
         }
 
         .cat span {
           font-size: 12px;
+          transition: all 0.3s ease;
+        }
+
+        .cat:hover span {
+          font-weight: 600;
+          color: var(--brand);
         }
 
         .submenu {
           position: absolute;
           left: 50%;
-          top: calc(100% + 10px);
+          top: calc(100% - 10px);
           transform: translateX(-50%) translateY(6px);
           min-width: 180px;
-          padding: 10px;
+          padding: 10px 10px 10px 30px;
           background: #fff;
           border: 1px solid var(--line);
           border-radius: 10px;
@@ -70,6 +89,22 @@ class ChCatItem extends HTMLElement {
           visibility: hidden;
           transition: 0.18s ease;
           z-index: 5;
+          list-style-position: outside;
+        }
+
+        .submenu li {
+          display: list-item;
+          list-style-type: disc;
+          padding: 4px 0;
+          border-radius: 6px;
+          transition: all 0.2s ease;
+        }
+
+        .submenu li:hover {
+          background: #f0f4ff;
+          padding-left: 12px;
+          margin-left: -12px;
+          transform: scale(1.05);
         }
 
         .submenu a {
@@ -78,11 +113,16 @@ class ChCatItem extends HTMLElement {
           font-size: 14px;
           padding: 6px 8px;
           border-radius: 6px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: inline;
+          transition: all 0.2s ease;
         }
 
         .submenu a:hover {
-          background: var(--soft);
           color: var(--brand);
+          font-weight: 600;
         }
 
         .cat:hover .submenu {

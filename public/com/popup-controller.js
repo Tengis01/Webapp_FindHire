@@ -14,18 +14,15 @@ window.addEventListener("DOMContentLoaded", () => {
   const ratingSelect = popup.shadowRoot.querySelector("#filter-rating");
   const expSelect = popup.shadowRoot.querySelector("#filter-experience");
 
-  let currentWorkers = [];
+  let currentCategory = { main: '', sub: '' };
 
-  // Helper function to render cards
   function renderCards(workers) {
-    // 1. Remove all old cards from popup
     while (popup.firstChild) {
       popup.firstChild.remove();
     }
 
     console.log(`Rendering ${workers.length} cards`);
 
-    // 2. Add new cards inside <ch-popup-screen>
     for (const worker of workers) {
       const card = document.createElement("ch-mini-job-card");
       card.setAttribute("name", worker.name);
@@ -38,53 +35,50 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Apply filters to workers
-  function applyFilters() {
-    let filtered = [...currentWorkers];
+  async function fetchWorkers(updateURL = true) {
+    try {
+      const name = nameInput.value.trim();
+      const rating = ratingSelect.value;
+      const exp = expSelect.value;
 
-    // Filter by name, rating, experience
-    filtered = filterByName(filtered);
-    filtered = filterByRating(filtered);
-    filtered = filterByExperience(filtered);
+      const apiParams = new URLSearchParams();
+      apiParams.set('main', currentCategory.main);
+      apiParams.set('sub', currentCategory.sub);
+      if (name) apiParams.set('search', name);
+      if (rating) apiParams.set('rating', rating);
+      if (exp) apiParams.set('experience', exp);
 
-    renderCards(filtered);
-  }
+      console.log('Fetching workers with params:', Object.fromEntries(apiParams));
 
-  // Filter workers by name
-  function filterByName(filtered) {
-    const name = nameInput.value.trim().toLowerCase();
-    if (name) {
-      return filtered.filter((w) => w.name.toLowerCase().includes(name));
+      const res = await fetch(`/api/workers?${apiParams.toString()}`);
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+      const workers = await res.json();
+      console.log('Received workers:', workers.length);
+
+      renderCards(workers);
+
+      if (updateURL) {
+        const url = new URL(window.location);
+        url.searchParams.set('menu', currentCategory.main);
+        url.searchParams.set('submenu', currentCategory.sub);
+        if (name) url.searchParams.set('search', name);
+        else url.searchParams.delete('search');
+        if (rating) url.searchParams.set('rating', rating);
+        else url.searchParams.delete('rating');
+        if (exp) url.searchParams.set('experience', exp);
+        else url.searchParams.delete('experience');
+        
+        window.history.replaceState(
+          { menu: currentCategory.main, submenu: currentCategory.sub },
+          '',
+          url
+        );
+      }
+    } catch (err) {
+      console.error('Error fetching workers:', err);
+      renderCards([]);
     }
-    return filtered;
-  }
-
-  // Filter workers by rating
-  function filterByRating(filtered) {
-    const rating = ratingSelect.value;
-    if (rating) {
-      return filtered.filter((w) => {
-        // rating нь string байгаа тул number болгож хөрвүүлнэ
-        const workerRating =
-          typeof w.rating === "string" ? parseFloat(w.rating) : w.rating;
-        return workerRating >= Number(rating);
-      });
-    }
-    return filtered;
-  }
-
-  // Filter workers by experience
-  function filterByExperience(filtered) {
-    const exp = expSelect.value;
-    if (exp) {
-      return filtered.filter((w) => {
-        // description-с жилийн тоо гаргаж авна
-        const years = w.description.match(/(\d+)\s*жил/i);
-        const expYears = years ? parseInt(years[1]) : 0;
-        return expYears >= Number(exp);
-      });
-    }
-    return filtered;
   }
 
   // URL-ээс параметрүүдийг уншиж popup нээх
@@ -92,9 +86,12 @@ window.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
     const menu = params.get("menu");
     const submenu = params.get("submenu");
+    const search = params.get("search");
+    const rating = params.get("rating");
+    const experience = params.get("experience");
 
     if (menu && submenu) {
-      console.log("Loading from URL:", { menu, submenu });
+      console.log("Loading from URL:", { menu, submenu, search, rating, experience });
       // URL аль хэдийн байгаа тул updateURL = false
       window.openWorkersPopup(menu, submenu, submenu, false);
     }
@@ -111,52 +108,30 @@ window.addEventListener("DOMContentLoaded", () => {
     try {
       console.log("Opening popup:", { main_category, sub_category });
 
-      // URL update хийх
-      if (updateURL) {
-        const url = new URL(window.location);
-        url.searchParams.set("menu", main_category);
-        url.searchParams.set("submenu", sub_category);
-        window.history.pushState(
-          { menu: main_category, submenu: sub_category },
-          "",
-          url
-        );
-        console.log("URL updated:", url.search);
-      }
-
-      // API параметрүүдийг зөв илгээх - main болон sub гэж
-      const res = await fetch(
-        `/api/workers?main=${encodeURIComponent(
-          main_category
-        )}&sub=${encodeURIComponent(sub_category)}`
-      );
-
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-
-      const workers = await res.json();
-      console.log("Received workers:", workers.length);
-
-      currentWorkers = workers;
+      currentCategory = { main: main_category, sub: sub_category };
 
       // Change title if available
       const titleElement = popup.shadowRoot.querySelector("h3");
       if (titleElement) titleElement.textContent = title;
 
-      renderCards(workers);
       popup.open();
 
-      // Set up filter event listeners
-      nameInput.value = "";
-      ratingSelect.value = "";
-      expSelect.value = "";
-      nameInput.oninput = applyFilters;
-      ratingSelect.onchange = applyFilters;
-      expSelect.onchange = applyFilters;
+      const params = new URLSearchParams(window.location.search);
+      const searchParam = params.get("search");
+      const ratingParam = params.get("rating");
+      const expParam = params.get("experience");
+
+      nameInput.value = searchParam || "";
+      ratingSelect.value = ratingParam || "";
+      expSelect.value = expParam || "";
+
+      nameInput.oninput = () => fetchWorkers(true);
+      ratingSelect.onchange = () => fetchWorkers(true);
+      expSelect.onchange = () => fetchWorkers(true);
+
+      await fetchWorkers(updateURL);
     } catch (err) {
       console.error("Error opening popup:", err);
-      // Show error message to user
       while (popup.firstChild) popup.firstChild.remove();
 
       const errorCard = document.createElement("ch-mini-job-card");
@@ -198,6 +173,9 @@ window.addEventListener("DOMContentLoaded", () => {
     if (url.searchParams.has("menu") || url.searchParams.has("submenu")) {
       url.searchParams.delete("menu");
       url.searchParams.delete("submenu");
+      url.searchParams.delete("search");
+      url.searchParams.delete("rating");
+      url.searchParams.delete("experience");
       window.history.pushState({}, "", url);
       console.log("URL cleared");
     }

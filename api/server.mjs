@@ -8,14 +8,38 @@ const __dirname = dirname(__filename);
 const rootDir = join(__dirname, "..");
 
 const app = express();
-const PORT = 3000;
+const PORT = 3001;
 
 app.use(cors());
-app.use(express.static(join(rootDir, "public")));
 
+// Routes-ийг static файлаас өмнө тодорхойлох
 app.get("/", (req, res) => {
   res.sendFile(join(rootDir, "public", "index.html"));
 });
+
+// Sign-in хуудас route
+app.get("/sign-in", (req, res) => {
+  res.sendFile(join(rootDir, "sign-in", "sign-in.html"));
+});
+
+// Ажилд орох хуудас route  
+app.get("/ajild-oroh", (req, res) => {
+  res.sendFile(join(rootDir, "ajild-oroh", "ajild-oroh.html"));
+});
+
+// Profile хуудас route
+app.get("/profile", (req, res) => {
+  res.sendFile(join(rootDir, "profile", "profile.html"));
+});
+
+// About-us хуудас route
+app.get("/about-us", (req, res) => {
+  res.sendFile(join(rootDir, "about-us", "about-us.html"));
+});
+
+// Static файлууд (routes-ээс хойш)
+app.use(express.static(join(rootDir, "public")));
+app.use(express.static(rootDir));
 
 // Ажилчдыг шүүж авах API
 app.get("/api/workers", async (req, res) => {
