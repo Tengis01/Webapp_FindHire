@@ -2,8 +2,10 @@
 class ChPopupScreen extends HTMLElement {
   constructor() {
     super();
+    
     const root = this.attachShadow({ mode: "open" });
     root.innerHTML = /* html */ `
+    
       <style>
         :host {
         @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;1,400;1,700&display=swap");
@@ -22,6 +24,8 @@ class ChPopupScreen extends HTMLElement {
           transition:
             opacity 0.25s ease-out,
             background-color 0.25s ease-out;
+            <button onclick="document.querySelector('ch-popup-screen').close()">Close</button>
+
         }
 
         :host([open]) {
@@ -120,6 +124,7 @@ class ChPopupScreen extends HTMLElement {
       </style>
 
       <div class="wrapper" role="dialog" aria-modal="true">
+      
         <aside class="filters">
           <h3>Фильтер</h3>
 
@@ -146,9 +151,10 @@ class ChPopupScreen extends HTMLElement {
       </div>
     `;
   }
-
+  
   open() { this.setAttribute("open", ""); }
   close() { this.removeAttribute("open"); }
+
 }
 
 customElements.define("ch-popup-screen", ChPopupScreen);

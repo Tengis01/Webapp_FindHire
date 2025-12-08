@@ -15,6 +15,15 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     });
   });
+popup.addEventListener("click", (e) => {
+  const root = popup.shadowRoot;
+  const wrapper = root.querySelector(".wrapper");
+
+  // wrapper дээр дараагүй бол → маск дээр дарсан гэж үзээд хаана
+  if (!wrapper.contains(e.target)) {
+    popup.close();
+  }
+});
 
   // popup-ийн хар маск дээр дарахад хаах
   popup.addEventListener("click", (e) => {
