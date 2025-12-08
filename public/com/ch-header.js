@@ -95,7 +95,7 @@ class ChHeader extends HTMLElement {
 
     <header>
       <div class="logo">
-        <img src="./icon/flower.png" alt="">
+        <img src="/public/icon/flower.png" alt="">
         <a href="">FindHire</a>
       </div>
       <div>
