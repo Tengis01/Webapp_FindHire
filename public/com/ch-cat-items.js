@@ -39,6 +39,13 @@ class ChCatItem extends HTMLElement {
           padding: 12px 8px;
           position: relative;
           cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .cat:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          border-color: var(--brand);
         }
 
         .cat img {
@@ -46,6 +53,11 @@ class ChCatItem extends HTMLElement {
           height: 22px;
           display: block;
           object-fit: contain;
+          transition: transform 0.3s ease;
+        }
+
+        .cat:hover img {
+          transform: scale(1.1);
         }
 
         .cat span {
@@ -55,7 +67,7 @@ class ChCatItem extends HTMLElement {
         .submenu {
           position: absolute;
           left: 50%;
-          top: calc(100% + 10px);
+          top: calc(100% - 10px);
           transform: translateX(-50%) translateY(6px);
           min-width: 180px;
           padding: 10px;
@@ -70,6 +82,22 @@ class ChCatItem extends HTMLElement {
           visibility: hidden;
           transition: 0.18s ease;
           z-index: 5;
+          list-style-position: outside;
+          padding-left: 30px;
+        }
+
+        .submenu li {
+          display: list-item;
+          list-style-type: disc;
+          padding: 2px 0;
+          border-radius: 6px;
+          transition: 0.2s ease;
+        }
+
+        .submenu li:hover {
+          background: var(--soft);
+          padding-left: 8px;
+          margin-left: -8px;
         }
 
         .submenu a {
@@ -78,11 +106,16 @@ class ChCatItem extends HTMLElement {
           font-size: 14px;
           padding: 6px 8px;
           border-radius: 6px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: inline;
+          transition: 0.2s ease;
         }
 
         .submenu a:hover {
-          background: var(--soft);
           color: var(--brand);
+          font-weight: 500;
         }
 
         .cat:hover .submenu {
