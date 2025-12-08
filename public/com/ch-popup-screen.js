@@ -146,8 +146,10 @@ class ChPopupScreen extends HTMLElement {
       </div>
     `;
 
-    this.shadowRoot.addEventListener('click', (e) => {
-      if (e.target === this.shadowRoot.host) {
+    const wrapper = this.shadowRoot.querySelector('.wrapper');
+    this.addEventListener('click', (e) => {
+      const path = e.composedPath();
+      if (!path.includes(wrapper)) {
         this.close();
       }
     });
