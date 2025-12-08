@@ -8,7 +8,7 @@ const __dirname = dirname(__filename);
 const rootDir = join(__dirname, "..");
 
 const app = express();
-const PORT = 3000;
+const PORT = 3001;
 
 app.use(cors());
 app.use(express.static(join(rootDir, "public")));

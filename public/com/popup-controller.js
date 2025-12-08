@@ -8,24 +8,19 @@ window.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  console.log("Popup controller loaded");
-
   const nameInput = popup.shadowRoot.querySelector("#filter-name");
   const ratingSelect = popup.shadowRoot.querySelector("#filter-rating");
   const expSelect = popup.shadowRoot.querySelector("#filter-experience");
 
   let currentWorkers = [];
 
-  // Helper function to render cards
   function renderCards(workers) {
-    // 1. Remove all old cards from popup
     while (popup.firstChild) {
       popup.firstChild.remove();
     }
 
     console.log(`Rendering ${workers.length} cards`);
 
-    // 2. Add new cards inside <ch-popup-screen>
     for (const worker of workers) {
       const card = document.createElement("ch-mini-job-card");
       card.setAttribute("name", worker.name);
@@ -38,8 +33,7 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  // Apply filters to workers
-  function applyFilters() {
+  function applyFilters(updateURL = true) {
     let filtered = [...currentWorkers];
 
     // Filter by name, rating, experience
@@ -47,10 +41,31 @@ window.addEventListener("DOMContentLoaded", () => {
     filtered = filterByRating(filtered);
     filtered = filterByExperience(filtered);
 
+    if (updateURL) {
+      const url = new URL(window.location);
+      const name = nameInput.value.trim();
+      const rating = ratingSelect.value;
+      const exp = expSelect.value;
+
+      if (name) url.searchParams.set('search', name);
+      else url.searchParams.delete('search');
+
+      if (rating) url.searchParams.set('rating', rating);
+      else url.searchParams.delete('rating');
+
+      if (exp) url.searchParams.set('experience', exp);
+      else url.searchParams.delete('experience');
+
+      window.history.replaceState(
+        { menu: url.searchParams.get('menu'), submenu: url.searchParams.get('submenu') },
+        '',
+        url
+      );
+    }
+
     renderCards(filtered);
   }
 
-  // Filter workers by name
   function filterByName(filtered) {
     const name = nameInput.value.trim().toLowerCase();
     if (name) {
@@ -59,7 +74,6 @@ window.addEventListener("DOMContentLoaded", () => {
     return filtered;
   }
 
-  // Filter workers by rating
   function filterByRating(filtered) {
     const rating = ratingSelect.value;
     if (rating) {
@@ -73,7 +87,6 @@ window.addEventListener("DOMContentLoaded", () => {
     return filtered;
   }
 
-  // Filter workers by experience
   function filterByExperience(filtered) {
     const exp = expSelect.value;
     if (exp) {
@@ -92,11 +105,22 @@ window.addEventListener("DOMContentLoaded", () => {
     const params = new URLSearchParams(window.location.search);
     const menu = params.get("menu");
     const submenu = params.get("submenu");
+    const search = params.get("search");
+    const rating = params.get("rating");
+    const experience = params.get("experience");
 
     if (menu && submenu) {
-      console.log("Loading from URL:", { menu, submenu });
+      console.log("Loading from URL:", { menu, submenu, search, rating, experience });
       // URL аль хэдийн байгаа тул updateURL = false
-      window.openWorkersPopup(menu, submenu, submenu, false);
+      window.openWorkersPopup(menu, submenu, submenu, false).then(() => {
+        if (search) nameInput.value = search;
+        if (rating) ratingSelect.value = rating;
+        if (experience) expSelect.value = experience;
+        
+        if (search || rating || experience) {
+          applyFilters(false);
+        }
+      });
     }
   }
 
@@ -198,6 +222,9 @@ window.addEventListener("DOMContentLoaded", () => {
     if (url.searchParams.has("menu") || url.searchParams.has("submenu")) {
       url.searchParams.delete("menu");
       url.searchParams.delete("submenu");
+      url.searchParams.delete("search");
+      url.searchParams.delete("rating");
+      url.searchParams.delete("experience");
       window.history.pushState({}, "", url);
       console.log("URL cleared");
     }
@@ -229,13 +256,6 @@ window.addEventListener("DOMContentLoaded", () => {
         }
       });
     });
-  });
-
-  // popup-ийн хар маск дээр дарахад хаах
-  popup.addEventListener("click", (e) => {
-    if (e.target === popup) {
-      popup.close();
-    }
   });
 
   // Хуудас ачааллагдахад URL-ээс popup нээх
