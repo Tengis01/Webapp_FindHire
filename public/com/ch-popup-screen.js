@@ -150,6 +150,15 @@ class ChPopupScreen extends HTMLElement {
         </section>
       </div>
     `;
+
+    const wrapper = this.shadowRoot.querySelector('.wrapper');
+    wrapper.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+
+    this.shadowRoot.addEventListener('click', (e) => {
+      this.close();
+    });
   }
   
   open() { this.setAttribute("open", ""); }

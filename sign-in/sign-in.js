@@ -2,27 +2,34 @@
 class Signin extends HTMLElement {
   constructor() {
     super();
+    console.log('Signin constructor called');
     this.attachShadow({ mode: "open" });
   }
 
   connectedCallback() {
+    console.log('Signin connectedCallback called');
     this.render();
     this.setupEventListeners();
   }
 
   render() {
+    console.log('Signin render called');
     this.shadowRoot.innerHTML = `
-        <style>
-            @import './sign-in.css';
-        </style>
+        <link rel="stylesheet" href="/sign-in/sign-in.css">
             
             <div class="container">
                 <!-- Нэвтрэх хэсэг -->
                 <div class="form-box active" id="box">
                     <form id="login-form">
                         <h2>Нэвтрэх</h2>
-                        <input type="email" name="email" placeholder="Мэйл хаяг" required>
-                        <input type="password" name="password" placeholder="Нууц үг" required>
+                        <div>
+                            <label for="login-email">Email</label>
+                            <input type="email" id="login-email" name="email" placeholder="abc@example.com" required>
+                        </div>
+                        <div>
+                            <label for="login-password">Нууц үг</label>
+                            <input type="password" id="login-password" name="password" placeholder="Нууц үг" required>
+                        </div>
                         <button type="submit">Нэвтрэх</button>
                         <p>Шинээр хаяг үүсгэх үү? 
                             <a href="#" class="toggle-link">Бүртгүүлэх</a>
@@ -34,17 +41,38 @@ class Signin extends HTMLElement {
                 <div class="form-box" id="burtguuleh">
                     <form id="register-form">
                         <h2>Бүртгүүлэх</h2>
-                        <input type="text" name="lastname" placeholder="Овог" required>
-                        <input type="text" name="firstname" placeholder="Нэр" required>
-                        <input type="tel" name="phone" placeholder="Утасны дугаар" required>
-                        <input type="text" name="address" placeholder="Хаяг" required>
-                        <input type="email" name="Email" placeholder="Email" requiered>
-                        <input type="password" name="password" placeholder="Нууц үг" required>
-                        <select name="role" required> 
-                            <option value="" disabled selected>Ажилчин эсвэл хэрэглэгч</option>
-                            <option value="Ажилчин">Ажилчин</option>
-                            <option value="Хэрэглэгч">Хэрэглэгч</option>
-                        </select> 
+                        <div>
+                            <label for="reg-lastname">Овог</label>
+                            <input type="text" id="reg-lastname" name="lastname" placeholder="Өөрийн овог" required>
+                        </div>
+                        <div>
+                            <label for="reg-firstname">Нэр</label>
+                            <input type="text" id="reg-firstname" name="firstname" placeholder="Өөрийн нэр" required>
+                        </div>
+                        <div>
+                            <label for="reg-phone">Холбогдох утасны дугаар</label>
+                            <input type="tel" id="reg-phone" name="phone" placeholder="99003322" maxlength="8" required>
+                        </div>
+                        <div>
+                            <label for="reg-address">Хаяг</label>
+                            <input type="text" id="reg-address" name="address" placeholder="Хаяг" required>
+                        </div>
+                        <div class="full-width">
+                            <label for="reg-email">Email</label>
+                            <input type="email" id="reg-email" name="Email" placeholder="abc@example.com" required>
+                        </div>
+                        <div class="full-width">
+                            <label for="reg-password">Нууц үг</label>
+                            <input type="password" id="reg-password" name="password" placeholder="Нууц үг" required>
+                        </div>
+                        <div class="full-width">
+                            <label for="reg-role">Төрөл сонгох</label>
+                            <select id="reg-role" name="role" required> 
+                                <option value="" disabled selected>Ажилчин эсвэл хэрэглэгч</option>
+                                <option value="Ажилчин">Ажилчин</option>
+                                <option value="Хэрэглэгч">Хэрэглэгч</option>
+                            </select>
+                        </div>
                         <button type="submit">Бүртгүүлэх</button>
                         <p>Хаягтай бол? 
                             <a href="#" class="toggle-link">Нэвтрэх</a>
@@ -108,4 +136,6 @@ class Signin extends HTMLElement {
   }
 }
 
+console.log('Defining sign-in custom element');
 customElements.define("sign-in", Signin);
+console.log('sign-in custom element defined');
