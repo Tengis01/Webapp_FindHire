@@ -15,14 +15,14 @@ class ChHeader extends HTMLElement {
       top: 0;
       left: 0;
       width: 100%;
-      height: 10%;
+      height: auto; /* allow natural height */
       background-color: white;
       padding:0;
       margin:0;
       display:flex;
       justify-content:space-between;
       align-items:center;
-      z-index: 100;
+      z-index: 5; /* lowered so popup (z-index:40) appears above header */
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
