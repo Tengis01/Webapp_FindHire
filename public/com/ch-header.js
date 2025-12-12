@@ -15,13 +15,15 @@ class ChHeader extends HTMLElement {
       top: 0;
       left: 0;
       width: 100%;
-      height: 10%;
+      height: auto; /* allow natural height */
       background-color: white;
       padding:0;
       margin:0;
       display:flex;
       justify-content:space-between;
       align-items:center;
+      z-index: 5; /* lowered so popup (z-index:40) appears above header */
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     ch-header header img{
@@ -60,55 +62,68 @@ class ChHeader extends HTMLElement {
       text-decoration:none;
       color:#333;
       cursor:pointer;
+      transition: all 0.3s ease;
+    }
+
+    ch-header nav ul li a:hover{
+      color: #213448;
     }
 
     ch-header nav ul li a.login-link{
-      border-radius:4px;
-      padding:8px 12px;
+      border-radius:6px;
+      padding:10px 20px;
       cursor:pointer;
-      background-color:rgb(255, 255, 255);
-      border:none;
-      transition:all 0.3s ease-in;
+      background-color:#fff;
+      border: 2px solid #213448;
+      color: #213448;
+      font-weight: 500;
+      transition:all 0.3s ease;
     }
 
     ch-header nav ul li a.login-link:hover{
       background-color:#213448;
       color:white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(33, 52, 72, 0.2);
     }
 
     ch-header button{
-      padding:8px 12px;
-      border:none;
+      padding:10px 20px;
+      border:2px solid #213448;
       background-color:#213448;
       color:white;
       cursor:pointer;
-      border-radius:4px;
+      border-radius:6px;
+      font-weight: 500;
+      font-size: 14px;
+      transition:all 0.3s ease;
     }
 
     ch-header button:hover{
       background-color:#ffffff;
-      color:black;
-      transition:all 0.3s ease-in-out;
+      color:#213448;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(33, 52, 72, 0.2);
     }
 
     </style>
 
     <header>
       <div class="logo">
-        <img src="/public/icon/flower.png" alt="">
-        <a href="">FindHire</a>
+        <img src="/public/icon/flower.png" alt="FindHire logo">
+        <a href="/">FindHire</a>
       </div>
       <div>
         <nav>
           <ul>
             <li>
-              <a href="">Бидний тухай</a>
+              <a href="/about-us">Бидний тухай</a>
             </li>
             <li>
-              <a href="./login/sign-in.html" class="login-link">Нэвтрэх</a>
+              <a href="/sign-in" class="login-link">Нэвтрэх</a>
             </li>
             <li>
-              <a href="./login/ajil-oroh.html">
+              <a href="/ajild-oroh">
                 <button>Ажилд орох</button>
               </a>
             </li>
