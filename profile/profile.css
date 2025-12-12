@@ -173,6 +173,7 @@ aside {
 }
 .feedback-box {
     display: flex;
+      flex-direction: row-reverse;
     background: var(--muted);
     border-radius: 15px;
     padding: auto;
@@ -238,7 +239,6 @@ button:hover{
     text-align: center;
 }
 
-/* Жижигхэн гялалзах effect */
 @keyframes sparkle {
     0% { text-shadow: 0 0 2px gold; }
     50% { text-shadow: 0 0 10px gold; }
