@@ -2,7 +2,7 @@
 class ChPopupScreen extends HTMLElement {
   constructor() {
     super();
-    
+
     const root = this.attachShadow({ mode: "open" });
     root.innerHTML = /* html */ `
     
@@ -151,19 +151,26 @@ class ChPopupScreen extends HTMLElement {
       </div>
     `;
 
-    const wrapper = this.shadowRoot.querySelector('.wrapper');
-    wrapper.addEventListener('click', (e) => {
-      e.stopPropagation();
-    });
+    const wrapper = this.shadowRoot.querySelector(".wrapper");
 
-    this.shadowRoot.addEventListener('click', (e) => {
-      this.close();
+    this.addEventListener("click", (e) => {
+      // Shadow DOM дээр найдвартай шалгахын тулд composedPath ашиглана
+      const path = e.composedPath();
+      const clickedInsideWrapper = path.includes(wrapper);
+
+      // зөвхөн wrapper-оос ГАДНА дарсан үед хаана (backdrop click)
+      if (!clickedInsideWrapper) {
+        this.close();
+      }
     });
   }
-  
-  open() { this.setAttribute("open", ""); }
-  close() { this.removeAttribute("open"); }
 
+  open() {
+    this.setAttribute("open", "");
+  }
+  close() {
+    this.removeAttribute("open");
+  }
 }
 
 customElements.define("ch-popup-screen", ChPopupScreen);
