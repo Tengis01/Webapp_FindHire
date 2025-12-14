@@ -124,12 +124,12 @@ class ChCatItem extends HTMLElement {
         const subCat = link.getAttribute("data-sub");
         const title = link.textContent.trim();
 
-        console.log("🔗 Category link clicked:", { mainCat, subCat, title });
+        console.log("Category link clicked:", { mainCat, subCat, title });
 
         if (typeof window.openWorkersPopup === "function") {
           window.openWorkersPopup(mainCat, subCat, title);
         } else {
-          console.error("❌ openWorkersPopup function not found!");
+          console.error("openWorkersPopup function not found!");
         }
       });
     });

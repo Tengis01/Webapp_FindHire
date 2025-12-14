@@ -8,11 +8,34 @@ window.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
-  const nameInput = popup.shadowRoot.querySelector("#filter-name");
-  const ratingSelect = popup.shadowRoot.querySelector("#filter-rating");
-  const expSelect = popup.shadowRoot.querySelector("#filter-experience");
-
   let currentCategory = { main: '', sub: '' };
+
+  // Filter component-ийг олох функц
+  const getFilterComponent = () => {
+    return popup.shadowRoot.querySelector("ch-filter");
+  };
+
+  // Filter-ийн утгуудыг авах функц
+  function getFilterValues() {
+    // Popup component-оос дуудах
+    if (typeof popup.getFilterValues === 'function') {
+      return popup.getFilterValues();
+    }
+    
+    // Эсвэл шууд ch-filter component-оос дуудах
+    const filterComponent = getFilterComponent();
+    if (filterComponent && typeof filterComponent.getFilterValues === 'function') {
+      return filterComponent.getFilterValues();
+    }
+    
+    console.warn("Filter component эсвэл getFilterValues method олдсонгүй");
+    return {
+      rating: [],
+      experience: [],
+      budget: [],
+      ratingRange: 3.0
+    };
+  }
 
   function renderCards(workers) {
     while (popup.firstChild) {
@@ -35,16 +58,25 @@ window.addEventListener("DOMContentLoaded", () => {
 
   async function fetchWorkers(updateURL = true) {
     try {
-      const name = nameInput.value.trim();
-      const rating = ratingSelect.value;
-      const exp = expSelect.value;
+      const filterValues = getFilterValues();
 
       const apiParams = new URLSearchParams();
       apiParams.set('main', currentCategory.main);
       apiParams.set('sub', currentCategory.sub);
-      if (name) apiParams.set('search', name);
-      if (rating) apiParams.set('rating', rating);
-      if (exp) apiParams.set('experience', exp);
+      
+      // Filter утгуудыг API параметрт нэмэх
+      if (filterValues.rating && filterValues.rating.length > 0) {
+        apiParams.set('rating', filterValues.rating.join(','));
+      }
+      if (filterValues.experience && filterValues.experience.length > 0) {
+        apiParams.set('experience', filterValues.experience.join(','));
+      }
+      if (filterValues.budget && filterValues.budget.length > 0) {
+        apiParams.set('budget', filterValues.budget.join(','));
+      }
+      if (filterValues.ratingRange) {
+        apiParams.set('ratingRange', filterValues.ratingRange);
+      }
 
       console.log('Fetching workers with params:', Object.fromEntries(apiParams));
 
@@ -60,12 +92,31 @@ window.addEventListener("DOMContentLoaded", () => {
         const url = new URL(window.location);
         url.searchParams.set('menu', currentCategory.main);
         url.searchParams.set('submenu', currentCategory.sub);
-        if (name) url.searchParams.set('search', name);
-        else url.searchParams.delete('search');
-        if (rating) url.searchParams.set('rating', rating);
-        else url.searchParams.delete('rating');
-        if (exp) url.searchParams.set('experience', exp);
-        else url.searchParams.delete('experience');
+        
+        // Filter параметрүүдийг URL-д нэмэх
+        if (filterValues.rating && filterValues.rating.length > 0) {
+          url.searchParams.set('rating', filterValues.rating.join(','));
+        } else {
+          url.searchParams.delete('rating');
+        }
+        
+        if (filterValues.experience && filterValues.experience.length > 0) {
+          url.searchParams.set('experience', filterValues.experience.join(','));
+        } else {
+          url.searchParams.delete('experience');
+        }
+        
+        if (filterValues.budget && filterValues.budget.length > 0) {
+          url.searchParams.set('budget', filterValues.budget.join(','));
+        } else {
+          url.searchParams.delete('budget');
+        }
+
+        if (filterValues.ratingRange) {
+          url.searchParams.set('ratingRange', filterValues.ratingRange);
+        } else {
+          url.searchParams.delete('ratingRange');
+        }
         
         window.history.replaceState(
           { menu: currentCategory.main, submenu: currentCategory.sub },
@@ -79,32 +130,25 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Filter changed event listener нэмэх
+  popup.addEventListener('filter-changed', (e) => {
+    console.log('Filter changed:', e.detail);
+    fetchWorkers(true);
+  });
+
   // URL-ээс параметрүүдийг уншиж popup нээх
   function loadFromURL() {
     const params = new URLSearchParams(window.location.search);
     const menu = params.get("menu");
     const submenu = params.get("submenu");
-    const search = params.get("search");
-    const rating = params.get("rating");
-    const experience = params.get("experience");
 
     if (menu && submenu) {
-      console.log("Loading from URL:", { menu, submenu, search, rating, experience });
-      // URL аль хэдийн байгаа тул updateURL = false
-      window.openWorkersPopup(menu, submenu, submenu, false).then(() => {
-        if (search) nameInput.value = search;
-        if (rating) ratingSelect.value = rating;
-        if (experience) expSelect.value = experience;
-        
-        if (search || rating || experience) {
-          applyFilters(false);
-        }
-      });
+      console.log("Loading from URL:", { menu, submenu });
+      window.openWorkersPopup(menu, submenu, submenu, false);
     }
   }
 
   // Global function to be called for opening workers popup
-  // updateURL параметр нэмсэн (default: true)
   window.openWorkersPopup = async function (
     main_category,
     sub_category,
@@ -121,19 +165,6 @@ window.addEventListener("DOMContentLoaded", () => {
       if (titleElement) titleElement.textContent = title;
 
       popup.open();
-
-      const params = new URLSearchParams(window.location.search);
-      const searchParam = params.get("search");
-      const ratingParam = params.get("rating");
-      const expParam = params.get("experience");
-
-      nameInput.value = searchParam || "";
-      ratingSelect.value = ratingParam || "";
-      expSelect.value = expParam || "";
-
-      nameInput.oninput = () => fetchWorkers(true);
-      ratingSelect.onchange = () => fetchWorkers(true);
-      expSelect.onchange = () => fetchWorkers(true);
 
       await fetchWorkers(updateURL);
     } catch (err) {
@@ -154,11 +185,10 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   };
 
-  //  Browser back/forward товч дарахад
+  // Browser back/forward товч дарахад
   window.addEventListener("popstate", (event) => {
     if (event.state && event.state.menu && event.state.submenu) {
       console.log("Browser navigation:", event.state);
-      // URL аль хэдийн өөрчлөгдсөн тул updateURL = false
       window.openWorkersPopup(
         event.state.menu,
         event.state.submenu,
@@ -166,55 +196,51 @@ window.addEventListener("DOMContentLoaded", () => {
         false
       );
     } else {
-      // Үндсэн хуудас руу буцах
       popup.close();
       console.log("Back to home");
     }
   });
 
-  //  Popup хаахад URL цэвэрлэх
+  // Popup хаахад URL цэвэрлэх
   const originalClose = popup.close.bind(popup);
   popup.close = function () {
     const url = new URL(window.location);
     if (url.searchParams.has("menu") || url.searchParams.has("submenu")) {
       url.searchParams.delete("menu");
       url.searchParams.delete("submenu");
-      url.searchParams.delete("search");
       url.searchParams.delete("rating");
       url.searchParams.delete("experience");
+      url.searchParams.delete("budget");
+      url.searchParams.delete("ratingRange");
       window.history.pushState({}, "", url);
       console.log("URL cleared");
     }
     originalClose();
   };
 
-  // бүх cat-item авч, тэдний shadow доторх submenu-гийн <a>–уудыг олно
+  // Category link handler
   const catItems = document.querySelectorAll("cat-item");
 
   catItems.forEach((item) => {
     const links = item.shadowRoot?.querySelectorAll(".submenu a") ?? [];
     links.forEach((link) => {
       link.addEventListener("click", (e) => {
-        e.preventDefault(); // href="#"-ээс үсрэхгүй
+        e.preventDefault();
 
-        // Link-ийн data attribute-аас категори мэдээллийг авах
         const mainCat = link.dataset.main || link.getAttribute("data-main");
         const subCat = link.dataset.sub || link.getAttribute("data-sub");
         const title = link.textContent.trim();
 
         console.log("Link clicked:", { mainCat, subCat, title });
 
-        // Хэрэв data attribute байвал popup нээх
         if (mainCat && subCat) {
-          window.openWorkersPopup(mainCat, subCat, title); // updateURL = true (default)
+          window.openWorkersPopup(mainCat, subCat, title);
         } else {
-          // Хэрэв байхгүй бол зүгээр popup нээх (хуучин арга)
           popup.open();
         }
       });
     });
   });
 
-  // Хуудас ачааллагдахад URL-ээс popup нээх
   loadFromURL();
 });

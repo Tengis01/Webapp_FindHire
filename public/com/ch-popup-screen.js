@@ -5,12 +5,9 @@ class ChPopupScreen extends HTMLElement {
 
     const root = this.attachShadow({ mode: "open" });
     root.innerHTML = /* html */ `
-    
       <style>
         :host {
-        @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,700;1,400;1,700&display=swap");
-
-         font-family: inter,system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+          font-family: inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
           box-sizing: border-box;
           position: fixed;
           inset: 0;
@@ -24,8 +21,6 @@ class ChPopupScreen extends HTMLElement {
           transition:
             opacity 0.25s ease-out,
             background-color 0.25s ease-out;
-            <button onclick="document.querySelector('ch-popup-screen').close()">Close</button>
-
         }
 
         :host([open]) {
@@ -64,22 +59,6 @@ class ChPopupScreen extends HTMLElement {
           display: flex;
           flex-direction: column;
           gap: 12px;
-        }
-
-        aside.filters h3 {
-          font-size: 14px;
-          margin: 0 0 6px;
-          color: #6b7280;
-        }
-
-        aside.filters input,
-        aside.filters select {
-          width:90%;
-          padding: 8px 10px;
-          font-size: 14px;
-          border: 1px solid #d1d5db;
-          border-radius: 6px;
-          background: #fff;
         }
 
         section.mini_profile {
@@ -124,25 +103,8 @@ class ChPopupScreen extends HTMLElement {
       </style>
 
       <div class="wrapper" role="dialog" aria-modal="true">
-      
         <aside class="filters">
-          <h3>Фильтер</h3>
-
-          <input type="text" id="filter-name" placeholder="Нэрээр хайх..." />
-
-          <select id="filter-rating">
-            <option value="">Үнэлгээ</option>
-            <option value="4.5">4.5+</option>
-            <option value="4.0">4.0+</option>
-            <option value="3.5">3.5+</option>
-          </select>
-
-          <select id="filter-experience">
-            <option value="">Туршлага</option>
-            <option value="2">2+ жил</option>
-            <option value="5">5+ жил</option>
-            <option value="10">10+ жил</option>
-          </select>
+          <ch-filter></ch-filter>
         </aside>
 
         <section class="mini_profile" aria-label="Ажилчдын профайл">
@@ -151,23 +113,74 @@ class ChPopupScreen extends HTMLElement {
       </div>
     `;
 
-    const wrapper = this.shadowRoot.querySelector(".wrapper");
+    this.wrapper = this.shadowRoot.querySelector(".wrapper");
+    this.filterComponent = null;
 
+    // Backdrop click handler
     this.addEventListener("click", (e) => {
-      // Shadow DOM дээр найдвартай шалгахын тулд composedPath ашиглана
       const path = e.composedPath();
-      const clickedInsideWrapper = path.includes(wrapper);
+      const clickedInsideWrapper = path.includes(this.wrapper);
 
-      // зөвхөн wrapper-оос ГАДНА дарсан үед хаана (backdrop click)
       if (!clickedInsideWrapper) {
         this.close();
       }
     });
+
+    // Filter changed event listener
+    this.addEventListener('filter-changed', (e) => {
+      console.log("Filter changed in popup:", e.detail);
+    });
+  }
+
+  connectedCallback() {
+    // Component DOM-д нэмэгдсэний дараа filter component-ийг олох
+    requestAnimationFrame(() => {
+      this.filterComponent = this.shadowRoot.querySelector("ch-filter");
+      if (this.filterComponent) {
+        console.log("Filter component found:", this.filterComponent);
+      } else {
+        console.warn("Filter component not found in shadow DOM");
+      }
+    });
+  }
+
+  // Public method - filter утгуудыг авах
+  getFilterValues() {
+    // Filter component-ийг дахин шалгах
+    if (!this.filterComponent) {
+      this.filterComponent = this.shadowRoot.querySelector("ch-filter");
+    }
+    
+    if (!this.filterComponent) {
+      console.warn("Filter component not found");
+      return {
+        rating: [],
+        experience: [],
+        budget: [],
+        ratingRange: 3.0
+      };
+    }
+    
+    // getFilterValues method байгаа эсэхийг шалгах
+    if (typeof this.filterComponent.getFilterValues !== 'function') {
+      console.error("getFilterValues method not found on filter component");
+      return {
+        rating: [],
+        experience: [],
+        budget: [],
+        ratingRange: 3.0
+      };
+    }
+    
+    const values = this.filterComponent.getFilterValues();
+    console.log("Got filter values:", values);
+    return values;
   }
 
   open() {
     this.setAttribute("open", "");
   }
+
   close() {
     this.removeAttribute("open");
   }

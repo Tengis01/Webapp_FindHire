@@ -104,38 +104,6 @@ app.get("/api/workers", async (req, res) => {
   }
 });
 
-/* Популяр ажилчдын API
-app.get("/api/popular", async (req, res) => {
-  try {
-    const fs = await import("node:fs/promises");
-    const data = await fs.readFile(
-      join(rootDir, "public", "data", "workers.json"),
-      "utf-8"
-    );
-    const jsonData = JSON.parse(data);
-    const workers = jsonData.workers || jsonData;
-
-    const sorted = workers
-      .sort((a, b) => b.rating - a.rating || b.jobs - a.jobs)
-      .slice(0, 15);
-
-    const formatted = sorted.map((w) => ({
-      name: w.name,
-      rating: String(w.rating),
-      jobs: `${w.jobs} ${w.emoji || "🤝"}`,
-      description: w.description,
-      pic: w.pic || "",
-      category: w.category,
-      subcategories: w.subcategories,
-    }));
-
-    res.json(formatted);
-  } catch (err) {
-    console.error("Popular API Error:", err);
-    res.status(500).json({ error: err.message });
-  }
-});*/
-
 app.listen(PORT, () => {
   console.log("");
   console.log("FindHire сервер амжилттай аслаа!");
