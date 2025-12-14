@@ -70,22 +70,6 @@ class ChFilter extends HTMLElement {
         <h3>Фильтер</h3>
 
         <div class="filter-group">
-          <h4>Үнэлгээ</h4>
-          <div class="checkbox-item">
-            <input type="checkbox" id="filter-rating-4.5" value="4.5" />
-            <label for="filter-rating-4.5">4.5+</label>
-          </div>
-          <div class="checkbox-item">
-            <input type="checkbox" id="filter-rating-4.0" value="4.0" />
-            <label for="filter-rating-4.0">4.0+</label>
-          </div>
-          <div class="checkbox-item">
-            <input type="checkbox" id="filter-rating-3.5" value="3.5" />
-            <label for="filter-rating-3.5">3.5+</label>
-          </div>
-        </div>
-
-        <div class="filter-group">
           <h4>Туршлага</h4>
           <div class="checkbox-item">
             <input type="checkbox" id="filter-experience-2" value="2" />
