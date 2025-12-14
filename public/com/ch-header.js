@@ -111,19 +111,19 @@ class ChHeader extends HTMLElement {
     <header>
       <div class="logo">
         <img src="/public/icon/flower.png" alt="FindHire logo">
-        <a href="/">FindHire</a>
+        <a href="/public/index.html">FindHire</a>
       </div>
       <div>
         <nav>
           <ul>
             <li>
-              <a href="/about-us">Бидний тухай</a>
+              <a href="/about-us/about-us.html">Бидний тухай</a>
             </li>
             <li>
-              <a href="/sign-in" class="login-link">Нэвтрэх</a>
+              <a href="/sign-in/sign-in.html" class="login-link">Нэвтрэх</a>
             </li>
             <li>
-              <a href="/ajild-oroh">
+              <a href="/ajild-oroh/ajild-oroh.html">
                 <button>Ажилд орох</button>
               </a>
             </li>
