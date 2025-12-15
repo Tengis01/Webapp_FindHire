@@ -57,78 +57,81 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   async function fetchWorkers(updateURL = true) {
-    try {
-      const filterValues = getFilterValues();
+  try {
+    const filterValues = getFilterValues();
 
-      const apiParams = new URLSearchParams();
-      apiParams.set('main', currentCategory.main);
-      apiParams.set('sub', currentCategory.sub);
-      
-      // Filter утгуудыг API параметрт нэмэх
-      if (filterValues.rating && filterValues.rating.length > 0) {
-        apiParams.set('rating', filterValues.rating.join(','));
-      }
-      if (filterValues.experience && filterValues.experience.length > 0) {
-        apiParams.set('experience', filterValues.experience.join(','));
-      }
-      if (filterValues.budget && filterValues.budget.length > 0) {
-        apiParams.set('budget', filterValues.budget.join(','));
-      }
-      if (filterValues.ratingRange) {
-        apiParams.set('ratingRange', filterValues.ratingRange);
-      }
+    const apiParams = new URLSearchParams();
+    apiParams.set('main', currentCategory.main);
 
-      console.log('Fetching workers with params:', Object.fromEntries(apiParams));
+    // 1) SUB: checkbox сонголт байвал түүгээр, байхгүй бол submenu-г default болгоно
+    const selectedSubs =
+      (filterValues.budget && filterValues.budget.length > 0)
+        ? filterValues.budget
+        : [currentCategory.sub];
 
-      const res = await fetch(`/api/workers?${apiParams.toString()}`);
-      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    apiParams.set('sub', selectedSubs.join(','));
 
-      const workers = await res.json();
-      console.log('Received workers:', workers.length);
-
-      renderCards(workers);
-
-      if (updateURL) {
-        const url = new URL(window.location);
-        url.searchParams.set('menu', currentCategory.main);
-        url.searchParams.set('submenu', currentCategory.sub);
-        
-        // Filter параметрүүдийг URL-д нэмэх
-        if (filterValues.rating && filterValues.rating.length > 0) {
-          url.searchParams.set('rating', filterValues.rating.join(','));
-        } else {
-          url.searchParams.delete('rating');
-        }
-        
-        if (filterValues.experience && filterValues.experience.length > 0) {
-          url.searchParams.set('experience', filterValues.experience.join(','));
-        } else {
-          url.searchParams.delete('experience');
-        }
-        
-        if (filterValues.budget && filterValues.budget.length > 0) {
-          url.searchParams.set('budget', filterValues.budget.join(','));
-        } else {
-          url.searchParams.delete('budget');
-        }
-
-        if (filterValues.ratingRange) {
-          url.searchParams.set('ratingRange', filterValues.ratingRange);
-        } else {
-          url.searchParams.delete('ratingRange');
-        }
-        
-        window.history.replaceState(
-          { menu: currentCategory.main, submenu: currentCategory.sub },
-          '',
-          url
-        );
-      }
-    } catch (err) {
-      console.error('Error fetching workers:', err);
-      renderCards([]);
+    // 2) Туршлага: ch-filter одоо experienceMin (нэг утга) өгнө
+    if (filterValues.experienceMin) {
+      apiParams.set('experience', filterValues.experienceMin);
     }
+
+    // 3) Rating range: min rating
+    if (filterValues.ratingRange != null) {
+      apiParams.set('ratingRange', String(filterValues.ratingRange));
+    }
+
+    console.log('Fetching workers with params:', Object.fromEntries(apiParams));
+
+    const res = await fetch(`/api/workers?${apiParams.toString()}`);
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+    const workers = await res.json();
+    console.log('Received workers:', workers.length);
+
+    renderCards(workers);
+
+    if (updateURL) {
+      const url = new URL(window.location);
+      url.searchParams.set('menu', currentCategory.main);
+      url.searchParams.set('submenu', currentCategory.sub);
+
+      // budget (сонгосон subcategories)-ийг URL-д хадгална (сэргээхэд хэрэгтэй)
+      if (filterValues.budget && filterValues.budget.length > 0) {
+        url.searchParams.set('budget', filterValues.budget.join(','));
+      } else {
+        url.searchParams.delete('budget');
+      }
+
+      // experienceMin
+      if (filterValues.experienceMin) {
+        url.searchParams.set('experience', filterValues.experienceMin);
+      } else {
+        url.searchParams.delete('experience');
+      }
+
+      // ratingRange
+      if (filterValues.ratingRange != null) {
+        url.searchParams.set('ratingRange', String(filterValues.ratingRange));
+      } else {
+        url.searchParams.delete('ratingRange');
+      }
+
+      // rating checkbox-ууд байхгүй болсон тул rating param хэрэггүй
+      url.searchParams.delete('rating');
+
+      window.history.replaceState(
+        { menu: currentCategory.main, submenu: currentCategory.sub },
+        '',
+        url
+      );
+    }
+  } catch (err) {
+    console.error('Error fetching workers:', err);
+    renderCards([]);
   }
+}
+
 
   // Filter changed event listener нэмэх
   popup.addEventListener('filter-changed', (e) => {

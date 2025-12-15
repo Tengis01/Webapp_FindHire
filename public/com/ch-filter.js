@@ -70,6 +70,12 @@ class ChFilter extends HTMLElement {
         <h3>Фильтер</h3>
 
         <div class="filter-group">
+          <h4>Засвар төрөл</h4>
+          <div id="subcat-options"></div>
+          </div>
+        </div>
+
+        <div class="filter-group">
           <h4>Туршлага</h4>
           <div class="checkbox-item">
             <input type="checkbox" id="filter-experience-2" value="2" />
@@ -82,22 +88,6 @@ class ChFilter extends HTMLElement {
           <div class="checkbox-item">
             <input type="checkbox" id="filter-experience-10" value="10" />
             <label for="filter-experience-10">10+ жил</label>
-          </div>
-        </div>
-
-        <div class="filter-group">
-          <h4>Засвар төрөл</h4>
-          <div class="checkbox-item">
-            <input type="checkbox" id="filter-budget-paint" value="paint" />
-            <label for="filter-budget-paint">Будаг</label>
-          </div>
-          <div class="checkbox-item">
-            <input type="checkbox" id="filter-budget-wall-ceiling" value="wall-ceiling" />
-            <label for="filter-budget-wall-ceiling">Хана, Тааз Засвар</label>
-          </div>
-          <div class="checkbox-item">
-            <input type="checkbox" id="filter-budget-floor" value="floor" />
-            <label for="filter-budget-floor">Шал Засвар</label>
           </div>
         </div>
 
@@ -125,7 +115,7 @@ class ChFilter extends HTMLElement {
     // Range input event
     const ratingRange = this.shadowRoot.querySelector("#rating-range");
     const ratingValue = this.shadowRoot.querySelector("#rating-range-value");
-    
+
     if (ratingRange && ratingValue) {
       ratingRange.addEventListener("input", () => {
         ratingValue.textContent = ratingRange.value;
@@ -137,58 +127,100 @@ class ChFilter extends HTMLElement {
   emitFilterChange() {
     const filterValues = this.getFilterValues();
     console.log("Emitting filter change:", filterValues);
-    
-    this.dispatchEvent(new CustomEvent("filter-changed", {
-      detail: filterValues,
-      bubbles: true,
-      composed: true
-    }));
+
+    this.dispatchEvent(
+      new CustomEvent("filter-changed", {
+        detail: filterValues,
+        bubbles: true,
+        composed: true,
+      })
+    );
   }
 
   getFilterValues() {
     const filterValues = {
-      rating: [],
-      experience: [],
-      budget: [],
-      ratingRange: 3.0
+      budget: [], // subcategories
+      experienceMin: "", // нэг утга
+      ratingRange: 3.0,
     };
 
-    // Rating checkboxes
-    this.shadowRoot.querySelectorAll('input[id^="filter-rating-"]:checked').forEach((checkbox) => {
-      filterValues.rating.push(checkbox.value);
-    });
+    // Динамик "Засвар төрөл" (name="subcat") checkbox-ууд
+    this.shadowRoot
+      .querySelectorAll('input[name="subcat"]:checked')
+      .forEach((cb) => {
+        filterValues.budget.push(cb.value);
+      });
 
-    // Experience checkboxes
-    this.shadowRoot.querySelectorAll('input[id^="filter-experience-"]:checked').forEach((checkbox) => {
-      filterValues.experience.push(checkbox.value);
-    });
+    // Туршлага (олон checkbox байж болох ч хамгийн ихийг нь min гэж үзье)
+    const exp = Array.from(
+      this.shadowRoot.querySelectorAll(
+        'input[id^="filter-experience-"]:checked'
+      )
+    )
+      .map((x) => Number(x.value))
+      .filter(Number.isFinite);
 
-    // Budget/type checkboxes
-    this.shadowRoot.querySelectorAll('input[id^="filter-budget-"]:checked').forEach((checkbox) => {
-      filterValues.budget.push(checkbox.value);
-    });
+    if (exp.length) filterValues.experienceMin = String(Math.max(...exp));
 
     // Rating range
     const ratingRange = this.shadowRoot.querySelector("#rating-range");
-    if (ratingRange) {
-      filterValues.ratingRange = parseFloat(ratingRange.value);
-    }
+    if (ratingRange) filterValues.ratingRange = parseFloat(ratingRange.value);
 
     return filterValues;
   }
 
-  clearFilters() {
-    this.shadowRoot.querySelectorAll('input[type="checkbox"]').forEach((checkbox) => {
-      checkbox.checked = false;
+  setSubcategoryOptions(options = [], checkedValues = []) {
+    const box = this.shadowRoot.querySelector("#subcat-options");
+    if (!box) return;
+
+    box.innerHTML = options
+      .map((label) => {
+        const checked = checkedValues.includes(label) ? "checked" : "";
+        return `
+      <div class="checkbox-item">
+        <input type="checkbox" name="subcat" value="${label}" ${checked} />
+        <label>${label}</label>
+      </div>
+    `;
+      })
+      .join("");
+  }
+
+  setRatingRange(value) {
+    const r = this.shadowRoot.querySelector("#rating-range");
+    const v = this.shadowRoot.querySelector("#rating-range-value");
+    if (!r || !v) return;
+
+    const num = Number(value);
+    const safe = Number.isFinite(num) ? num : 3.0;
+    r.value = String(safe);
+    v.textContent = safe.toFixed(1);
+  }
+
+  setExperienceMin(value) {
+    const v = String(value ?? "");
+    const inputs = this.shadowRoot.querySelectorAll(
+      'input[id^="filter-experience-"]'
+    );
+    inputs.forEach((el) => {
+      el.checked = v !== "" && el.value === v;
     });
-    
+  }
+
+  clearFilters() {
+    this.shadowRoot
+      .querySelectorAll('input[type="checkbox"]')
+      .forEach((checkbox) => {
+        checkbox.checked = false;
+      });
+
     const ratingRange = this.shadowRoot.querySelector("#rating-range");
     const ratingValue = this.shadowRoot.querySelector("#rating-range-value");
     if (ratingRange && ratingValue) {
       ratingRange.value = "3.0";
       ratingValue.textContent = "3.0";
     }
-    
+
     this.emitFilterChange();
   }
 }
