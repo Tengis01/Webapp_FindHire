@@ -55,7 +55,7 @@ class CHFooter extends HTMLElement {
 }
 
 .footer-links a:hover {
-  color: #1e7ca5ff;
+  color: #38bdf8;
 }
 
 .footer-contact p {
