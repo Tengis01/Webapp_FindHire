@@ -10,7 +10,7 @@ class CHFooter extends HTMLElement {
     .site-footer {
   background-color: #213448 ;
   color: #ffffff;
-  font-family: Arial, sans-serif;
+  font-family: Arial, sans-serif;;
 }
 
 .footer-container {
@@ -95,9 +95,9 @@ class CHFooter extends HTMLElement {
 
     <div class="footer-contact">
       <h4>Холбоо барих</h4>
-      <p>📍 Улаанбаатар</p>
-      <p>📞 +976 9999 9999</p>
-      <p>✉️ info@mywebsite.mn</p>
+      <p>📍 Улаанбаатар, Монгол улс</p>
+      <p>📞 +976 7000-0000</p>
+      <p>✉️ info@findhire.mn</p>
     </div>
 
   </div>
