@@ -13,7 +13,7 @@ async function loadFeatures() {
       card.setAttribute("desc", f.desc);
 
       container.appendChild(card);
-    });
+    }); 
   }
 
   loadFeatures();
