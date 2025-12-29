@@ -42,9 +42,11 @@
         <span> хөлсөл</span>
       </span>
     </div>
-    <div class="search-bar">
+    <script type="module" src="./com/ch-show-search.js"></script>
+    <div class="search-bar" style="position: relative;">
       <input type="text" placeholder="Хайх..." />
       <i class="fa fa-search"></i>
+      <ch-show-search id="search-results-popup"></ch-show-search>
     </div>
 
     <ch-categories></ch-categories>

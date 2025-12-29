@@ -31,25 +31,25 @@ class ChCatItem extends HTMLElement {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 6px;
+          gap: 10px;
           background: var(--card);
           border: 1px solid var(--line);
-          border-radius: 10px;
+          border-radius: 12px;
           box-shadow: var(--shadow);
-          padding: 12px 8px;
+          padding: 16px 12px;
           position: relative;
           cursor: pointer;
         }
 
         .cat img {
-          width: 22px;
-          height: 22px;
+          width: 28px;
+          height: 28px;
           display: block;
           object-fit: contain;
         }
 
         .cat span {
-          font-size: 12px;
+          font-size: 15px;
           transition: all 0.3s ease;
         }
 
@@ -61,13 +61,13 @@ class ChCatItem extends HTMLElement {
         .submenu {
           position: absolute;
           left: 50%;
-          top: calc(100% - 10px);
-          transform: translateX(-50%) translateY(6px);
-          min-width: 180px;
-          padding: 10px 10px 10px 30px;
+          top: calc(100% - 12px);
+          transform: translateX(-50%) translateY(8px);
+          min-width: 220px;
+          padding: 12px 12px 12px 36px;
           background: #fff;
           border: 1px solid var(--line);
-          border-radius: 10px;
+          border-radius: 12px;
           box-shadow: var(--shadow);
           display: flex;
           flex-direction: column;
@@ -81,9 +81,9 @@ class ChCatItem extends HTMLElement {
         .submenu a {
           color: var(--ink);
           text-decoration: none;
-          font-size: 14px;
-          padding: 6px 8px;
-          border-radius: 6px;
+          font-size: 16px;
+          padding: 8px 10px;
+          border-radius: 8px;
         }
 
         .submenu a:hover {
@@ -102,11 +102,11 @@ class ChCatItem extends HTMLElement {
         <span>${name}</span>
         <ul class="submenu">
           ${submenu
-            .map(
-              (item) =>
-                `<li><a href="#" data-main="${category}" data-sub="${item.trim()}">${item}</a></li>`
-            )
-            .join("")}
+        .map(
+          (item) =>
+            `<li><a href="#" data-main="${category}" data-sub="${item.trim()}">${item}</a></li>`
+        )
+        .join("")}
         </ul>
       </button>
     `;

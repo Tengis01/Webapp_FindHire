@@ -21,6 +21,103 @@ process.on('unhandledRejection', (reason, promise) => console.error('Unhandled R
 app.use(cors());
 
 // Routes-ийг static файлаас өмнө тодорхойлох
+// Helper to create flexible regex for Mongolian/English search
+function createMongolianRegex(term) {
+  // 1. Check dictionary for direct English translations
+  const lowerTerm = term.toLowerCase().trim();
+  const dictionary = {
+    "driver": "жолооч",
+    "cleaner": "цэвэрлэгээ",
+    "builder": "барилга",
+    "plumber": "сантехник",
+    "electrician": "цахилгаан",
+    "painter": "будаг",
+    "move": "нүүлгэлт",
+    "mover": "нүүлгэлт",
+    "nanny": "хүүхэд асрагч",
+    "cook": "тогооч",
+    "welder": "гагнуур",
+    "carpenter": "мужаан"
+  };
+
+  let searchTerms = [term];
+  if (dictionary[lowerTerm]) {
+    searchTerms.push(dictionary[lowerTerm]);
+  }
+
+  // 2. Build Regex Pattern
+  // Map Latin chars to potential Cyrillic matches
+  const latinToCyrillic = {
+    'a': '[аА]',
+    'b': '[бБвВ]',
+    'c': '[цЦчЧ]',
+    'd': '[дД]',
+    'e': '[еЕэЭ]',
+    'f': '[фФ]',
+    'g': '[гГ]',
+    'h': '[хХ]',
+    'i': '[иИйЙыЫ]',
+    'j': '[жЖ]',
+    'k': '[кК]',
+    'l': '[лЛ]',
+    'm': '[мМ]',
+    'n': '[нН]',
+    'o': '[оОөӨуУүҮ]', // Broad matching for vowels
+    'p': '[пП]',
+    'q': '[кК]',
+    'r': '[рР]',
+    's': '[сСшШ]',
+    't': '[тТ]',
+    'u': '[уУүҮ]',
+    'v': '[вВ]',
+    'w': '[вВ]',
+    'x': '[хХ]',
+    'y': '[уУүҮйЙ]',
+    'z': '[зЗ]',
+    'sh': '[шШ]',
+    'ch': '[чЧ]',
+    'kh': '[хХ]',
+    'ts': '[цЦ]'
+  };
+
+  // Convert each term into a pattern
+  const patterns = searchTerms.map(t => {
+    let pattern = "";
+    // If input is fully Latin, try to construct a mapped pattern
+    const isLatin = /^[a-zA-Z\s]+$/.test(t);
+
+    if (isLatin) {
+      let i = 0;
+      while (i < t.length) {
+        // Check 2-char combos first
+        const twoChar = t.substr(i, 2).toLowerCase();
+        if (latinToCyrillic[twoChar]) {
+          pattern += latinToCyrillic[twoChar];
+          i += 2;
+          continue;
+        }
+
+        const oneChar = t[i].toLowerCase();
+        if (latinToCyrillic[oneChar]) {
+          pattern += latinToCyrillic[oneChar];
+        } else {
+          // Keep special chars or unmapped chars as is (escaped)
+          pattern += t[i].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+        i++;
+      }
+      return `(${pattern}|${t})`; // Match generated cyrillic OR original latin
+    } else {
+      // Cyrillic input - just escape it
+      return t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+  });
+
+  // Join all variations with OR
+  // Case insensitive flag 'i'
+  return new RegExp(patterns.join('|'), 'i');
+}
+
 app.get("/", (req, res) => {
   res.sendFile(join(rootDir, "public", "index.html"));
 });
@@ -91,11 +188,13 @@ app.get("/api/workers", async (req, res) => {
 
     // Search filter
     if (search) {
-      const term = search.toLowerCase();
+      const regex = createMongolianRegex(search);
       workers = workers.filter(
         (w) =>
-          w.name.toLowerCase().includes(term) ||
-          w.description.toLowerCase().includes(term)
+          regex.test(w.name) ||
+          regex.test(w.description) ||
+          regex.test(w.category) ||
+          (w.subcategories && w.subcategories.some(s => regex.test(s)))
       );
       console.log(`After search filter: ${workers.length}`);
     }

@@ -31,14 +31,14 @@ class ChMiniJobCard extends HTMLElement {
           height: 100%;
           box-sizing: border-box;
           background: #ffffff;
-          border-radius: 18px;
+          border-radius: 22px;
           border: 1px solid #e5e7eb;
           box-shadow: 0 15px 35px rgba(15, 23, 42, 0.10);
-          padding: 12px 14px 8px;
+          padding: 16px 18px 10px;
           display: flex;
           position: relative;
           flex-direction: column;
-          padding-bottom: 36px; 
+          padding-bottom: 42px; 
         }
 
         header.top {
@@ -49,9 +49,9 @@ class ChMiniJobCard extends HTMLElement {
         }
 
         figure.avatar {
-          width: 48px;
-          height: 48px;
-          border-radius: 12px;
+          width: 60px;
+          height: 60px;
+          border-radius: 14px;
           background: #111827;
           margin: 0;
           flex-shrink: 0;
@@ -66,15 +66,15 @@ class ChMiniJobCard extends HTMLElement {
         }
 
         h3.name {
-          margin: 0 0 4px;
-          font-size: 16px;
+          margin: 0 0 6px;
+          font-size: 20px;
           font-weight: 700;
           color: #111827;
         }
 
         p.meta {
           margin: 0;
-          font-size: 13px;
+          font-size: 15px;
           color: #4b5563;
         }
 
@@ -91,10 +91,10 @@ class ChMiniJobCard extends HTMLElement {
 
                 .desc-wrapper {
           position: relative;
-          font-size: 14px;
+          font-size: 16px;
           color: #374151;
           line-height: 1.5;
-          max-height: 70px;
+          max-height: 84px;
           overflow: hidden;
           transition: max-height 0.2s ease;
           margin-bottom: 0;       /* доош суманд зай үлдээгээд байна гэж үгүй болгоё */
@@ -112,12 +112,12 @@ class ChMiniJobCard extends HTMLElement {
         button.toggle {
           position: absolute;     /* картын дотор тогтмол байрлалтай болно */
           left: 50%;
-          bottom: 10px;
+          bottom: 12px;
           transform: translateX(-50%);
           border: none;
           background: none;
           cursor: pointer;
-          font-size: 18px;
+          font-size: 22px;
           line-height: 1;
           color: #4b5563;
           padding: 0;
