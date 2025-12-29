@@ -53,9 +53,9 @@ app.get("/api/workers", async (req, res) => {
     const jsonData = JSON.parse(data);
     let workers = jsonData.workers || jsonData;
 
-    const { main, sub, search, experience, ratingRange } = req.query;
+    const { main, sub, search } = req.query;
 
-    console.log("API Request:", { main, sub, search, experience, ratingRange });
+    console.log("API Request:", { main, sub, search });
     console.log("Total workers:", workers.length);
 
     // category талбараар шүүнэ
@@ -66,45 +66,15 @@ app.get("/api/workers", async (req, res) => {
       console.log(`After main filter: ${workers.length}`);
     }
 
-    // subcategories array-с олно (олон subcategory дэмжинэ)
+    // subcategories array-с олно
     if (sub) {
-      // sub нь таслалаар тусгаарлагдсан утгууд байж болно (e.g., "Цахилгаан,Сантехник")
-      const subList = sub.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-
-      if (subList.length > 0) {
-        workers = workers.filter((w) => {
-          if (!w.subcategories || !Array.isArray(w.subcategories)) return false;
-          // Хэрэв ажилчдын subcategories-ын аль нэг нь шүүлтийн жагсаалтад байвал
-          return w.subcategories.some((sc) =>
-            subList.includes(sc.trim().toLowerCase())
-          );
-        });
-        console.log(`After sub filter: ${workers.length}`);
-      }
-    }
-
-    // Experience filter - minimum experience шаардлагаар шүүнэ
-    if (experience) {
-      const minExp = parseFloat(experience);
-      if (!isNaN(minExp)) {
-        workers = workers.filter((w) => {
-          const workerExp = parseFloat(w.experience || 0);
-          return workerExp >= minExp;
-        });
-        console.log(`After experience filter (>= ${minExp}): ${workers.length}`);
-      }
-    }
-
-    // Rating range filter - minimum rating-аар шүүнэ
-    if (ratingRange) {
-      const minRating = parseFloat(ratingRange);
-      if (!isNaN(minRating)) {
-        workers = workers.filter((w) => {
-          const workerRating = parseFloat(w.rating || 0);
-          return workerRating >= minRating;
-        });
-        console.log(`After rating filter (>= ${minRating}): ${workers.length}`);
-      }
+      workers = workers.filter((w) => {
+        if (!w.subcategories || !Array.isArray(w.subcategories)) return false;
+        return w.subcategories.some(
+          (sc) => sc.trim().toLowerCase() === sub.trim().toLowerCase()
+        );
+      });
+      console.log(`After sub filter: ${workers.length}`);
     }
 
     // Search filter
@@ -115,7 +85,6 @@ app.get("/api/workers", async (req, res) => {
           w.name.toLowerCase().includes(term) ||
           w.description.toLowerCase().includes(term)
       );
-      console.log(`After search filter: ${workers.length}`);
     }
 
     // Response форматыг mini-job-card-д тохируулах
@@ -127,7 +96,6 @@ app.get("/api/workers", async (req, res) => {
       pic: w.pic || "",
       category: w.category,
       subcategories: w.subcategories,
-      experience: w.experience, // Debugging-д хэрэгтэй
     }));
 
     console.log(`Sending ${formatted.length} workers`);
