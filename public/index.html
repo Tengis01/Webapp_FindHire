@@ -1,66 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="styles.css" />
-    <script type="module" src="./com/ch-feature-card.js"></script>
-    <script type="module" src="./com/ch-job-card.js"></script>
-    <script type="module" src="./com/ch-review-card.js"></script>
-    <script type="module" src="./com/ch-header.js"></script>
-    <script type="module" src="./com/ch-footer.js"></script>
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
-    </style>
-    <script type="module" src="./com/ch-cat-items.js"></script>
-    <script type="module" src="./com/ch-categories.js"></script>
-    <script type="module" src="./com/ch-mini-job-card.js"></script>
-    <script type="module" src="./com/ch-popup-screen.js"></script>
-    <script type="module" src="./com/popup-controller.js"></script>
-    <script type="module" src="./com/ch-filter.js"></script>
-    <script type="module" src="./load/load-popular.js"></script>
-    <script type="module" src="./load/load-features.js"></script>
-    <script type="module" src="./load/load_review.js"></script>
-    <script type="module" src="./load/load-popupscreen.js"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
-    />
-    <title>FindHire web</title>
-  </head>
-  <body>
-    <ch-header></ch-header>
 
-    <main>
-      <div class="main-text">
-        <p>Ажилтнаа</p>
-        <span class="word">
-          <span> хөлсөл</span>
-          <span> урамшуул</span>
-          <span> шагна</span>
-          <span> хай </span>
-          <span> хөлсөл</span>
-        </span>
-      </div>
-      <div class="search-bar">
-        <input type="text" placeholder="Хайх..." />
-        <i class="fa fa-search"></i>
-      </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css" />
+  <script type="module" src="./com/ch-feature-card.js"></script>
+  <script type="module" src="./com/ch-job-card.js"></script>
+  <script type="module" src="./com/ch-review-card.js"></script>
+  <script type="module" src="./com/ch-header.js"></script>
+  <script type="module" src="./com/ch-footer.js"></script>
+  <style>
+    @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+  </style>
+  <script type="module" src="./com/ch-cat-items.js"></script>
+  <script type="module" src="./com/ch-categories.js"></script>
+  <script type="module" src="./com/ch-mini-job-card.js"></script>
+  <script type="module" src="./com/ch-popup-screen.js"></script>
+  <script type="module" src="./com/popup-controller.js"></script>
+  <script type="module" src="./com/ch-filter.js"></script>
+  <script type="module" src="./load/load-popular.js"></script>
+  <script type="module" src="./load/load-features.js"></script>
+  <script type="module" src="./load/load_review.js"></script>
+  <script type="module" src="./load/load-popupscreen.js"></script>
+  <script type="module" src="./load/load-search.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+  <title>FindHire web</title>
+</head>
 
-      <ch-categories></ch-categories>
+<body>
+  <ch-header></ch-header>
 
-      <!-- Features (3 box) -->
-      <section class="features" id="features-section" aria-label="Манай зорилго"></section>
+  <main>
+    <div class="main-text">
+      <p>Ажилтнаа</p>
+      <span class="word">
+        <span> хөлсөл</span>
+        <span> урамшуул</span>
+        <span> шагна</span>
+        <span> хай </span>
+        <span> хөлсөл</span>
+      </span>
+    </div>
+    <div class="search-bar">
+      <input type="text" placeholder="Хайх..." />
+      <i class="fa fa-search"></i>
+    </div>
 
-      <!-- Popular -->
-      <section class="popular" id="popular-section" aria-label="Алдартай ажилтнууд"></section>
+    <ch-categories></ch-categories>
 
-      <ch-popup-screen id="profiles-popup"></ch-popup-screen>
-     
-      <!-- Reviews (жишээ 3) -->
-      <section class="reviews" id="reviews-section" aria-label="Сэтгэгдэл"></section>
-    </main>
-  
-  </body>
-    <ch-footer></ch-footer>
-  </html>
+    <!-- Features (3 box) -->
+    <section class="features" id="features-section" aria-label="Манай зорилго"></section>
+
+    <!-- Popular -->
+    <section class="popular" id="popular-section" aria-label="Алдартай ажилтнууд"></section>
+
+    <ch-popup-screen id="profiles-popup"></ch-popup-screen>
+
+    <!-- Reviews (жишээ 3) -->
+    <section class="reviews" id="reviews-section" aria-label="Сэтгэгдэл"></section>
+  </main>
+
+</body>
+<ch-footer></ch-footer>
+
+</html>

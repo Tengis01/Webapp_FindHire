@@ -21,13 +21,13 @@ window.addEventListener("DOMContentLoaded", () => {
     if (typeof popup.getFilterValues === 'function') {
       return popup.getFilterValues();
     }
-    
+
     // Эсвэл шууд ch-filter component-оос дуудах
     const filterComponent = getFilterComponent();
     if (filterComponent && typeof filterComponent.getFilterValues === 'function') {
       return filterComponent.getFilterValues();
     }
-    
+
     console.warn("Filter component эсвэл getFilterValues method олдсонгүй");
     return {
       rating: [],
@@ -57,80 +57,92 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 
   async function fetchWorkers(updateURL = true) {
-  try {
-    const filterValues = getFilterValues();
+    try {
+      const filterValues = getFilterValues();
 
-    const apiParams = new URLSearchParams();
-    apiParams.set('main', currentCategory.main);
+      const apiParams = new URLSearchParams();
+      apiParams.set('main', currentCategory.main);
 
-    // 1) SUB: checkbox сонголт байвал түүгээр, байхгүй бол submenu-г default болгоно
-    const selectedSubs =
-      (filterValues.budget && filterValues.budget.length > 0)
-        ? filterValues.budget
-        : [currentCategory.sub];
+      // 1) SUB: checkbox сонголт байвал түүгээр, байхгүй бол submenu-г default болгоно
+      const selectedSubs =
+        (filterValues.budget && filterValues.budget.length > 0)
+          ? filterValues.budget
+          : [currentCategory.sub];
 
-    apiParams.set('sub', selectedSubs.join(','));
+      apiParams.set('sub', selectedSubs.join(','));
 
-    // 2) Туршлага: ch-filter одоо experienceMin (нэг утга) өгнө
-    if (filterValues.experienceMin) {
-      apiParams.set('experience', filterValues.experienceMin);
-    }
-
-    // 3) Rating range: min rating
-    if (filterValues.ratingRange != null) {
-      apiParams.set('ratingRange', String(filterValues.ratingRange));
-    }
-
-    console.log('Fetching workers with params:', Object.fromEntries(apiParams));
-
-    const res = await fetch(`/api/workers?${apiParams.toString()}`);
-    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-
-    const workers = await res.json();
-    console.log('Received workers:', workers.length);
-
-    renderCards(workers);
-
-    if (updateURL) {
-      const url = new URL(window.location);
-      url.searchParams.set('menu', currentCategory.main);
-      url.searchParams.set('submenu', currentCategory.sub);
-
-      // budget (сонгосон subcategories)-ийг URL-д хадгална (сэргээхэд хэрэгтэй)
-      if (filterValues.budget && filterValues.budget.length > 0) {
-        url.searchParams.set('budget', filterValues.budget.join(','));
-      } else {
-        url.searchParams.delete('budget');
-      }
-
-      // experienceMin
+      // 2) Туршлага: ch-filter одоо experienceMin (нэг утга) өгнө
       if (filterValues.experienceMin) {
-        url.searchParams.set('experience', filterValues.experienceMin);
-      } else {
-        url.searchParams.delete('experience');
+        apiParams.set('experience', filterValues.experienceMin);
       }
 
-      // ratingRange
+      // 3) Rating range: min rating
       if (filterValues.ratingRange != null) {
-        url.searchParams.set('ratingRange', String(filterValues.ratingRange));
-      } else {
-        url.searchParams.delete('ratingRange');
+        apiParams.set('ratingRange', String(filterValues.ratingRange));
       }
 
-      // rating checkbox-ууд байхгүй болсон тул rating param хэрэггүй
-      url.searchParams.delete('rating');
+      // 4) Availability
+      if (filterValues.availability && filterValues.availability.length > 0) {
+        apiParams.set('availability', filterValues.availability.join(','));
+      }
 
-      window.history.replaceState(
-        { menu: currentCategory.main, submenu: currentCategory.sub },
-        '',
-        url
-      );
+      console.log('Fetching workers with params:', Object.fromEntries(apiParams));
+
+      const res = await fetch(`/api/workers?${apiParams.toString()}`);
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+      const workers = await res.json();
+      console.log('Received workers:', workers.length);
+
+      renderCards(workers);
+
+      if (updateURL) {
+        const url = new URL(window.location);
+        url.searchParams.set('menu', currentCategory.main);
+        url.searchParams.set('submenu', currentCategory.sub);
+
+        // budget (сонгосон subcategories)-ийг URL-д хадгална (сэргээхэд хэрэгтэй)
+        if (filterValues.budget && filterValues.budget.length > 0) {
+          url.searchParams.set('budget', filterValues.budget.join(','));
+        } else {
+          url.searchParams.delete('budget');
+        }
+
+        // experienceMin
+        if (filterValues.experienceMin) {
+          url.searchParams.set('experience', filterValues.experienceMin);
+        } else {
+          url.searchParams.delete('experience');
+        }
+
+        // ratingRange
+        if (filterValues.ratingRange != null) {
+          url.searchParams.set('ratingRange', String(filterValues.ratingRange));
+        } else {
+          url.searchParams.delete('ratingRange');
+        }
+
+        // availability
+        if (filterValues.availability && filterValues.availability.length > 0) {
+          url.searchParams.set('availability', filterValues.availability.join(','));
+        } else {
+          url.searchParams.delete('availability');
+        }
+
+        // rating checkbox-ууд байхгүй болсон тул rating param хэрэггүй
+        url.searchParams.delete('rating');
+
+        window.history.replaceState(
+          { menu: currentCategory.main, submenu: currentCategory.sub },
+          '',
+          url
+        );
+      }
+    } catch (err) {
+      console.error('Error fetching workers:', err);
+      renderCards([]);
     }
-  } catch (err) {
-    console.error('Error fetching workers:', err);
-    renderCards([]);
   }
-}
 
 
   // Filter changed event listener нэмэх
@@ -147,7 +159,21 @@ window.addEventListener("DOMContentLoaded", () => {
 
     if (menu && submenu) {
       console.log("Loading from URL:", { menu, submenu });
-      window.openWorkersPopup(menu, submenu, submenu, false);
+
+      // We don't have easy access to sibling subcategories from URL loading only
+      // UNLESS we map them. For now, let's just open without dynamic subcats via URL
+      // Or we could try to find the matching cat-item from DOM
+      const catItem = Array.from(document.querySelectorAll("cat-item")).find(item =>
+        item.getAttribute("category") === menu || item.getAttribute("name") === menu
+      );
+
+      let subOptions = [];
+      if (catItem) {
+        const submenuStr = catItem.getAttribute("submenu") || "";
+        subOptions = submenuStr.split(",").map(s => s.trim()).filter(Boolean);
+      }
+
+      window.openWorkersPopup(menu, submenu, submenu, subOptions, false);
     }
   }
 
@@ -156,16 +182,26 @@ window.addEventListener("DOMContentLoaded", () => {
     main_category,
     sub_category,
     title = sub_category,
+    availableSubcategories = [],
     updateURL = true
   ) {
     try {
-      console.log("Opening popup:", { main_category, sub_category });
+      console.log("Opening popup:", { main_category, sub_category, availableSubcategories });
 
       currentCategory = { main: main_category, sub: sub_category };
 
       // Change title if available
       const titleElement = popup.shadowRoot.querySelector("h3");
       if (titleElement) titleElement.textContent = title;
+
+      // Update filter subcategories
+      const filterComponent = popup.shadowRoot.querySelector("ch-filter");
+      if (filterComponent && typeof filterComponent.setSubcategoryOptions === 'function') {
+        // Automatically check the selected sub_category
+        filterComponent.setSubcategoryOptions(availableSubcategories, [sub_category]);
+        // Also clear other filters? Maybe optional.
+        // filterComponent.clearFilters(); // Don't clear because it might clear the just-set subcat
+      }
 
       popup.open();
 
@@ -196,6 +232,7 @@ window.addEventListener("DOMContentLoaded", () => {
         event.state.menu,
         event.state.submenu,
         event.state.submenu,
+        [], // TODO: Pass subcategories here too if possible
         false
       );
     } else {
@@ -215,6 +252,7 @@ window.addEventListener("DOMContentLoaded", () => {
       url.searchParams.delete("experience");
       url.searchParams.delete("budget");
       url.searchParams.delete("ratingRange");
+      url.searchParams.delete("availability");
       window.history.pushState({}, "", url);
       console.log("URL cleared");
     }
@@ -225,6 +263,10 @@ window.addEventListener("DOMContentLoaded", () => {
   const catItems = document.querySelectorAll("cat-item");
 
   catItems.forEach((item) => {
+    // Get subcategories from the parent item
+    const submenuStr = item.getAttribute("submenu") || "";
+    const subCategories = submenuStr.split(",").map(s => s.trim()).filter(Boolean);
+
     const links = item.shadowRoot?.querySelectorAll(".submenu a") ?? [];
     links.forEach((link) => {
       link.addEventListener("click", (e) => {
@@ -237,7 +279,7 @@ window.addEventListener("DOMContentLoaded", () => {
         console.log("Link clicked:", { mainCat, subCat, title });
 
         if (mainCat && subCat) {
-          window.openWorkersPopup(mainCat, subCat, title);
+          window.openWorkersPopup(mainCat, subCat, title, subCategories);
         } else {
           popup.open();
         }

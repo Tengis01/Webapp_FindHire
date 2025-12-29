@@ -6,73 +6,137 @@ class ChFilter extends HTMLElement {
       <style>
         :host {
           display: block;
+          font-family: 'Inter', sans-serif;
+          height: 100%;
+          overflow: hidden;
         }
 
         .filters {
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 24px;
+          background: #fff;
+          padding: 16px;
+          border-radius: 12px;
+          border: 1px solid #e5e7eb;
+          height: 100%;
+          box-sizing: border-box;
+          overflow-y: auto;
         }
 
-        h3, h4 {
-          font-size: 14px;
-          margin: 0 0 6px;
-          color: #6b7280;
-          font-weight: 600;
+        h3 {
+          font-size: 16px;
+          margin: 0 0 12px;
+          color: #111827;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+        }
+
+        .clear-btn {
+          font-size: 12px;
+          color: #EF4444;
+          cursor: pointer;
+          font-weight: 500;
+          display: none;
+        }
+        
+        .clear-btn:hover {
+          text-decoration: underline;
         }
 
         h4 {
-          font-size: 13px;
-          margin-bottom: 8px;
+          font-size: 14px;
+          margin: 0 0 12px;
+          color: #374151;
+          font-weight: 600;
         }
 
         .filter-group {
           display: flex;
           flex-direction: column;
-          gap: 6px;
+          gap: 10px;
+          border-bottom: 1px solid #f3f4f6;
+          padding-bottom: 20px;
+        }
+        
+        .filter-group:last-child {
+          border-bottom: none;
+          padding-bottom: 0;
         }
 
         .checkbox-item {
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: 10px;
         }
 
         input[type="checkbox"] {
           cursor: pointer;
+          width: 16px;
+          height: 16px;
+          accent-color: #2563EB;
+          border-radius: 4px;
         }
 
         label {
-          font-size: 13px;
-          color: #374151;
+          font-size: 14px;
+          color: #4B5563;
           cursor: pointer;
+          user-select: none;
+        }
+        
+        label:hover {
+          color: #111827;
         }
 
         .range-group {
           display: flex;
           flex-direction: column;
-          gap: 8px;
+          gap: 12px;
         }
 
         input[type="range"] {
           width: 100%;
           cursor: pointer;
+          accent-color: #2563EB;
         }
 
         .range-value {
-          font-size: 13px;
-          color: #6b7280;
+          font-size: 14px;
+          color: #4B5563;
           font-weight: 500;
+          display: flex;
+          justify-content: space-between;
+        }
+        
+        .rating-num {
+          color: #2563EB;
+          font-weight: 700;
         }
       </style>
 
       <div class="filters">
-        <h3>Фильтер</h3>
+        <h3>
+          Шүүлтүүр
+          <span class="clear-btn" id="clear-btn">Цэвэрлэх</span>
+        </h3>
 
-        <div class="filter-group">
+        <div class="filter-group" id="subcat-group" style="display: none;">
           <h4>Засвар төрөл</h4>
           <div id="subcat-options"></div>
-          </div>
+        </div>
+
+        <div class="filter-group">
+          <h4>Чөлөөт цаг (Боломжтой өдөр)</h4>
+          <div class="checkbox-item"><input type="checkbox" name="availability" value="Даваа" id="day-1"><label for="day-1">Даваа</label></div>
+          <div class="checkbox-item"><input type="checkbox" name="availability" value="Мягмар" id="day-2"><label for="day-2">Мягмар</label></div>
+          <div class="checkbox-item"><input type="checkbox" name="availability" value="Лхагва" id="day-3"><label for="day-3">Лхагва</label></div>
+          <div class="checkbox-item"><input type="checkbox" name="availability" value="Пүрэв" id="day-4"><label for="day-4">Пүрэв</label></div>
+          <div class="checkbox-item"><input type="checkbox" name="availability" value="Баасан" id="day-5"><label for="day-5">Баасан</label></div>
+          <div class="checkbox-item"><input type="checkbox" name="availability" value="Бямба" id="day-6"><label for="day-6">Бямба</label></div>
+          <div class="checkbox-item"><input type="checkbox" name="availability" value="Ням" id="day-7"><label for="day-7">Ням</label></div>
         </div>
 
         <div class="filter-group">
@@ -91,11 +155,12 @@ class ChFilter extends HTMLElement {
           </div>
         </div>
 
-        <div class="range-group">
+        <div class="range-group filter-group">
           <h4>Үнэлгээний хүрээ</h4>
-          <input type="range" id="rating-range" min="1" max="5" step="0.1" value="3.0" />
+          <input type="range" id="rating-range" min="1" max="5" step="0.5" value="3" />
           <div class="range-value">
-            <span id="rating-range-value">3.0</span> одоос дээш
+            <span>Доод тал нь:</span>
+            <span class="rating-num"><span id="rating-range-value">3.0</span> ★</span>
           </div>
         </div>
       </div>
@@ -109,6 +174,7 @@ class ChFilter extends HTMLElement {
     this.shadowRoot.addEventListener("change", (e) => {
       if (e.target.type === "checkbox") {
         this.emitFilterChange();
+        this.toggleClearButton();
       }
     });
 
@@ -120,8 +186,23 @@ class ChFilter extends HTMLElement {
       ratingRange.addEventListener("input", () => {
         ratingValue.textContent = ratingRange.value;
         this.emitFilterChange();
+        this.toggleClearButton();
       });
     }
+
+    // Clear btn
+    const clearBtn = this.shadowRoot.querySelector("#clear-btn");
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        this.clearFilters();
+      });
+    }
+  }
+
+  toggleClearButton() {
+    // Optional: Logic to show/hide clear button if any filter is active
+    const clearBtn = this.shadowRoot.querySelector("#clear-btn");
+    if (clearBtn) clearBtn.style.display = 'block';
   }
 
   emitFilterChange() {
@@ -140,7 +221,8 @@ class ChFilter extends HTMLElement {
   getFilterValues() {
     const filterValues = {
       budget: [], // subcategories
-      experienceMin: "", // нэг утга
+      availability: [],
+      experienceMin: "",
       ratingRange: 3.0,
     };
 
@@ -151,7 +233,14 @@ class ChFilter extends HTMLElement {
         filterValues.budget.push(cb.value);
       });
 
-    // Туршлага (олон checkbox байж болох ч хамгийн ихийг нь min гэж үзье)
+    // Availability
+    this.shadowRoot
+      .querySelectorAll('input[name="availability"]:checked')
+      .forEach((cb) => {
+        filterValues.availability.push(cb.value);
+      });
+
+    // Туршлага
     const exp = Array.from(
       this.shadowRoot.querySelectorAll(
         'input[id^="filter-experience-"]:checked'
@@ -171,8 +260,16 @@ class ChFilter extends HTMLElement {
 
   setSubcategoryOptions(options = [], checkedValues = []) {
     const box = this.shadowRoot.querySelector("#subcat-options");
-    if (!box) return;
+    const group = this.shadowRoot.querySelector("#subcat-group");
+    if (!box || !group) return;
 
+    if (!options || options.length === 0) {
+      group.style.display = "none";
+      box.innerHTML = "";
+      return;
+    }
+
+    group.style.display = "flex";
     box.innerHTML = options
       .map((label) => {
         const checked = checkedValues.includes(label) ? "checked" : "";
@@ -184,6 +281,14 @@ class ChFilter extends HTMLElement {
     `;
       })
       .join("");
+
+    // Re-attach listeners for new dynamic inputs
+    box.querySelectorAll('input').forEach(input => {
+      input.addEventListener('change', () => {
+        this.emitFilterChange();
+        this.toggleClearButton();
+      });
+    });
   }
 
   setRatingRange(value) {
@@ -222,6 +327,10 @@ class ChFilter extends HTMLElement {
     }
 
     this.emitFilterChange();
+
+    // Hide clear button
+    const clearBtn = this.shadowRoot.querySelector("#clear-btn");
+    if (clearBtn) clearBtn.style.display = 'none';
   }
 }
 
