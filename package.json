@@ -21,10 +21,13 @@
   },
   "homepage": "https://github.com/Tengis01/Webapp_FindHire#readme",
   "dependencies": {
+    "connect-mongo": "^6.0.0",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
-    "mongoose": "^9.0.1"
+    "express-session": "^1.18.2",
+    "mongoose": "^9.0.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"

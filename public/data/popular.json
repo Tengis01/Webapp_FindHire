@@ -6,15 +6,16 @@
       "searches": 500,
       "rating": 4.2,
       "worker": "Ц. Дэлгэрмөрөн",
-      "completedJobs": 30
-    },
+      "completedJobs": 30,
+"img": "https://images.ctfassets.net/vwt5n1ljn95x/3sbIHOfdhBhVilGyaApius/829a05b423c4aff40b3bb007668e85cb/Hang_Pictures.jpeg?w=384&q=75&fm=webp "   },
     {
       "id": 2,
       "title": "Тавилга угсралт",
       "searches": 650,
       "rating": 4.4,
       "worker": "Б. Мөнх-Оргил",
-      "completedJobs": 18
+      "completedJobs": 18,
+      "img": "https://images.ctfassets.net/vwt5n1ljn95x/15JB3WRwRtvEsf5rcVKmnK/610c440541b1cca93bee3534037379e7/Furniture_Assembly.jpeg?w=384&q=75&fm=webp"
     },
     {
       "id": 3,
@@ -22,7 +23,8 @@
       "searches": 300,
       "rating": 4.0,
       "worker": "С. Хулан",
-      "completedJobs": 45
+      "completedJobs": 45,
+      "img": "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?w=400&h=300&fit=crop"
     },
     {
       "id": 4,
@@ -30,7 +32,8 @@
       "searches": 820,
       "rating": 4.6,
       "worker": "Ж. Тэмүүлэн",
-      "completedJobs": 27
+      "completedJobs": 27,
+      "img": "https://images.ctfassets.net/vwt5n1ljn95x/5RdOpgNLV7GFgjHegMSn4S/4da60b993bc3b03fcef4d19645c38e59/Help_Moving.jpg?w=384&q=75&fm=webp"
     }
   ]
 }

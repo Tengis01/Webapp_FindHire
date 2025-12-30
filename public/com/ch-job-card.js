@@ -13,11 +13,14 @@ class ChJobCard extends HTMLElement {
     const rating = parseFloat(this.getAttribute("rating") || "0");
     const worker = this.getAttribute("worker") || "Ц. Дэлгэрмөрөн";
     const jobs = this.getAttribute("jobs") || "";
+    const img = this.getAttribute("img") || "";
 
     this.innerHTML = /* html */ `
       <article class="job">
         <div class="job-top">
-          <div class="job-thumb" aria-hidden="true"></div>
+          <div class="job-thumb" aria-hidden="true">
+          <img src="${img}" alt="img" />
+          </div>
 
           <div class="job-main">
             <h4 class="job-title">${title}</h4>

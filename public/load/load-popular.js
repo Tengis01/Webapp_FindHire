@@ -1,5 +1,5 @@
 async function loadPopularJobs() {
-  const res = await fetch("/data/popular.json");
+  const res = await fetch("./data/popular.json");
   const data = await res.json();
 
   const container = document.getElementById("popular-section");
@@ -12,6 +12,7 @@ async function loadPopularJobs() {
     card.setAttribute("rating", job.rating);
     card.setAttribute("worker", job.worker);
     card.setAttribute("jobs", job.jobs);
+    card.setAttribute("img", job.img);
     container.appendChild(card);
   });
 }

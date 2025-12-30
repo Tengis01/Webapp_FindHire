@@ -316,11 +316,18 @@ form button svg {
 
 /* хар box – зургийн slot */
 .job-thumb {
-  width: 60px;
-  min-width: 60px;
-  height: 80px;
-  border-radius: 6px;
-  background: #111; /* дараа нь background-image тавьж болно */
+  width: 90px;
+  height: 90px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #eee;
+  flex-shrink: 0;
+}
+
+.job-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .job-main {
