@@ -76,7 +76,7 @@ class CHFooter extends HTMLElement {
   <div class="footer-container">
 
     <div class="footer-about">
-      <h3>MyWebsite</h3>
+      <h3>FindHire</h3>
       <p>
         Чанартай үйлчилгээ, найдвартай гүйцэтгэл.
         Бид таны ажлыг хялбар болгоно.

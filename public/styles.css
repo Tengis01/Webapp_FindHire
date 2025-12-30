@@ -393,7 +393,7 @@ form button svg {
   color: var(--brand);
 }
 
-.job-nav {
+.prev {
   border: none;
   background: transparent;
   padding: 4px 6px;
@@ -402,9 +402,22 @@ form button svg {
   color: var(--brand);
 }
 
-.job-nav:hover {
+.prev:hover {
+  color: var(#a39f9d);
+}
+.next {
+  border: none;
+  background: transparent;
+  padding: 4px 6px;
+  font-size: 18px;
+  cursor: pointer;
   color: var(--brand);
 }
+
+.next:hover {
+  color: var( #a39f9d);
+}
+
 
 /* ==== Reviews – popular-той ижил өргөн, илүү дээд зай ==== */
 .reviews {
