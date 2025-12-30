@@ -48,11 +48,6 @@ class Signin extends HTMLElement {
                         <input type="tel" name="phone" placeholder="Утасны дугаар" required>
                         <input type="text" name="address" placeholder="Хаяг" required>
                         <input type="password" name="password" placeholder="Нууц үг" required>
-                        <select name="role" required> 
-                            <option value="" disabled selected>Ажилтан эсвэл хэрэглэгч</option>
-                            <option value="Ажилтан">Ажилтан</option>
-                            <option value="Хэрэглэгч">Хэрэглэгч</option>
-                        </select> 
                         <button type="submit">Бүртгүүлэх</button>
                         <p>Хаягтай бол? 
                             <a href="#" class="toggle-link">Нэвтрэх</a>
@@ -86,11 +81,11 @@ class Signin extends HTMLElement {
     toggleForms() {
         const loginBox = this.shadowRoot.getElementById('box');
         const registerBox = this.shadowRoot.getElementById('burtguuleh');
-        
+
         loginBox.classList.toggle('active');
         registerBox.classList.toggle('active');
     }
-    
+
     handleLogin(form) {
         const formData = new FormData(form);
         const email = formData.get('email');
@@ -99,11 +94,11 @@ class Signin extends HTMLElement {
         console.log('Нэвтрэх:', { email, password });
         alert('Нэвтрэх амжилттай!');
     }
-    
+
     handleRegister(form) {
         const formData = new FormData(form);
         const data = Object.fromEntries(formData);
-        
+
         // Энд логик нэмэх (API call, validation гэх мэт)
         console.log('Бүртгүүлэх:', data);
         alert('Бүртгүүлэх амжилттай!');

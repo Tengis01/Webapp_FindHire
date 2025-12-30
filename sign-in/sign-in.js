@@ -59,20 +59,13 @@ class Signin extends HTMLElement {
                         </div>
                         <div class="full-width">
                             <label for="reg-email">Email</label>
-                            <input type="email" id="reg-email" name="Email" placeholder="abc@example.com" required>
+                            <input type="email" id="reg-email" name="email" placeholder="abc@example.com" required>
                         </div>
                         <div class="full-width">
                             <label for="reg-password">Нууц үг</label>
                             <input type="password" id="reg-password" name="password" placeholder="Нууц үг" required>
                         </div>
-                        <div class="full-width">
-                            <label for="reg-role">Төрөл сонгох</label>
-                            <select id="reg-role" name="role" required> 
-                                <option value="" disabled selected>Ажилчин эсвэл хэрэглэгч</option>
-                                <option value="Ажилчин">Ажилчин</option>
-                                <option value="Хэрэглэгч">Хэрэглэгч</option>
-                            </select>
-                        </div>
+                        <!-- Role selector removed: User is default here -->
                         <button type="submit">Бүртгүүлэх</button>
                         <p>Хаягтай бол? 
                             <a href="#" class="toggle-link">Нэвтрэх</a>
@@ -116,23 +109,53 @@ class Signin extends HTMLElement {
     registerBox.classList.toggle("active");
   }
 
-  handleLogin(form) {
+  async handleLogin(form) {
     const formData = new FormData(form);
     const email = formData.get("email");
     const password = formData.get("password");
 
-    // Энд логик нэмэх (API call, validation гэх мэт)
-    console.log("Нэвтрэх:", { email, password });
-    alert("Нэвтрэх амжилттай!");
+    try {
+      const response = await fetch('/api/auth/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.error);
+      }
+
+      // Success
+      alert('Амжилттай нэвтэрлээ!');
+      window.location.href = '/'; // Redirect to home
+    } catch (err) {
+      alert(err.message);
+    }
   }
 
-  handleRegister(form) {
+  async handleRegister(form) {
     const formData = new FormData(form);
     const data = Object.fromEntries(formData);
 
-    // Энд логик нэмэх (API call, validation гэх мэт)
-    console.log("Бүртгүүлэх:", data);
-    alert("Бүртгүүлэх амжилттай!");
+    try {
+      // API call to /api/auth/signup/user
+      const response = await fetch('/api/auth/signup/user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.error);
+      }
+
+      alert('Бүртгүүлэх амжилттай!');
+      window.location.href = '/'; // Redirect to home
+    } catch (err) {
+      alert(err.message);
+    }
   }
 }
 

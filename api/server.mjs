@@ -6,6 +6,13 @@ import { dirname, join } from "node:path";
 import process from "node:process";
 import mongoose from "mongoose";
 import Worker from "./models/Worker.js";
+import User from "./models/User.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import cookieParser from "cookie-parser";
+
+const JWT_SECRET = "your_super_secret_key_change_in_production"; // In real app, use env var
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -22,6 +29,9 @@ process.on('uncaughtException', (err) => console.error('Uncaught Exception:', er
 process.on('unhandledRejection', (reason, promise) => console.error('Unhandled Rejection:', reason));
 
 // Middleware
+// Middleware
+app.use(express.json()); // Enable JSON body parsing
+app.use(cookieParser());
 app.use(cors());
 
 // Connect to MongoDB
@@ -138,7 +148,7 @@ app.get("/sign-in", (req, res) => {
 
 // Ажилд орох хуудас route  
 app.get("/ajild-oroh", (req, res) => {
-  res.sendFile(join(rootDir, "ajild-oroh", "ajild-oroh.html"));
+  res.sendFile(join(rootDir, "public", "ajild-oroh", "ajild-oroh.html"));
 });
 
 // Profile хуудас route
@@ -266,6 +276,176 @@ app.get("/api/popular", async (req, res) => {
   } catch (err) {
     console.error("Popular API Error:", err);
     res.status(500).json({ error: err.message });
+  }
+});
+// Authentication Routes
+
+// 1. Unified Sign In
+app.post("/api/auth/signin", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find user
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ error: "Email or password incorrect" });
+    }
+
+    // Check password
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: "Email or password incorrect" });
+    }
+
+    // Generate token
+    const token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+
+    // Set cookie
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: false, // Set to true in production with HTTPS
+      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+    });
+
+    res.json({
+      message: "Successfully logged in", user: {
+        firstname: user.firstname,
+        lastname: user.lastname,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (err) {
+    console.error("Signin Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 2. User Sign Up
+app.post("/api/auth/signup/user", async (req, res) => {
+  try {
+    const { firstname, lastname, email, phone, address, password } = req.body;
+
+    // Check existing
+    const existing = await User.findOne({ email });
+    if (existing) {
+      return res.status(400).json({ error: "Email already exists" });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create User
+    const user = new User({
+      firstname,
+      lastname,
+      email,
+      phone,
+      address,
+      password: hashedPassword,
+      role: 'User'
+    });
+    await user.save();
+
+    // Auto login (generate token)
+    const token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+
+    res.cookie('token', token, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
+
+    res.json({ message: "User registered successfully", user: { firstname, role: 'User' } });
+  } catch (err) {
+    console.error("User Signup Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 3. Worker Sign Up
+app.post("/api/auth/signup/worker", async (req, res) => {
+  try {
+    const {
+      firstname, lastname, email, phone, address, password,
+      category, subcategories, experience, description, availability,
+      // Default overrideable fields
+      emoji
+    } = req.body;
+
+    // Check existing
+    const existing = await User.findOne({ email });
+    if (existing) {
+      return res.status(400).json({ error: "Email already exists" });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create User
+    const user = new User({
+      firstname,
+      lastname,
+      email,
+      phone,
+      address,
+      password: hashedPassword,
+      role: 'Worker'
+    });
+    const savedUser = await user.save();
+
+    // Create Worker Profile
+    // Note: 'subcategories' and 'availability' might come as arrays or comma-separated strings depending on client.
+    // We'll normalize them here if needed.
+
+    // Auto-generate ID (simple max+1 strategy for now, or random)
+    // Ideally use UUID or let Mongo ID be sufficient, but Schema has customized Number ID.
+    // Let's find max ID.
+    const lastWorker = await Worker.findOne().sort({ id: -1 });
+    const nextId = lastWorker && lastWorker.id ? lastWorker.id + 1 : 1001;
+
+    const worker = new Worker({
+      userId: savedUser._id,
+      id: nextId,
+      name: `${lastname.charAt(0)}.${firstname}`, // Standard Mongolian formatting
+      rating: 5.0, // New worker default
+      jobs: 0,
+      emoji: emoji || "👷",
+      description: description || "Тайлбар оруулаагүй",
+      category,
+      subcategories: Array.isArray(subcategories) ? subcategories : [subcategories],
+      experience: Number(experience) || 0,
+      availability: Array.isArray(availability) ? availability : [availability]
+    });
+
+    await worker.save();
+
+    // Auto login
+    const token = jwt.sign({ userId: user._id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
+    res.cookie('token', token, { httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000 });
+
+    res.json({ message: "Worker registered successfully", user: { firstname, role: 'Worker' } });
+
+  } catch (err) {
+    console.error("Worker Signup Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 4. Logout
+app.post("/api/auth/logout", (req, res) => {
+  res.clearCookie('token');
+  res.json({ message: "Logged out" });
+});
+
+// 5. Get Current User (Me)
+app.get("/api/auth/me", async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) return res.json({ user: null });
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findById(decoded.userId).select('-password');
+    res.json({ user });
+  } catch (err) {
+    res.clearCookie('token');
+    res.json({ user: null });
   }
 });
 

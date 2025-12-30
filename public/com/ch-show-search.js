@@ -44,7 +44,7 @@ class ChShowSearch extends HTMLElement {
         }
 
         .search-results-container {
-          max-height: 500px; /* Increased height */
+          max-height: 600px; /* Increased height */
           overflow-y: auto;
           padding: 20px;
         }
