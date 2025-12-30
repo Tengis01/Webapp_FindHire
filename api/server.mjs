@@ -1,8 +1,11 @@
+// pkill -f "node api/server.mjs"
 import express from "express";
 import cors from "cors";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import process from "node:process";
+import mongoose from "mongoose";
+import Worker from "./models/Worker.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -12,6 +15,7 @@ const rootDir = process.cwd();
 
 const app = express();
 const PORT = 3001;
+const MONGO_URI = 'mongodb://localhost:27017/findhire';
 
 // Global error handling to prevent server crashes
 process.on('uncaughtException', (err) => console.error('Uncaught Exception:', err));
@@ -19,6 +23,11 @@ process.on('unhandledRejection', (reason, promise) => console.error('Unhandled R
 
 // Middleware
 app.use(cors());
+
+// Connect to MongoDB
+mongoose.connect(MONGO_URI)
+  .then(() => console.log("MongoDB Connected"))
+  .catch(err => console.error("MongoDB Connection Error:", err));
 
 // Routes-ийг static файлаас өмнө тодорхойлох
 // Helper to create flexible regex for Mongolian/English search
@@ -149,91 +158,75 @@ app.use(express.static(rootDir));
 // Ажилчдыг шүүж авах API
 app.get("/api/workers", async (req, res) => {
   try {
-    const fs = await import("node:fs/promises");
-    const data = await fs.readFile(
-      join(rootDir, "public", "data", "workers.json"),
-      "utf-8"
-    );
-    const jsonData = JSON.parse(data);
-    let workers = jsonData.workers || jsonData;
-
     const { main, sub, search, experience, availability, ratingRange } = req.query;
-
     console.log("API Request:", { main, sub, search, experience, availability, ratingRange });
-    console.log("Total workers:", workers.length);
 
-    // category талбараар шүүнэ
+    const query = {};
+
+    // category filter
     if (main) {
-      workers = workers.filter(
-        (w) => w.category?.trim().toLowerCase() === main.trim().toLowerCase()
-      );
-      console.log(`After main filter: ${workers.length}`);
+      // Create case-insensitive regex for category
+      query.category = new RegExp(`^${main.trim()}$`, 'i');
     }
 
-    // subcategories array-с олно
+    // subcategories filter
     if (sub) {
-      // sub нь таслалаар тусгаарлагдсан утгууд байж болно (e.g., "Цахилгаан,Сантехник")
-      const subList = sub.split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-
+      const subList = sub.split(',').map(s => s.trim()).filter(Boolean);
       if (subList.length > 0) {
-        workers = workers.filter((w) => {
-          if (!w.subcategories || !Array.isArray(w.subcategories)) return false;
-          // STRICT AND LOGIC: Worker must have ALL selected subcategories
-          const workerSubs = w.subcategories.map(sc => sc.trim().toLowerCase());
-          return subList.every((selected) => workerSubs.includes(selected));
-        });
-        console.log(`After sub filter (AND): ${workers.length}`);
+        // Use $all with regex to match subcategories case-insensitively
+        query.subcategories = {
+          $all: subList.map(s => new RegExp(s, 'i'))
+        };
       }
     }
 
     // Search filter
     if (search) {
       const regex = createMongolianRegex(search);
-      workers = workers.filter(
-        (w) =>
-          regex.test(w.name) ||
-          regex.test(w.description) ||
-          regex.test(w.category) ||
-          (w.subcategories && w.subcategories.some(s => regex.test(s)))
-      );
-      console.log(`After search filter: ${workers.length}`);
+      query.$or = [
+        { name: regex },
+        { description: regex },
+        { category: regex },
+        { subcategories: { $in: [regex] } }
+      ];
     }
 
-    // Experience filter - minimum experience
-    if (req.query.experience) {
-      const minExp = parseFloat(req.query.experience);
+    // Experience filter
+    if (experience) {
+      const minExp = parseFloat(experience);
       if (!isNaN(minExp)) {
-        workers = workers.filter((w) => {
-          const workerExp = parseFloat(w.experience || 0);
-          return workerExp >= minExp;
-        });
-        console.log(`After experience filter (>= ${minExp}): ${workers.length}`);
+        query.experience = { $gte: minExp };
       }
     }
 
-    // Availability filter - checks if worker is available on ALL selected days
-    if (req.query.availability) {
-      const days = req.query.availability.split(',').map(d => d.trim());
-      workers = workers.filter(w =>
-        w.availability && Array.isArray(w.availability) &&
-        days.every(day => w.availability.includes(day))
-      );
-      console.log(`After availability filter (AND): ${workers.length}`);
+    // Availability filter
+    if (availability) {
+      const days = availability.split(',').map(d => d.trim().toLowerCase());
+      if (days.length > 0) {
+        // Case insensitive matching for days in array
+        // DB stores Capitalized days ("Даваа"), user might send lower case?
+        // Actually JSON has "Даваа".
+        // Let's use regex for safety or $in
+        // For $all, we need to match all.
+        // Can use list of regexes again.
+        query.availability = {
+          $all: days.map(d => new RegExp(`^${d}$`, 'i'))
+        };
+      }
     }
 
-    // Rating range filter - minimum rating
-    if (req.query.ratingRange) {
-      const minRating = parseFloat(req.query.ratingRange);
+    // Rating filter
+    if (ratingRange) {
+      const minRating = parseFloat(ratingRange);
       if (!isNaN(minRating)) {
-        workers = workers.filter((w) => {
-          const workerRating = parseFloat(w.rating || 0);
-          return workerRating >= minRating;
-        });
-        console.log(`After rating filter (>= ${minRating}): ${workers.length}`);
+        query.rating = { $gte: minRating };
       }
     }
 
-    // Response форматыг mini-job-card-д тохируулах
+    const workers = await Worker.find(query);
+    console.log(`Found ${workers.length} workers`);
+
+    // Format response
     const formatted = workers.map((w) => ({
       name: w.name,
       rating: String(w.rating),
@@ -244,7 +237,6 @@ app.get("/api/workers", async (req, res) => {
       subcategories: w.subcategories,
     }));
 
-    console.log(`Sending ${formatted.length} workers`);
     res.json(formatted);
   } catch (err) {
     console.error("API Error:", err);
@@ -255,19 +247,12 @@ app.get("/api/workers", async (req, res) => {
 // Популяр ажилчдын API
 app.get("/api/popular", async (req, res) => {
   try {
-    const fs = await import("node:fs/promises");
-    const data = await fs.readFile(
-      join(rootDir, "public", "data", "workers.json"),
-      "utf-8"
-    );
-    const jsonData = JSON.parse(data);
-    const workers = jsonData.workers || jsonData;
+    // Get top 15 by rating decs, then jobs desc
+    const workers = await Worker.find()
+      .sort({ rating: -1, jobs: -1 })
+      .limit(15);
 
-    const sorted = workers
-      .sort((a, b) => b.rating - a.rating || b.jobs - a.jobs)
-      .slice(0, 15);
-
-    const formatted = sorted.map((w) => ({
+    const formatted = workers.map((w) => ({
       name: w.name,
       rating: String(w.rating),
       jobs: `${w.jobs} ${w.emoji || "🤝"}`,
