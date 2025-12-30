@@ -7,7 +7,12 @@
       "rating": 4.2,
       "worker": "Ц. Дэлгэрмөрөн",
       "completedJobs": 30,
-      "img": "https://images.ctfassets.net/vwt5n1ljn95x/3sbIHOfdhBhVilGyaApius/829a05b423c4aff40b3bb007668e85cb/Hang_Pictures.jpeg?w=384&q=75&fm=webp"
+      "img": "https://images.ctfassets.net/vwt5n1ljn95x/3sbIHOfdhBhVilGyaApius/829a05b423c4aff40b3bb007668e85cb/Hang_Pictures.jpeg?w=384&q=75&fm=webp",
+      "workers": [
+        {"worker": "Ц. Дэлгэрмөрөн", "completedJobs": 30},
+        {"worker": "Б. Мөнх-Оргил", "completedJobs": 25},
+        {"worker": "С. Хулан", "completedJobs": 40}
+      ]
     },
     {
       "id": 2,
@@ -16,7 +21,12 @@
       "rating": 4.4,
       "worker": "Б. Мөнх-Оргил",
       "completedJobs": 18,
-      "img": "https://images.ctfassets.net/vwt5n1ljn95x/15JB3WRwRtvEsf5rcVKmnK/610c440541b1cca93bee3534037379e7/Furniture_Assembly.jpeg?w=384&q=75&fm=webp"
+      "img": "https://images.ctfassets.net/vwt5n1ljn95x/15JB3WRwRtvEsf5rcVKmnK/610c440541b1cca93bee3534037379e7/Furniture_Assembly.jpeg?w=384&q=75&fm=webp",
+      "workers": [
+        {"worker": "Б. Мөнх-Оргил", "completedJobs": 18},
+        {"worker": "Д. Бат-Эрдэнэ", "completedJobs": 22},
+        {"worker": "Г. Алтанцэцэг", "completedJobs": 15}
+      ]
     },
     {
       "id": 3,
@@ -25,7 +35,12 @@
       "rating": 4.0,
       "worker": "С. Хулан",
       "completedJobs": 45,
-      "img": "https://images.ctfassets.net/vwt5n1ljn95x/51s0CVltl03F7bOfy31VXB/8a5adaf0c64e789c7f202329724806c0/Home_Apartment_Cleaning.jpg?w=384&q=75&fm=webp"
+      "img": "https://images.ctfassets.net/vwt5n1ljn95x/51s0CVltl03F7bOfy31VXB/8a5adaf0c64e789c7f202329724806c0/Home_Apartment_Cleaning.jpg?w=384&q=75&fm=webp",
+      "workers": [
+        {"worker": "С. Хулан", "completedJobs": 45},
+        {"worker": "Н. Сарангэрэл", "completedJobs": 38},
+        {"worker": "М. Энхтуяа", "completedJobs": 42}
+      ]
     },
     {
       "id": 4,
@@ -34,7 +49,12 @@
       "rating": 4.6,
       "worker": "Ж. Тэмүүлэн",
       "completedJobs": 27,
-      "img": "https://images.ctfassets.net/vwt5n1ljn95x/5RdOpgNLV7GFgjHegMSn4S/4da60b993bc3b03fcef4d19645c38e59/Help_Moving.jpg?w=384&q=75&fm=webp"
+      "img": "https://images.ctfassets.net/vwt5n1ljn95x/5RdOpgNLV7GFgjHegMSn4S/4da60b993bc3b03fcef4d19645c38e59/Help_Moving.jpg?w=384&q=75&fm=webp",
+      "workers": [
+        {"worker": "Ж. Тэмүүлэн", "completedJobs": 27},
+        {"worker": "Л. Болд", "completedJobs": 31},
+        {"worker": "П. Ганзориг", "completedJobs": 24}
+      ]
     }
   ]
 }

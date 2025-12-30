@@ -11,7 +11,7 @@ async function loadPopularJobs() {
     card.setAttribute("searches", job.searches);
     card.setAttribute("rating", job.rating);
     card.setAttribute("worker", job.worker);
-    card.setAttribute("jobs", job.jobs);
+    card.setAttribute("completedJobs", job.completedJobs);
     card.setAttribute("img", job.img);
     container.appendChild(card);
   });
