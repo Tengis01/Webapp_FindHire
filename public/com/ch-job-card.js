@@ -18,8 +18,8 @@ class ChJobCard extends HTMLElement {
     this.innerHTML = /* html */ `
       <article class="job">
         <div class="job-top">
-          <div class="job-thumb" aria-hidden="true">
-          <img src="${img}" alt="img" />
+          <div class="job-thumb">
+            <img src="${img}" alt="${title}">
           </div>
 
           <div class="job-main">
@@ -27,7 +27,9 @@ class ChJobCard extends HTMLElement {
             <p class="job-stats">
               <span class="job-views">${views}</span>
               <span class="job-eye">👁</span>
-              <span class="job-rating">${rating.toFixed(1)} <span class="rating-star">★</span></span>
+              <span class="job-rating">
+                ${rating.toFixed(1)} <span class="rating-star">★</span>
+              </span>
             </p>
           </div>
         </div>
@@ -35,18 +37,18 @@ class ChJobCard extends HTMLElement {
         <hr class="job-divider" />
 
         <div class="job-bottom">
-          <button class="job-nav job-nav-prev" type="button" aria-label="Өмнөх гүйцэтгэгч">‹</button>
+          <button class="job-nav job-nav-prev">‹</button>
 
           <div class="job-worker">
             <p class="job-worker-name">${worker}</p>
             <p class="job-worker-meta">${jobs}</p>
           </div>
 
-          <button class="job-nav job-nav-next" type="button" aria-label="Дараагийн гүйцэтгэгч">›</button>
+          <button class="job-nav job-nav-next">›</button>
         </div>
       </article>
     `;
   }
 }
 
-window.customElements.define("ch-job-card", ChJobCard);
+customElements.define("ch-job-card", ChJobCard);

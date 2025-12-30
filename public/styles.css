@@ -316,8 +316,8 @@ form button svg {
 
 /* хар box – зургийн slot */
 .job-thumb {
-  width: 90px;
-  height: 90px;
+  width: 85px;
+  height: 85px;
   border-radius: 10px;
   overflow: hidden;
   background: #eee;
