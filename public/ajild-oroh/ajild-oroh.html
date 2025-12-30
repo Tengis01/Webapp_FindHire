@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/ajild-oroh/ajild-oroh.css">
+  <script type="module" src="/public/com/ch-header.js"></script>
+  <title>Ажилд Орох</title>
+</head>
+
+<body>
+  <ch-header></ch-header>
+
+  <form id="jobApplicationForm">
+    <h1>Ажлын маягт</h1>
+    <div class="first">
+      <label for="last">Овог</label>
+      <input type="text" id="last" name="last" placeholder="Өөрийн овог" required>
+    </div>
+    <div class="first">
+      <label for="name">Нэр</label>
+      <input type="text" id="name" name="name" placeholder="Өөрийн нэр" required>
+    </div>
+    <div>
+      <label for="email">Email</label>
+      <input type="email" placeholder="abc@example.com" required name="email" id="email">
+    </div>
+    <div>
+      <label for="address">Хаяг</label>
+      <input type="text" placeholder="Улаанбаатар" required name="address" id="address">
+    </div>
+    <div>
+      <label for="password">Нууц үг</label>
+      <input type="password" placeholder="Нууц үг" required name="password" id="password">
+    </div>
+    <div>
+      <label for="posotion">Категори</label>
+      <select name="category" id="category" required>
+        <option value="">Сонгох</option>
+        <option value="Дотоод засал">Дотоод засал</option>
+        <option value="Гадаад засал">Гадаад засал</option>
+        <option value="Сантехник">Сантехник</option>
+        <option value="Цахилгаан">Цахилгаан</option>
+        <option value="Ханын засал">Ханын засал</option>
+        <option value="Гоёл чимэглэл">Гоёл чимэглэл</option>
+      </select>
+    </div>
+    <div>
+      <label for="subcategories">Дэд категориуд</label>
+      <input type="text" id="subcategories" name="subcategories"
+        placeholder="Жишээ: Плита наах, Обой наах (Заавал биш)">
+    </div>
+    <div>
+      <label for="experience">Ажлын туршлага:</label>
+      <select id="experience" name="experience" required></select>
+    </div>
+    <div>
+      <label for="dugaar">Холбогдох утасны дугаар</label>
+      <input type="tel" name="dugaar" id="dugaar" placeholder="99003322" maxlength="8" pattern="[6-9][0-9]{7}" required>
+    </div>
+    <div>
+      <fieldset class="radio-group" style="border:none; padding:0;">
+        <legend style="margin-bottom:10px; font-weight:bold;">Ажиллах боломжтой өдрүүд</legend>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <label><input type="checkbox" name="availability" value="Даваа"> Даваа</label>
+          <label><input type="checkbox" name="availability" value="Мягмар"> Мягмар</label>
+          <label><input type="checkbox" name="availability" value="Лхагва"> Лхагва</label>
+          <label><input type="checkbox" name="availability" value="Пүрэв"> Пүрэв</label>
+          <label><input type="checkbox" name="availability" value="Баасан"> Баасан</label>
+          <label><input type="checkbox" name="availability" value="Бямба"> Бямба</label>
+          <label><input type="checkbox" name="availability" value="Ням"> Ням</label>
+        </div>
+      </fieldset>
+    </div>
+    <div class="second">
+      <label for="message">Өөрийн тухай товч</label>
+      <textarea name="message" id="message" placeholder="Өөрийн тухай товч"></textarea>
+    </div>
+    <div class="button">
+      <button class="submit" type="submit">Илгээх</button>
+    </div>
+  </form>
+
+</body>
+
+<script>
+  // Experience dropdown-ыг автоматаар үүсгэх
+  const select = document.getElementById('experience');
+  for (let i = 1; i <= 10; i++) {
+    const option = document.createElement('option');
+    option.value = i;
+    option.text = i + " жил";
+    select.add(option);
+  }
+
+  // Form submit handler
+  document.getElementById('jobApplicationForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    // Submit button-г идэвхгүй болгох (давхар илгээхээс сэргийлэх)
+    const submitBtn = e.target.querySelector('.submit');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Илгээж байна...';
+
+    // Form data цуглуулах
+    const formData = new FormData(e.target);
+
+    // Custom mapping to API expectations
+    const payload = {
+      lastname: formData.get('last'),
+      firstname: formData.get('name'),
+      email: formData.get('email'),
+      phone: formData.get('dugaar'),
+      address: formData.get('address'),
+      password: formData.get('password'),
+      category: formData.get('category'),
+      subcategories: formData.get('subcategories'),
+      experience: formData.get('experience'),
+      description: formData.get('message'),
+      availability: formData.getAll('availability') // Get all checked boxes
+    };
+
+    try {
+      const response = await fetch('/api/auth/signup/worker', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // Амжилттай
+        alert('✅ Бүртгэл амжилттай! Та нэвтрэн орлоо.');
+        window.location.href = '/';
+      } else {
+        // Алдаа гарсан
+        alert('❌ Алдаа гарлаа: ' + result.error);
+      }
+    } catch (error) {
+      // Network буюу бусад алдаа
+      console.error('Алдаа:', error);
+      alert('❌ Хүсэлт илгээхэд алдаа гарлаа. Дахин оролдоно уу.');
+    } finally {
+      // Button-г буцааж идэвхжүүлэх
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalText;
+    }
+  });
+
+  // Phone number болон Age input-д зөвхөн тоо оруулах
+  document.getElementById('dugaar').addEventListener('input', function (e) {
+    this.value = this.value.replace(/[^0-9]/g, '');
+  });
+
+
+</script>
+
+</html>
