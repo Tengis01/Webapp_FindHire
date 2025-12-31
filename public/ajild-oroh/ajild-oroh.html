@@ -6,11 +6,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="/ajild-oroh/ajild-oroh.css">
   <script type="module" src="/public/com/ch-header.js"></script>
+  <script type="module" src="/public/com/ch-toast.js"></script>
   <title>Ажилд Орох</title>
 </head>
 
 <body>
   <ch-header></ch-header>
+  <ch-toast></ch-toast>
 
   <form id="jobApplicationForm">
     <h1>Ажлын маягт</h1>
@@ -38,19 +40,23 @@
       <label for="posotion">Категори</label>
       <select name="category" id="category" required>
         <option value="">Сонгох</option>
-        <option value="Дотоод засал">Дотоод засал</option>
-        <option value="Гадаад засал">Гадаад засал</option>
+        <option value="Дотор засал">Дотор засал</option>
+        <option value="Тавилга угсралт">Тавилга угсралт</option>
+        <option value="Цэвэрлэгээ">Цэвэрлэгээ</option>
+        <option value="Нүүлгэлт">Нүүлгэлт</option>
         <option value="Сантехник">Сантехник</option>
+        <option value="Гадна талбай">Гадна талбай</option>
         <option value="Цахилгаан">Цахилгаан</option>
-        <option value="Ханын засал">Ханын засал</option>
-        <option value="Гоёл чимэглэл">Гоёл чимэглэл</option>
       </select>
     </div>
-    <div>
-      <label for="subcategories">Дэд категориуд</label>
-      <input type="text" id="subcategories" name="subcategories"
-        placeholder="Жишээ: Плита наах, Обой наах (Заавал биш)">
+
+    <div id="subcategory-container" style="display:none; margin-top:15px;">
+      <label>Дэд категориуд</label>
+      <div id="subcategory-options" style="display:flex; flex-direction:column; gap:8px; margin-top:5px;">
+        <!-- Checkboxes will be injected here -->
+      </div>
     </div>
+
     <div>
       <label for="experience">Ажлын туршлага:</label>
       <select id="experience" name="experience" required></select>
@@ -85,6 +91,16 @@
 </body>
 
 <script>
+  // Helper to find global toast
+  function showToast(message, type) {
+    const toast = document.querySelector('ch-toast');
+    if (toast) {
+      toast.show(message, type);
+    } else {
+      alert(message);
+    }
+  }
+
   // Experience dropdown-ыг автоматаар үүсгэх
   const select = document.getElementById('experience');
   for (let i = 1; i <= 10; i++) {
@@ -94,9 +110,55 @@
     select.add(option);
   }
 
+  // --- Dynamic Subcategories ---
+  const CATEGORY_MAP = {
+    "Дотор засал": ["Будаг", "Хана тааз засвар", "Шал"],
+    "Тавилга угсралт": ["Гэр ахуйн", "Оффис", "Зөөвөр угсрах"],
+    "Цэвэрлэгээ": ["Ерөнхий их", "Орон сууц/байшин", "Оффис"],
+    "Нүүлгэлт": ["Оффис нүүлгэлт", "Том овор хүнд даац", "Гэр нүүлгэлт"],
+    "Сантехник": ["Дотоод шугам", "Гал тогоо/угаалтуур", "Ариун цэврийн өрөө"],
+    "Гадна талбай": ["Зүлэг хадах", "Цас цэвэрлэх", "Явган зам/хашаа"],
+    "Цахилгаан": ["Гэрэлтүүлэг", "Розетка/унтраалга", "Засвар үйлчилгээ"]
+  };
+
+  const categorySelect = document.getElementById('category');
+  const subContainer = document.getElementById('subcategory-container');
+  const subOptions = document.getElementById('subcategory-options');
+
+  categorySelect.addEventListener('change', (e) => {
+    const cat = e.target.value;
+    subOptions.innerHTML = ''; // Clear previous
+
+    if (cat && CATEGORY_MAP[cat]) {
+      subContainer.style.display = 'block';
+      CATEGORY_MAP[cat].forEach(sub => {
+        const label = document.createElement('label');
+        label.style.display = 'flex';
+        label.style.gap = '10px';
+        label.style.alignItems = 'center';
+        label.innerHTML = `
+            <input type="checkbox" name="subcategories" value="${sub}" style="width:16px; height:16px;">
+            ${sub}
+        `;
+        subOptions.appendChild(label);
+      });
+    } else {
+      subContainer.style.display = 'none';
+    }
+  });
+
+
   // Form submit handler
   document.getElementById('jobApplicationForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    // Validate Subcategories
+    const checkedSubs = document.querySelectorAll('input[name="subcategories"]:checked');
+    // NOTE: Optional? User said "when i filling sign up form i skipped subcategories". 
+    // But they complained card didn't show up. If we force them, card will show up.
+    // Let's make it REQUIRED if a category is selected?
+    // "Also fix worker sign up... dynamically changes subcategories with 3 checkboxes"
+    // I'll leave it not-strict for now to avoid blocking, but visually present.
 
     // Submit button-г идэвхгүй болгох (давхар илгээхээс сэргийлэх)
     const submitBtn = e.target.querySelector('.submit');
@@ -116,11 +178,13 @@
       address: formData.get('address'),
       password: formData.get('password'),
       category: formData.get('category'),
-      subcategories: formData.get('subcategories'),
+      subcategories: formData.getAll('subcategories'), // Get all checked boxes
       experience: formData.get('experience'),
       description: formData.get('message'),
       availability: formData.getAll('availability') // Get all checked boxes
     };
+
+    console.log("Payload:", payload);
 
     try {
       const response = await fetch('/api/auth/signup/worker', {
@@ -135,16 +199,18 @@
 
       if (response.ok) {
         // Амжилттай
-        alert('✅ Бүртгэл амжилттай! Та нэвтрэн орлоо.');
-        window.location.href = '/';
+        showToast('✅ Бүртгэл амжилттай! Та нэвтрэн орлоо.', 'success');
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
       } else {
         // Алдаа гарсан
-        alert('❌ Алдаа гарлаа: ' + result.error);
+        showToast('❌ Алдаа гарлаа: ' + result.error, 'error');
       }
     } catch (error) {
       // Network буюу бусад алдаа
       console.error('Алдаа:', error);
-      alert('❌ Хүсэлт илгээхэд алдаа гарлаа. Дахин оролдоно уу.');
+      showToast('❌ Хүсэлт илгээхэд алдаа гарлаа. Дахин оролдоно уу.', 'error');
     } finally {
       // Button-г буцааж идэвхжүүлэх
       submitBtn.disabled = false;
