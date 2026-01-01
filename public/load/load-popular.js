@@ -13,10 +13,7 @@ async function loadPopularJobs() {
     card.setAttribute("rating", job.rating);
     card.setAttribute("img", job.img);
 
-    card.setAttribute(
-      "workers",
-      JSON.stringify(job.workers)
-    );
+    card.setAttribute("workers", JSON.stringify(job.workers) );
 
     container.appendChild(card);
   });

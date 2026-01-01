@@ -6,7 +6,7 @@ class ChJobCard extends HTMLElement {
     this.attachShadow({ mode: "open" });
     this.workers = [];
     this.currentIndex = 0;
-  }
+    this.autoTimer = null;}
 
   connectedCallback() {
     this.parseWorkers();
@@ -14,16 +14,25 @@ class ChJobCard extends HTMLElement {
   }
 
   parseWorkers() {
-    const workerData = this.getAttribute("workers");
-    if (workerData) {
-      try {
-        this.workers = JSON.parse(workerData);
-        this.currentIndex = 0;
-      } catch (e) {
-        console.error("Invalid workers data:", e);
-      }
+  const workerData = this.getAttribute("workers");
+
+  if (workerData) {
+    try {
+      this.workers = JSON.parse(workerData);
+      this.currentIndex = 0;
+    } catch (e) {
+      console.error("Invalid workers data:", e);
     }
   }
+
+  // ⭐ fallback
+  if (this.workers.length === 0) {
+    this.workers = [{
+      worker: this.getAttribute("worker") || "Тодорхойгүй",
+      completedJobs: this.getAttribute("completedJobs") || 0
+    }];
+  }
+}
 
   getCurrentWorker() {
     return this.workers[this.currentIndex];
@@ -58,9 +67,12 @@ class ChJobCard extends HTMLElement {
         <div class="job-bottom">
           <button class="prev" ${this.workers.length <= 1 ? "disabled" : ""}>‹</button>
           <div class= "job-worker">
-
+        <div class="job-worker-track">
+        <div class="job-worker-slide">
             <p class="job-worker-name">${w.worker}</p>
             <p class="job-worker-meta">${w.completedJobs} ажил хийсэн</p>
+          </div>
+          </div>
           </div>
 
           <button class="next" ${this.workers.length <= 1 ? "disabled" : ""}>›</button>
@@ -72,32 +84,99 @@ class ChJobCard extends HTMLElement {
   }
 
   attachEventListeners() {
-    const prev = this.shadowRoot.querySelector(".prev");
-    const next = this.shadowRoot.querySelector(".next");
-    console.log("Prev:", prev, "Next:", next);
+  const prev = this.shadowRoot.querySelector(".prev");
+  const next = this.shadowRoot.querySelector(".next");
 
-    prev?.addEventListener("click", () => this.navigatePrev());
-    next?.addEventListener("click", () => this.navigateNext());
-  }
+  // ✅ ЗӨВ hover target
+  const card = this.shadowRoot.querySelector(".job");
 
-  navigatePrev() {
-    this.currentIndex =
-      (this.currentIndex - 1 + this.workers.length) % this.workers.length;
-    this.updateWorker();
-  }
+  console.log("Hover target:", card);
+
+  prev?.addEventListener("click", () => this.navigatePrev());
+  next?.addEventListener("click", () => this.navigateNext());
+
+  card?.addEventListener("mouseenter", () => {
+    console.log("HOVER IN");
+    this.startAutoSlide();
+  });
+
+  card?.addEventListener("mouseleave", () => {
+    console.log("HOVER OUT");
+    this.stopAutoSlide();
+  });
+}
+
 
   navigateNext() {
-    this.currentIndex =
-      (this.currentIndex + 1) % this.workers.length;
-    this.updateWorker();
+  if (this.workers.length <= 1) return;
+
+  this.currentIndex =
+    (this.currentIndex + 1) % this.workers.length;
+  this.updateWorker("next");
+}
+
+navigatePrev() {
+  if (this.workers.length <= 1) return;
+
+  this.currentIndex =
+    (this.currentIndex - 1 + this.workers.length) % this.workers.length;
+  this.updateWorker("prev");
+}
+
+
+
+updateWorker(direction = "next") {
+  const track = this.shadowRoot.querySelector(".job-worker-track");
+  const w = this.getCurrentWorker();
+
+  // шинэ slide үүсгэнэ
+  const slide = document.createElement("div");
+  slide.className = "job-worker-slide";
+  slide.innerHTML = `
+    <p class="job-worker-name">${w.worker}</p>
+    <p class="job-worker-meta">${w.completedJobs} ажил хийсэн</p>
+  `;
+
+  if (direction === "next") {
+    track.appendChild(slide);
+    track.style.transform = "translateX(-100%)";
+  } else {
+    track.insertBefore(slide, track.firstChild);
+    track.style.transform = "translateX(-100%)";
+    track.style.transition = "none";
+    requestAnimationFrame(() => {
+      track.style.transition = "transform 0.4s ease";
+      track.style.transform = "translateX(0)";
+    });
   }
 
-  updateWorker() {
-    const w = this.getCurrentWorker();
-    this.shadowRoot.querySelector(".job-worker-name").textContent = w.worker;
-    this.shadowRoot.querySelector(".job-worker-meta").textContent =
-      `${w.completedJobs} ажил хийсэн`;
-  }
+  // animation дууссаны дараа cleanup
+  setTimeout(() => {
+    if (track.children.length > 1) {
+      track.removeChild(track.children[0]);
+    }
+    track.style.transition = "none";
+    track.style.transform = "translateX(0)";
+    requestAnimationFrame(() => {
+      track.style.transition = "transform 0.4s ease";
+    });
+  }, 400);
+}
+
+
+  startAutoSlide() {
+  if (this.autoTimer || this.workers.length <= 1) return;
+
+  this.autoTimer = setInterval(() => {
+    this.navigateNext();
+  }, 1300); // ⏱ 2.5 секунд
+}
+
+stopAutoSlide() {
+  clearInterval(this.autoTimer);
+  this.autoTimer = null;
+}
+
 }
 
 customElements.define("ch-job-card", ChJobCard);

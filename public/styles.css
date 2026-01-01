@@ -413,6 +413,21 @@ form button svg {
   font-size: 14px;
   color: var(--brand);
 }
+.job-worker {
+  overflow: hidden;
+  width: 100%;
+}
+
+.job-worker-track {
+  display: flex;
+  width: 100%;
+  transition: transform 0.4s ease;
+}
+
+.job-worker-slide {
+  min-width: 100%;
+}
+
 
 .prev,
 .next {
