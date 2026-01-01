@@ -22,7 +22,8 @@ const rootDir = process.cwd();
 
 const app = express();
 const PORT = 3001;
-const MONGO_URI = 'mongodb://localhost:27017/findhire';
+// const MONGO_URI = 'mongodb://localhost:27017/findhire';
+const MONGO_URI = 'mongodb+srv://roott:12345@cluster0.qrsusnj.mongodb.net/findhire?retryWrites=true&w=majority';
 
 // Global error handling to prevent server crashes
 process.on('uncaughtException', (err) => console.error('Uncaught Exception:', err));
