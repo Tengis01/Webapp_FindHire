@@ -174,6 +174,83 @@ class ChHeader extends HTMLElement {
         border-color: #CBD5E1;
     }
 
+      /* Mobile Responsiveness */
+      @media (max-width: 768px) {
+        ch-header header {
+          height: 60px;
+          padding: 0 12px;
+        }
+        
+        /* Hide About Us on Tablet/Mobile */
+        .about-link {
+          display: none;
+        }
+
+        .header-spacer {
+          height: 60px;
+        }
+
+        ch-header .logo {
+          left: 12px;
+        }
+
+        ch-header .logo img {
+          width: 28px;
+          height: 28px;
+        }
+
+        ch-header .logo a {
+          font-size: 18px;
+        }
+
+        ch-header nav {
+          padding-right: 0;
+        }
+
+        ch-header nav ul {
+          gap: 10px; /* Reduced gap */
+        }
+
+        ch-header nav ul li a {
+          font-size: 13px;
+        }
+
+        /* Compact buttons for mobile */
+        ch-header .join-btn {
+          padding: 8px 14px;
+          font-size: 13px;
+          white-space: nowrap;
+        }
+        
+        ch-header nav ul li a.login-link {
+            font-size: 13px;
+            white-space: nowrap;
+        }
+
+        .profile-btn {
+          width: 38px;
+          height: 38px;
+          font-size: 15px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        /* Further adjustments for small screens */
+        ch-header nav ul {
+          gap: 8px;
+        }
+
+        ch-header .join-btn {
+          padding: 6px 12px;
+          font-size: 12px;
+        }
+        
+        ch-header nav ul li a.login-link {
+           font-size: 12px;
+           padding: 6px;
+        }
+      }
+
     </style>
 
     <header>
@@ -184,7 +261,7 @@ class ChHeader extends HTMLElement {
       <div>
         <nav>
           <ul>
-            <li>
+            <li class="about-link">
               <a href="/about-us/about-us.html">Бидний тухай</a>
             </li>
             ${rightNavHtml}

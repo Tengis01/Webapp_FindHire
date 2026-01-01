@@ -95,6 +95,89 @@ class ChCatItem extends HTMLElement {
           visibility: visible;
           transform: translateX(-50%) translateY(0);
         }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+          .cat {
+            padding: 18px 14px;
+            min-height: 44px;
+            min-width: 44px;
+          }
+
+          .cat img {
+            width: 32px;
+            height: 32px;
+          }
+
+          .cat span {
+            font-size: 14px;
+          }
+
+          .submenu {
+            min-width: 200px;
+            padding: 10px 10px 10px 30px;
+          }
+
+          .submenu a {
+            font-size: 14px;
+            padding: 6px 8px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .cat {
+            padding: 16px 10px;
+          }
+
+          .cat img {
+            width: 28px;
+            height: 28px;
+          }
+
+          .cat span {
+            font-size: 13px;
+          }
+
+          .submenu {
+            min-width: 180px;
+            left: 0;
+            transform: translateX(0) translateY(8px);
+          }
+
+          .cat:hover .submenu {
+            transform: translateX(0) translateY(0);
+          }
+
+          .submenu a {
+            font-size: 13px;
+          }
+        }
+
+        /* Touch device support - make submenu tap-based on mobile */
+        @media (hover: none) and (pointer: coarse) {
+          .cat {
+            cursor: pointer;
+          }
+
+          .submenu {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+          }
+
+          .cat.active .submenu {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateX(-50%) translateY(0);
+          }
+
+          @media (max-width: 480px) {
+            .cat.active .submenu {
+              transform: translateX(0) translateY(0);
+            }
+          }
+        }
       </style>
 
       <button class="cat" type="button">
@@ -112,6 +195,41 @@ class ChCatItem extends HTMLElement {
     `;
 
     this._attachLinkListeners();
+    this._attachMobileTapToggle();
+  }
+
+  _attachMobileTapToggle() {
+    // For touch devices, toggle submenu on tap
+    const catButton = this.shadowRoot.querySelector('.cat');
+    if (catButton) {
+      catButton.addEventListener('click', (e) => {
+        // Only toggle on touch devices
+        if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
+          e.stopPropagation();
+          catButton.classList.toggle('active');
+
+          // Close other active category menus
+          document.querySelectorAll('cat-item').forEach(item => {
+            if (item !== this) {
+              const otherButton = item.shadowRoot?.querySelector('.cat');
+              if (otherButton) {
+                otherButton.classList.remove('active');
+              }
+            }
+          });
+        }
+      });
+    }
+
+    // Close submenu when clicking outside on touch devices
+    if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
+      document.addEventListener('click', (e) => {
+        const catButton = this.shadowRoot.querySelector('.cat');
+        if (catButton && !e.composedPath().includes(this)) {
+          catButton.classList.remove('active');
+        }
+      });
+    }
   }
 
   _attachLinkListeners() {

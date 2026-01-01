@@ -534,6 +534,94 @@ class ChProfilePopup extends HTMLElement {
         .logout-btn:hover {
           background: #FEE2E2;
         }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+          .drawer {
+            width: min(400px, 85vw);
+          }
+
+          .header {
+            padding: 20px;
+          }
+
+          .content {
+            padding: 20px;
+          }
+
+          .footer {
+            padding: 20px;
+          }
+
+          .avatar {
+            width: 80px;
+            height: 80px;
+            font-size: 32px;
+          }
+
+          .action-btn {
+            padding: 12px;
+            font-size: 15px;
+            min-height: 44px;
+          }
+
+          .edit-input {
+            padding: 12px;
+            font-size: 16px;
+            min-height: 44px;
+          }
+
+          .logout-btn {
+            padding: 14px;
+            min-height: 48px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .drawer {
+            width: 100vw;
+            max-width: 100vw;
+          }
+
+          .header {
+            padding: 18px;
+          }
+
+          .header h3 {
+            font-size: 17px;
+          }
+
+          .content {
+            padding: 18px;
+          }
+
+          .footer {
+            padding: 18px;
+          }
+
+          .avatar {
+            width: 70px;
+            height: 70px;
+            font-size: 28px;
+            margin-bottom: 12px;
+          }
+
+          .profile-header {
+            margin-bottom: 24px;
+          }
+
+          .info-group {
+            margin-bottom: 20px;
+          }
+
+          .info-group label {
+            font-size: 13px;
+          }
+
+          .info-group p {
+            font-size: 16px;
+          }
+        }
       </style>
 
       <div class="backdrop"></div>

@@ -3,8 +3,9 @@ class CHFooter extends HTMLElement {
     super();
   }
   connectedCallback() {
-    this.render();}
-    render() {
+    this.render();
+  }
+  render() {
     this.innerHTML = `
     <style>
     .site-footer {
@@ -71,6 +72,47 @@ class CHFooter extends HTMLElement {
   font-size: 13px;
   color: #9ca3af;
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .footer-container {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 32px 20px;
+    text-align: center;
+  }
+
+  .footer-about h3 {
+    font-size: 20px;
+  }
+
+  .footer-links h4,
+  .footer-contact h4 {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-container {
+    padding: 28px 16px;
+    gap: 20px;
+  }
+
+  .footer-about h3 {
+    font-size: 18px;
+  }
+
+  .footer-about p,
+  .footer-links a,
+  .footer-contact p {
+    font-size: 13px;
+  }
+
+  .footer-bottom {
+    padding: 12px;
+    font-size: 12px;
+  }
+}
 </style>
     <footer class="site-footer">
   <div class="footer-container">
@@ -112,6 +154,6 @@ class CHFooter extends HTMLElement {
 
 
       `
-    }
+  }
 }
 customElements.define("ch-footer", CHFooter);

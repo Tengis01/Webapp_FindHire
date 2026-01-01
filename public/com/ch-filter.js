@@ -115,6 +115,62 @@ class ChFilter extends HTMLElement {
           color: #2563EB;
           font-weight: 700;
         }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+          .filters {
+            padding: 18px;
+            gap: 22px;
+          }
+
+          input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+          }
+
+          label {
+            font-size: 15px;
+            padding: 4px 0;
+          }
+
+          .checkbox-item {
+            gap: 12px;
+            padding: 2px 0;
+          }
+
+          h4 {
+            font-size: 15px;
+          }
+
+          input[type="range"] {
+            height: 8px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .filters {
+            padding: 16px;
+            gap: 20px;
+          }
+
+          h3 {
+            font-size: 15px;
+          }
+
+          input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+          }
+
+          label {
+            font-size: 16px;
+          }
+
+          .checkbox-item {
+            min-height: 44px;
+            align-items: center;
+          }
+        }
       </style>
 
       <div class="filters">

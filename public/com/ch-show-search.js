@@ -120,6 +120,57 @@ class ChShowSearch extends HTMLElement {
           color: #333;
         }
 
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+          ch-show-search {
+            width: calc(100vw - 32px);
+            max-width: 100%;
+            left: 16px;
+            right: 16px;
+          }
+
+          .search-results-container {
+            max-height: 500px;
+            padding: 16px;
+          }
+
+          .results-grid {
+            grid-template-columns: 1fr;
+            gap: 16px;
+          }
+
+          .header {
+            padding: 14px 16px;
+          }
+
+          .header h3 {
+            font-size: 15px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .search-results-container {
+            max-height: 400px;
+            padding: 12px;
+          }
+
+          .results-grid {
+            gap: 12px;
+          }
+
+          .header {
+            padding: 12px 14px;
+          }
+
+          .header h3 {
+            font-size: 14px;
+          }
+
+          .no-results {
+            padding: 24px;
+          }
+        }
+
       </style>
       
       <div class="header">

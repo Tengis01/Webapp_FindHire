@@ -86,6 +86,36 @@ class ChToast extends HTMLElement {
           line-height: 1.4;
           font-weight: 500;
         }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+          :host {
+            top: 16px;
+          }
+
+          .toast {
+            min-width: 200px;
+            max-width: calc(100vw - 32px);
+            padding: 14px 20px;
+            font-size: 13px;
+          }
+
+          .icon {
+            font-size: 16px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          :host {
+            top: 12px;
+          }
+
+          .toast {
+            min-width: 180px;
+            max-width: calc(100vw - 24px);
+            padding: 12px 18px;
+          }
+        }
       </style>
       <div class="toast-container" id="container"></div>
     `;

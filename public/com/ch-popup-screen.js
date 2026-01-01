@@ -85,19 +85,53 @@ class ChPopupScreen extends HTMLElement {
           }
         }
 
+        @media (max-width: 768px) {
+          .wrapper {
+            width: min(1100px, 100vw - 24px);
+            max-height: 90vh;
+          }
+
+          aside.filters {
+            width: 240px;
+          }
+
+          section.mini_profile {
+            padding: 14px 16px;
+            gap: 14px;
+          }
+        }
+
         @media (max-width: 640px) {
           .wrapper {
             flex-direction: column;
             height: auto;
+            max-height: 90vh;
           }
           aside.filters {
             width: 100%;
             border-right: none;
             border-bottom: 1px solid #e5e7eb;
+            max-height: 40vh;
           }
           section.mini_profile {
             grid-template-columns: 1fr;
-            height: 420px;
+            height: auto;
+            max-height: 50vh;
+          }
+        }
+
+        @media (max-width: 480px) {
+          .wrapper {
+            width: calc(100vw - 16px);
+          }
+
+          aside.filters {
+            padding: 14px;
+          }
+
+          section.mini_profile {
+            padding: 12px;
+            gap: 12px;
           }
         }
       </style>
@@ -150,7 +184,7 @@ class ChPopupScreen extends HTMLElement {
     if (!this.filterComponent) {
       this.filterComponent = this.shadowRoot.querySelector("ch-filter");
     }
-    
+
     if (!this.filterComponent) {
       console.warn("Filter component not found");
       return {
@@ -160,7 +194,7 @@ class ChPopupScreen extends HTMLElement {
         ratingRange: 3.0
       };
     }
-    
+
     // getFilterValues method байгаа эсэхийг шалгах
     if (typeof this.filterComponent.getFilterValues !== 'function') {
       console.error("getFilterValues method not found on filter component");
@@ -171,7 +205,7 @@ class ChPopupScreen extends HTMLElement {
         ratingRange: 3.0
       };
     }
-    
+
     const values = this.filterComponent.getFilterValues();
     console.log("Got filter values:", values);
     return values;

@@ -127,6 +127,49 @@ class ChMiniJobCard extends HTMLElement {
           color: #111827;
         }
 
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+          figure.avatar {
+            width: 70px;
+            height: 70px;
+          }
+
+          h3.name {
+            font-size: 21px;
+          }
+
+          p.meta {
+            font-size: 16px;
+          }
+
+          .desc-wrapper {
+            font-size: 17px;
+          }
+
+          button.toggle {
+            font-size: 24px;
+            padding: 4px;
+            min-width: 44px;
+            min-height: 44px;
+          }
+        }
+
+        @media (max-width: 480px) {
+          article.card {
+            padding: 14px 16px 10px;
+            padding-bottom: 44px;
+          }
+
+          figure.avatar {
+            width: 64px;
+            height: 64px;
+          }
+
+          h3.name {
+            font-size: 19px;
+          }
+        }
+
       </style>
 
       <article class="card">

@@ -13,7 +13,8 @@
 
 body {
   margin: 0;
-  font-family: Arial, sans-serif;;
+  font-family: Arial, sans-serif;
+  ;
   padding-top: 80px;
 }
 
@@ -48,9 +49,9 @@ main .main-text {
   display: inline-block;
   height: 1.2em;
   vertical-align: bottom;
-  color:var(--brand)
-  
+  color: var(--brand)
 }
+
 .word span {
   display: block;
   height: 1.2em;
@@ -63,6 +64,7 @@ main .main-text {
   0% {
     transform: translateY(0%);
   }
+
   20% {
     transform: translateY(0%);
   }
@@ -70,6 +72,7 @@ main .main-text {
   25% {
     transform: translateY(-100%);
   }
+
   45% {
     transform: translateY(-100%);
   }
@@ -77,6 +80,7 @@ main .main-text {
   50% {
     transform: translateY(-200%);
   }
+
   70% {
     transform: translateY(-200%);
   }
@@ -84,13 +88,16 @@ main .main-text {
   75% {
     transform: translateY(-300%);
   }
+
   95% {
     transform: translateY(-300%);
   }
 
   100% {
     transform: translateY(0%);
-  } /* эхэндээ буцна */
+  }
+
+  /* эхэндээ буцна */
 }
 
 main .search-bar {
@@ -99,19 +106,23 @@ main .search-bar {
   align-items: center;
   gap: 6px;
   position: relative;
-  width: 720px;
+  width: 100%;
+  max-width: 720px;
   height: 45px;
   margin-top: 24px;
   margin-bottom: 24px;
+  padding: 0 16px;
+  box-sizing: border-box;
 }
 
 main .search-bar input {
-  width: 720px;
+  width: 100%;
   height: 45px;
   padding: 10px 42px 10px 14px;
   font-size: 16px;
   border-radius: 24px;
   border: 1px solid black;
+  box-sizing: border-box;
 }
 
 main .search-bar i {
@@ -119,7 +130,7 @@ main .search-bar i {
   align-items: center;
   justify-content: center;
   position: absolute;
-  right: 10px;
+  right: 28px;
   top: 50%;
   transform: translateY(-50%);
   color: rgb(0, 0, 0);
@@ -155,9 +166,11 @@ form[role="search"] {
   display: flex;
   justify-content: center;
   position: relative;
-  width: 860px;
-  max-width: 90%;
+  width: 100%;
+  max-width: 860px;
   margin: 0 auto 22px;
+  padding: 0 16px;
+  box-sizing: border-box;
 }
 
 form [type="search"] {
@@ -208,7 +221,8 @@ form button svg {
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;
   max-width: 1320px;
-  margin: 40px auto 40px; /* Категори menu-ээс тодорхой зайтай */
+  margin: 40px auto 40px;
+  /* Категори menu-ээс тодорхой зайтай */
 }
 
 /* Нэг box */
@@ -221,7 +235,8 @@ form button svg {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  align-items: flex-start; /* Зүүн тийш шахна */
+  align-items: flex-start;
+  /* Зүүн тийш шахна */
 }
 
 /* Дээд хэсэг → badge + title зэрэгцэх */
@@ -245,7 +260,8 @@ form button svg {
   font-weight: 700;
   font-size: 20px;
   margin: 0;
-  flex-shrink: 0; /* Badge жижигрэхгүй, тогтвортой */
+  flex-shrink: 0;
+  /* Badge жижигрэхгүй, тогтвортой */
 }
 
 /* Гарчиг */
@@ -254,17 +270,21 @@ form button svg {
   font-size: 22px;
   color: var(--brand);
   line-height: 1.3;
-  flex: 1; /* wrap хийж өргөнийг дүүргэнэ */
-  word-break: break-word; /* Урт байвал дараагийн мөр рүү */
+  flex: 1;
+  /* wrap хийж өргөнийг дүүргэнэ */
+  word-break: break-word;
+  /* Урт байвал дараагийн мөр рүү */
 }
 
 /* Тайбар */
 .feature-desc {
   margin: 0;
-  color: var(--brand); /* хүсвэл var(--muted) болгож болно */
+  color: var(--brand);
+  /* хүсвэл var(--muted) болгож болно */
   line-height: 1.5;
   font-size: 17px;
-  width: 100%; /* wrap 100% дотор жигд */
+  width: 100%;
+  /* wrap 100% дотор жигд */
 }
 
 /* RESPONSIVE */
@@ -287,7 +307,7 @@ form button svg {
   isolation: isolate;
 }
 
-.popular > * {
+.popular>* {
   min-width: 0;
 }
 
@@ -362,7 +382,8 @@ form button svg {
 .job-divider {
   border: 0;
   border-top: 1px solid var(--line);
-  margin: 4px -4px 2px; /* бага зэрэг хоёр тал руу сунгаж өгнө */
+  margin: 4px -4px 2px;
+  /* бага зэрэг хоёр тал руу сунгаж өгнө */
 }
 
 /* доод хэсэг: гүйцэтгэгчийн мэдээлэл + сумнууд */
@@ -393,7 +414,8 @@ form button svg {
   color: var(--brand);
 }
 
-.prev, .next {
+.prev,
+.next {
   border: none;
   background: transparent;
   padding: 4px 6px;
@@ -402,9 +424,11 @@ form button svg {
   color: var(--brand);
 }
 
-.prev:hover, .next:hover {
+.prev:hover,
+.next:hover {
   border: #a39f9d 1px solid;
-  border-radius: 4px;}
+  border-radius: 4px;
+}
 
 /* ==== Reviews – popular-той ижил өргөн, илүү дээд зай ==== */
 .reviews {
@@ -465,27 +489,147 @@ form button svg {
 @media (max-width: 1100px) {
   .cat-grid {
     grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
   }
+
   .popular {
     grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
   }
+
   .reviews {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
+/* Tablet breakpoint */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 48px;
+    margin: 32px 0 20px;
+  }
+
+  main .main-text {
+    font-size: 42px;
+    height: 36px;
+  }
+
+  .cat-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .popular {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .features {
+    gap: 18px;
+  }
+
+  .reviews {
+    gap: 18px;
+  }
+}
+
+/* Large phone breakpoint */
 @media (max-width: 720px) {
   h1 {
     font-size: 36px;
+    margin: 24px 0 16px;
   }
+
+  main .main-text {
+    font-size: 32px;
+    height: 32px;
+  }
+
+  main .search-bar {
+    height: 48px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+  }
+
+  main .search-bar input {
+    height: 48px;
+    font-size: 16px;
+  }
+
   .cat-grid {
     grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
   }
+
   .features {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
+
   .popular {
     grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  .reviews {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Small phone breakpoint */
+@media (max-width: 480px) {
+  h1 {
+    font-size: 28px;
+    margin: 20px 0 12px;
+  }
+
+  main .main-text {
+    font-size: 24px;
+    height: 28px;
+    padding: 8px;
+  }
+
+  main .search-bar {
+    height: 50px;
+    padding: 0 12px;
+  }
+
+  main .search-bar input {
+    height: 50px;
+    padding: 12px 44px 12px 16px;
+  }
+
+  main .search-bar i {
+    width: 28px;
+    height: 28px;
+  }
+
+  .cat-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .popular {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .feature {
+    padding: 18px 20px;
+  }
+
+  .badge {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+
+  .feature h3 {
+    font-size: 20px;
+  }
+
+  .feature-desc {
+    font-size: 16px;
   }
 }
 
@@ -496,4 +640,5 @@ form button svg {
   height: 22px;
   display: block;
 }
+
 /* (өмнө нь .cat svg гэж бичсэн бол хамт үлдээсэн ч болно) */
