@@ -88,6 +88,22 @@ label {
     margin-top: 30px;
 
 }
+.password{
+  width: 100%;
+  grid-column: 1/-1;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+}
+.password #password{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  border-radius:6px;
+  border-color:#e6e9ee;
+  font-size: large;
+
+}
 .submit{
     background-color: var(--brand);
     color: white;
@@ -104,6 +120,7 @@ transform: scale(1.1);
 color: var(--brand);
 background-color: var(--card);
 }
+
 
 
 

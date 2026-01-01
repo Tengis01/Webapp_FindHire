@@ -31,7 +31,7 @@
     <div>
         <label for="posotion">Мэргэжлээ сонгоно уу</label>
         <select name="posotion" id="posotion" required>
-            <option value="">Сонгох</option>
+            <option value="">Сонгох</option>  
             <option value="dotood">Дотоод засал</option>
             <option value="gadna">Гадаад засал</option>
             <option value="santehnik">Сантехник</option>
@@ -66,6 +66,9 @@
     <div class="second">
         <label for="message">Өөрийн тухай товч</label>
         <textarea name="message" id="message" placeholder="Өөрийн тухай товч"></textarea>
+    </div>
+    <div class="password">
+        <input type="password" name="" id="password" placeholder="Password">
     </div>
     <div class="button">
         <button class="submit" type="submit">Илгээх</button>
@@ -136,7 +139,7 @@ document.getElementById('dugaar').addEventListener('input', function(e) {
 document.getElementById('age').addEventListener('input', function(e) {
   this.value = this.value.replace(/[^0-9]/g, '');
   
-  // Насны шалгалт (21-60)
+  
   const age = parseInt(this.value);
   if (this.value.length === 2) {
     if (age < 21 || age > 60) {
