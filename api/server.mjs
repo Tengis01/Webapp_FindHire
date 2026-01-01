@@ -65,47 +65,31 @@ function createMongolianRegex(term) {
   }
 
   // 2. Build Regex Pattern
-  // Map Latin chars to potential Cyrillic matches
+  const cyrillicToLatin = {
+    'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'ye', 'ё': 'yo',
+    'ж': 'j', 'з': 'z', 'и': 'i', 'й': 'i', 'к': 'k', 'л': 'l', 'м': 'm',
+    'н': 'n', 'о': 'o', 'ө': 'u', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't',
+    'у': 'u', 'ү': 'u', 'ф': 'f', 'х': 'kh', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh',
+    'щ': 'sh', 'ъ': '', 'ы': 'y', 'ь': 'i', 'э': 'e', 'ю': 'yu', 'я': 'ya'
+  };
+
   const latinToCyrillic = {
-    'a': '[аА]',
-    'b': '[бБвВ]',
-    'c': '[цЦчЧ]',
-    'd': '[дД]',
-    'e': '[еЕэЭ]',
-    'f': '[фФ]',
-    'g': '[гГ]',
-    'h': '[хХ]',
-    'i': '[иИйЙыЫ]',
-    'j': '[жЖ]',
-    'k': '[кК]',
-    'l': '[лЛ]',
-    'm': '[мМ]',
-    'n': '[нН]',
-    'o': '[оОөӨуУүҮ]', // Broad matching for vowels
-    'p': '[пП]',
-    'q': '[кК]',
-    'r': '[рР]',
-    's': '[сСшШ]',
-    't': '[тТ]',
-    'u': '[уУүҮ]',
-    'v': '[вВ]',
-    'w': '[вВ]',
-    'x': '[хХ]',
-    'y': '[уУүҮйЙ]',
-    'z': '[зЗ]',
-    'sh': '[шШ]',
-    'ch': '[чЧ]',
-    'kh': '[хХ]',
-    'ts': '[цЦ]'
+    'a': '[аА]', 'b': '[бБвВ]', 'c': '[цЦчЧ]', 'd': '[дД]', 'e': '[еЕэЭ]',
+    'f': '[фФ]', 'g': '[гГ]', 'h': '[хХ]', 'i': '[иИйЙыЫ]', 'j': '[жЖ]',
+    'k': '[кК]', 'l': '[лЛ]', 'm': '[мМ]', 'n': '[нН]', 'o': '[оОөӨуУүҮ]',
+    'p': '[пП]', 'q': '[кК]', 'r': '[рР]', 's': '[сСшШ]', 't': '[тТ]',
+    'u': '[уУүҮ]', 'v': '[вВ]', 'w': '[вВ]', 'x': '[хХ]', 'y': '[уУүҮйЙ]',
+    'z': '[зЗ]', 'sh': '[шШ]', 'ch': '[чЧ]', 'kh': '[хХ]', 'ts': '[цЦ]'
   };
 
   // Convert each term into a pattern
   const patterns = searchTerms.map(t => {
-    let pattern = "";
     // If input is fully Latin, try to construct a mapped pattern
     const isLatin = /^[a-zA-Z\s]+$/.test(t);
+    const isCyrillic = /[а-яА-ЯөӨүҮ]/.test(t);
 
     if (isLatin) {
+      let pattern = "";
       let i = 0;
       while (i < t.length) {
         // Check 2-char combos first
@@ -120,20 +104,29 @@ function createMongolianRegex(term) {
         if (latinToCyrillic[oneChar]) {
           pattern += latinToCyrillic[oneChar];
         } else {
-          // Keep special chars or unmapped chars as is (escaped)
           pattern += t[i].replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
         }
         i++;
       }
-      return `(${pattern}|${t})`; // Match generated cyrillic OR original latin
+      return `(${pattern}|${t})`;
+    } else if (isCyrillic) {
+      // Convert Cyrillic to Latin Regex
+      let latinPattern = "";
+      for (let char of t.toLowerCase()) {
+        if (cyrillicToLatin[char] !== undefined) {
+          latinPattern += cyrillicToLatin[char]; // e.g. "т" -> "t"
+        } else {
+          latinPattern += char.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+      }
+      return `(${latinPattern}|${t})`;
     } else {
-      // Cyrillic input - just escape it
+      // Other
       return t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     }
   });
 
   // Join all variations with OR
-  // Case insensitive flag 'i'
   return new RegExp(patterns.join('|'), 'i');
 }
 
@@ -213,12 +206,6 @@ app.get("/api/workers", async (req, res) => {
     if (availability) {
       const days = availability.split(',').map(d => d.trim().toLowerCase());
       if (days.length > 0) {
-        // Case insensitive matching for days in array
-        // DB stores Capitalized days ("Даваа"), user might send lower case?
-        // Actually JSON has "Даваа".
-        // Let's use regex for safety or $in
-        // For $all, we need to match all.
-        // Can use list of regexes again.
         query.availability = {
           $all: days.map(d => new RegExp(`^${d}$`, 'i'))
         };
@@ -395,15 +382,29 @@ app.post("/api/auth/signup/worker", async (req, res) => {
     // We'll normalize them here if needed.
 
     // Auto-generate ID (simple max+1 strategy for now, or random)
-    // Ideally use UUID or let Mongo ID be sufficient, but Schema has customized Number ID.
-    // Let's find max ID.
     const lastWorker = await Worker.findOne().sort({ id: -1 });
     const nextId = lastWorker && lastWorker.id ? lastWorker.id + 1 : 1001;
+
+    // Smart Initials for Mongolian Names
+    let initial = lastname.charAt(0).toUpperCase();
+    const l = lastname.trim();
+    // Check for common digraphs at start: Sh, Ch, Ts, Kh
+    // Need to handle both Latin and Cyrillic if necessary, 
+    // but typically Lastname input determines it. 
+    // Here we check Latin digraphs.
+    if (/^(sh|ch|ts|kh)/i.test(l)) {
+      initial = l.substring(0, 2);
+      // Capitalize first, lowercase second: "Sh"
+      initial = initial.charAt(0).toUpperCase() + initial.charAt(1).toLowerCase();
+    }
+    // Also check Cyrillic digraphs if they exist as 2 chars? Usually 1 char in Cyrillic (Ш, Ч, Ц, Х). 
+    // If user typed Latin-Mongolian "Sharav", we get "Sh". 
+    // If user typed Cyrillic "Шарав", we get "Ш". Correct.
 
     const worker = new Worker({
       userId: savedUser._id,
       id: nextId,
-      name: `${lastname.charAt(0)}.${firstname}`, // Standard Mongolian formatting
+      name: `${initial}.${firstname}`, // e.g. "Sh.Tengis" or "Т.Тэнгис"
       rating: 5.0, // New worker default
       jobs: 0,
       emoji: emoji || "👷",
@@ -442,10 +443,54 @@ app.get("/api/auth/me", async (req, res) => {
 
     const decoded = jwt.verify(token, JWT_SECRET);
     const user = await User.findById(decoded.userId).select('-password');
-    res.json({ user });
+
+    let workerProfile = null;
+    if (user && user.role === 'Worker') {
+      workerProfile = await Worker.findOne({ userId: user._id });
+    }
+
+    res.json({ user, workerProfile });
   } catch (err) {
     res.clearCookie('token');
     res.json({ user: null });
+  }
+});
+
+// 6. Update Worker Profile
+app.put("/api/workers/profile", async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findById(decoded.userId);
+
+    if (!user || user.role !== 'Worker') {
+      return res.status(403).json({ error: "Access denied" });
+    }
+
+    const { category, subcategories, description, phone, email, firstname, lastname } = req.body;
+
+    // Update User fields (Phone, Email, Name) - basic fields
+    if (phone) user.phone = phone;
+    // Email/Name changes might require checks, ignoring for simplicity or adding simple updates
+    // const existingEmail = ...
+    await user.save();
+
+    // Update Worker fields
+    const worker = await Worker.findOne({ userId: user._id });
+    if (worker) {
+      if (category) worker.category = category;
+      if (subcategories) worker.subcategories = Array.isArray(subcategories) ? subcategories : [subcategories];
+      if (description) worker.description = description;
+      await worker.save();
+    }
+
+    res.json({ message: "Profile updated", user, workerProfile: worker });
+
+  } catch (err) {
+    console.error("Profile Update Error:", err);
+    res.status(500).json({ error: err.message });
   }
 });
 

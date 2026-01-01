@@ -51,9 +51,9 @@ class ChJobCard extends HTMLElement {
         <span class="job-eye">👁</span> 
         <span class="job-rating"> ⭐ ${rating.toFixed(1)}</span>
 </span> 
-</p> </div> </div>
-
-
+</p> 
+</div>
+ </div>
 
         <div class="job-bottom">
           <button class="prev" ${this.workers.length <= 1 ? "disabled" : ""}>‹</button>
@@ -74,7 +74,6 @@ class ChJobCard extends HTMLElement {
   attachEventListeners() {
     const prev = this.shadowRoot.querySelector(".prev");
     const next = this.shadowRoot.querySelector(".next");
-
     console.log("Prev:", prev, "Next:", next);
 
     prev?.addEventListener("click", () => this.navigatePrev());
