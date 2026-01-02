@@ -112,6 +112,7 @@ class ChPopupScreen extends HTMLElement {
             border-right: none;
             border-bottom: 1px solid #e5e7eb;
             max-height: 40vh;
+            overflow-y: auto; /* Enable vertical scrolling */
           }
           section.mini_profile {
             grid-template-columns: 1fr;
@@ -163,6 +164,11 @@ class ChPopupScreen extends HTMLElement {
     // Filter changed event listener
     this.addEventListener('filter-changed', (e) => {
       console.log("Filter changed in popup:", e.detail);
+    });
+
+    // Sort changed event listener
+    this.addEventListener('sort-changed', (e) => {
+      console.log("Sort changed in popup:", e.detail);
     });
   }
 
