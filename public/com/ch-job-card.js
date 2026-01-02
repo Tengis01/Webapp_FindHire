@@ -6,33 +6,44 @@ class ChJobCard extends HTMLElement {
     this.attachShadow({ mode: "open" });
     this.workers = [];
     this.currentIndex = 0;
-    this.autoTimer = null;}
+    this.autoTimer = null;
+  }
 
   connectedCallback() {
     this.parseWorkers();
     this.render();
+    this.startAutoSlide();
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        this.stopAutoSlide();
+      } else {
+        this.startAutoSlide();
+      }
+    });
   }
+
 
   parseWorkers() {
-  const workerData = this.getAttribute("workers");
+    const workerData = this.getAttribute("workers");
 
-  if (workerData) {
-    try {
-      this.workers = JSON.parse(workerData);
-      this.currentIndex = 0;
-    } catch (e) {
-      console.error("Invalid workers data:", e);
+    if (workerData) {
+      try {
+        this.workers = JSON.parse(workerData);
+        this.currentIndex = 0;
+      } catch (e) {
+        console.error("Invalid workers data:", e);
+      }
+    }
+
+    // ⭐ fallback
+    if (this.workers.length === 0) {
+      this.workers = [{
+        worker: this.getAttribute("worker") || "Тодорхойгүй",
+        completedJobs: this.getAttribute("completedJobs") || 0
+      }];
     }
   }
-
-  // ⭐ fallback
-  if (this.workers.length === 0) {
-    this.workers = [{
-      worker: this.getAttribute("worker") || "Тодорхойгүй",
-      completedJobs: this.getAttribute("completedJobs") || 0
-    }];
-  }
-}
 
   getCurrentWorker() {
     return this.workers[this.currentIndex];
@@ -84,98 +95,89 @@ class ChJobCard extends HTMLElement {
   }
 
   attachEventListeners() {
-  const prev = this.shadowRoot.querySelector(".prev");
-  const next = this.shadowRoot.querySelector(".next");
+    const prev = this.shadowRoot.querySelector(".prev");
+    const next = this.shadowRoot.querySelector(".next");
 
-  // ✅ ЗӨВ hover target
-  const card = this.shadowRoot.querySelector(".job");
+    const card = this.shadowRoot.querySelector(".job");
 
-  console.log("Hover target:", card);
+    console.log("Hover target:", card);
 
-  prev?.addEventListener("click", () => this.navigatePrev());
-  next?.addEventListener("click", () => this.navigateNext());
+    prev?.addEventListener("click", () => this.navigatePrev());
+    next?.addEventListener("click", () => this.navigateNext());
 
-  card?.addEventListener("mouseenter", () => {
-    console.log("HOVER IN");
-    this.startAutoSlide();
-  });
 
-  card?.addEventListener("mouseleave", () => {
-    console.log("HOVER OUT");
-    this.stopAutoSlide();
-  });
-}
+  }
 
 
   navigateNext() {
-  if (this.workers.length <= 1) return;
+    if (this.workers.length <= 1) return;
 
-  this.currentIndex =
-    (this.currentIndex + 1) % this.workers.length;
-  this.updateWorker("next");
-}
+    this.currentIndex =
+      (this.currentIndex + 1) % this.workers.length;
+    this.updateWorker("next");
+  }
 
-navigatePrev() {
-  if (this.workers.length <= 1) return;
+  navigatePrev() {
+    if (this.workers.length <= 1) return;
 
-  this.currentIndex =
-    (this.currentIndex - 1 + this.workers.length) % this.workers.length;
-  this.updateWorker("prev");
-}
+    this.currentIndex =
+      (this.currentIndex - 1 + this.workers.length) % this.workers.length;
+    this.updateWorker("prev");
+  }
 
 
 
-updateWorker(direction = "next") {
-  const track = this.shadowRoot.querySelector(".job-worker-track");
-  const w = this.getCurrentWorker();
+  updateWorker(direction = "next") {
+    const track = this.shadowRoot.querySelector(".job-worker-track");
+    const w = this.getCurrentWorker();
 
-  // шинэ slide үүсгэнэ
-  const slide = document.createElement("div");
-  slide.className = "job-worker-slide";
-  slide.innerHTML = `
+    // шинэ slide үүсгэнэ
+    const slide = document.createElement("div");
+    slide.className = "job-worker-slide";
+    slide.innerHTML = `
     <p class="job-worker-name">${w.worker}</p>
     <p class="job-worker-meta">${w.completedJobs} ажил хийсэн</p>
   `;
 
-  if (direction === "next") {
-    track.appendChild(slide);
-    track.style.transform = "translateX(-100%)";
-  } else {
-    track.insertBefore(slide, track.firstChild);
-    track.style.transform = "translateX(-100%)";
-    track.style.transition = "none";
-    requestAnimationFrame(() => {
-      track.style.transition = "transform 0.4s ease";
-      track.style.transform = "translateX(0)";
-    });
-  }
-
-  // animation дууссаны дараа cleanup
-  setTimeout(() => {
-    if (track.children.length > 1) {
-      track.removeChild(track.children[0]);
+    if (direction === "next") {
+      track.appendChild(slide);
+      track.style.transform = "translateX(-100%)";
+    } else {
+      track.insertBefore(slide, track.firstChild);
+      track.style.transform = "translateX(-100%)";
+      track.style.transition = "none";
+      requestAnimationFrame(() => {
+        track.style.transition = "transform 0.4s ease";
+        track.style.transform = "translateX(0)";
+      });
     }
-    track.style.transition = "none";
-    track.style.transform = "translateX(0)";
-    requestAnimationFrame(() => {
-      track.style.transition = "transform 0.4s ease";
-    });
-  }, 400);
-}
+
+    // animation дууссаны дараа cleanup
+    setTimeout(() => {
+      if (track.children.length > 1) {
+        track.removeChild(track.children[0]);
+      }
+      track.style.transition = "none";
+      track.style.transform = "translateX(0)";
+      requestAnimationFrame(() => {
+        track.style.transition = "transform  ease-all-in-out";
+      });
+    }, 400);
+  }
 
 
   startAutoSlide() {
-  if (this.autoTimer || this.workers.length <= 1) return;
+    if (this.autoTimer || this.workers.length <= 1) return;
 
-  this.autoTimer = setInterval(() => {
-    this.navigateNext();
-  }, 1300); // ⏱ 2.5 секунд
-}
+    this.autoTimer = setInterval(() => {
+      this.navigateNext();
+    }, 1300); // ⏱ 2.5 секунд
+  }
 
-stopAutoSlide() {
-  clearInterval(this.autoTimer);
-  this.autoTimer = null;
-}
+  stopAutoSlide() {
+    clearInterval(this.autoTimer);
+    this.autoTimer = null;
+  }
 
 }
 
