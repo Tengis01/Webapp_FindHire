@@ -9,6 +9,8 @@ const workerSchema = new mongoose.Schema({
     emoji: { type: String, required: true },
     description: { type: String, required: true },
     category: { type: String, required: true },
+    phone: { type: String, index: true },
+    email: { type: String, index: true },
     subcategories: { type: [String], required: true },
     experience: { type: Number, required: true },
     availability: { type: [String], required: true },

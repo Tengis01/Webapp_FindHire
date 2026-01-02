@@ -27,6 +27,7 @@ class ChMiniJobCard extends HTMLElement {
     document.removeEventListener("keydown", this.onKeyDown);
   }
 
+
   onKeyDown(e) {
     if (e.key === "Escape") this.closeModal();
   }
@@ -94,20 +95,34 @@ class ChMiniJobCard extends HTMLElement {
           color: #374151;
         }
 
-        button.profile-btn {
-          width: 100%;
-          padding: 10px;
-          border-radius: 12px;
-          border: none;
-          background: #111827;
-          color: #fff;
-          cursor: pointer;
-          font-size: 15px;
-        }
+   button.profile-btn {
+  width: 100%;
+  padding: 10px 12px;          /* босоо + хэвтээ зайг ялгав */
+  border-radius: 7px;         /* илүү зөөлөн */
+  border: 1px solid #1f2937; ;
+  background: #f3f4f6;        /* зөөлөн саарал */
+  margin-top: 14px;
+  color: #000000ff;
+  cursor: pointer;
 
-        button.profile-btn:hover {
-          background: #1f2937;
-        }
+  font-size: 14px;             /* уншихад илүү сайн */
+  font-weight: 500;
+
+  transition: background 0.2s ease,
+              transform 0.15s ease,
+              box-shadow 0.15s ease;
+}
+
+    button.profile-btn:hover {
+  background: #1f2937;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+button.profile-btn:active {
+  transform: translateY(0);
+  box-shadow: none;
+}
 
         /* MODAL */
         .modal-backdrop {
@@ -130,9 +145,11 @@ class ChMiniJobCard extends HTMLElement {
           padding: 24px;
           width: 90%;
           max-width: 420px;
-          position: relative;
           max-height: 85vh;
-          overflow-y: auto;
+          position: relative;
+          box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+          overflow: hidden;
+
         }
 
         .close {
@@ -153,8 +170,30 @@ class ChMiniJobCard extends HTMLElement {
 
         .modal h3 {
           margin-top: 0;
-          margin-bottom: 8px;
+          margin-bottom: 4px;
+          font-size: 20px;
         }
+
+        .modal header {
+          display: flex;
+          gap: 12px;
+          align-items: center;
+          margin-bottom: 16px;
+        }
+
+        .modal .meta {
+          color: #555;
+          font-size: 14px;
+        }
+
+        .modal .desc {
+          color: #374151;
+          margin: 0 0 16px 0;
+          padding-bottom: 16px;
+          border-bottom: 1px solid #e5e7eb;
+        }
+
+     
 
         .modal p {
           margin: 8px 0;
@@ -170,39 +209,129 @@ class ChMiniJobCard extends HTMLElement {
         }
 
         .socials {
-          margin: 12px 0;
+          margin: 16px 0;
+          padding-bottom: 16px;
+          border-bottom: 1px solid #e5e7eb;
         }
 
         .socials a {
-          margin-right: 12px;
+          margin-right: 16px;
           display: inline-block;
+          padding: 8px 16px;
+          background: #f3f4f6;
+          border-radius: 8px;
+          font-size: 14px;
+          transition: background 0.2s;
+        }
+
+        .socials a:hover {
+          background: #e5e7eb;
         }
 
         h4 {
           margin-top: 20px;
-          margin-bottom: 10px;
+          margin-bottom: 12px;
           font-size: 16px;
+          color: #111;
         }
 
-        .review {
-          border-top: 1px solid #eee;
-          margin-top: 12px;
-          padding-top: 12px;
+        .no-reviews {
+          color: #9ca3af;
+          font-style: italic;
         }
 
-        .review:first-of-type {
-          margin-top: 8px;
-        }
+    .review p {
+  margin: 0;
+  color: #555;
+  font-size: 14px;
+  line-height: 1.5;
 
-        .review b {
-          display: block;
-          margin-bottom: 4px;
+ 
+}
+        .review:last-of-type {
+          margin-bottom: 0;
         }
+.reviews-container {
+  max-height: 90px;
+  overflow-y: auto;
+  padding-right: 6px;
 
-        .review p {
-          margin: 4px 0 0 0;
-          color: #555;
-        }
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+.contact-info {
+  margin: 10px 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.contact-info a {
+  color: #111;
+  text-decoration: none;
+}
+
+.contact-info a:hover {
+  text-decoration: underline;
+}
+
+
+
+/* Scrollbar – цэвэрхэн харагдана */
+.reviews-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.reviews-container::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 4px;
+}
+
+.reviews-container::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+.contact-info {
+  margin: 12px 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.contact-info a {
+  color: #111;
+  text-decoration: none;
+}
+
+.contact-info a:hover {
+  text-decoration: underline;
+}
+
+
+
+.review {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #f9fafb;
+}
+
+
+.review b {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+  color: #111;
+}
+
+.review p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #555;
+}
+
+
       </style>
 
       <article class="card">
@@ -214,42 +343,53 @@ class ChMiniJobCard extends HTMLElement {
           </div>
         </header>
 
-        <p class="desc">${description}</p>
 
-        <button class="profile-btn">Профайл харах</button>
+        <button class="profile-btn">Мэдээлэл харах</button>
       </article>
 
       <div class="modal-backdrop">
         <div class="modal">
           <button class="close" aria-label="Close">✕</button>
 
-          <h3>${name}</h3>
-          <p>★ ${rating} · ${jobs}</p>
+          <header>
+            <figure>${pic ? `<img src="${pic}" alt="${name}" />` : ""}</figure>
+            <div>
+              <h3>${name}</h3>
+              <div class="meta">★ ${rating} · ${jobs}</div>
+            </div>
+          </header>
 
-          ${phone ? `<p>📞 <a href="tel:${phone}">${phone}</a></p>` : ""}
+          ${description ? `<p class="desc">${description}</p>` : ""}
+        
+          ${phone ? `<p class="contact-info">📞 <a href="tel:${phone}">${phone}</a></p>` : ""}
 
           ${facebook || instagram ? `
             <div class="socials">
-              ${facebook ? `<a href="${facebook}" target="_blank" rel="noopener">Facebook</a>` : ""}
-              ${instagram ? `<a href="${instagram}" target="_blank" rel="noopener">Instagram</a>` : ""}
+              ${facebook ? `<a href="${facebook}" target="_blank" rel="noopener">📘 Facebook</a>` : ""}
+              ${instagram ? `<a href="${instagram}" target="_blank" rel="noopener">📷 Instagram</a>` : ""}
             </div>
           ` : ""}
 
           <h4>Сэтгэгдлүүд</h4>
-          ${
-            reviews.length === 0
-              ? "<p>Сэтгэгдэл алга</p>"
-              : reviews
-                  .map(
-                    (r) => `
-                <div class="review">
-                  <b>${r.user} ★${r.rating}</b>
-                  <p>${r.comment}</p>
-                </div>
-              `
-                  )
-                  .join("")
-          }
+<div class="reviews-container">
+  ${reviews.length === 0
+      ? "<p class='no-reviews'>Сэтгэгдэл алга</p>"
+      : reviews
+          .map(
+            (r) => `
+              <div class="review">
+                <b>${r.user} ★${r.rating}</b>
+                <p>${r.comment}</p>
+              </div> 
+            `
+          )
+          .join("")
+  }
+</div>
+
+
+</div>
+
         </div>
       </div>
     `;
