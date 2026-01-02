@@ -3,10 +3,32 @@ class ChMiniJobCard extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
+
+    this.openModal = this.openModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
+    this.onKeyDown = this.onKeyDown.bind(this);
   }
 
   connectedCallback() {
     this.render();
+  }
+
+  disconnectedCallback() {
+    document.removeEventListener("keydown", this.onKeyDown);
+  }
+
+  openModal() {
+    this.modal.classList.add("active");
+    document.addEventListener("keydown", this.onKeyDown);
+  }
+
+  closeModal() {
+    this.modal.classList.remove("active");
+    document.removeEventListener("keydown", this.onKeyDown);
+  }
+
+  onKeyDown(e) {
+    if (e.key === "Escape") this.closeModal();
   }
 
   render() {
@@ -14,201 +36,231 @@ class ChMiniJobCard extends HTMLElement {
     const name = this.getAttribute("name") || "Нэр оруулаагүй";
     const rating = this.getAttribute("rating") || "0.0";
     const jobs = this.getAttribute("jobs") || "0 🤝";
-    const description =
-      this.getAttribute("description") || "Тайлбар оруулаагүй.";
+    const description = this.getAttribute("description") || "";
+    const phone = this.getAttribute("phone") || "";
+    const facebook = this.getAttribute("facebook") || "";
+    const instagram = this.getAttribute("instagram") || "";
+    const reviews = JSON.parse(this.getAttribute("reviews") || "[]");
 
     this.shadowRoot.innerHTML = /* html */ `
       <style>
         :host {
           display: block;
-          height: auto;             /* grid мөрийг хүчээр сунгахгүй */
-          font-family: system-ui, -apple-system, BlinkMacSystemFont,
-            "Segoe UI", sans-serif;
+          font-family: system-ui, sans-serif;
         }
 
         article.card {
-          width: 100%;
-          height: 100%;
-          box-sizing: border-box;
-          background: #ffffff;
-          border-radius: 22px;
+          background: #fff;
+          border-radius: 20px;
           border: 1px solid #e5e7eb;
-          box-shadow: 0 15px 35px rgba(15, 23, 42, 0.10);
-          padding: 16px 18px 10px;
-          display: flex;
+          box-shadow: 0 10px 25px rgba(0,0,0,.1);
+          padding: 16px;
           position: relative;
-          flex-direction: column;
-          padding-bottom: 42px; 
         }
 
-        header.top {
+        header {
           display: flex;
-          align-items: center;
           gap: 12px;
-          margin-bottom: 10px;
+          align-items: center;
         }
 
-        figure.avatar {
+        figure {
           width: 60px;
           height: 60px;
           border-radius: 14px;
-          background: #111827;
-          margin: 0;
-          flex-shrink: 0;
           overflow: hidden;
+          background: #111;
+          margin: 0;
         }
 
-        figure.avatar img {
+        figure img {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          display: block;
         }
 
-        h3.name {
-          margin: 0 0 6px;
-          font-size: 20px;
-          font-weight: 700;
-          color: #111827;
-        }
-
-        p.meta {
+        h3 {
           margin: 0;
-          font-size: 15px;
-          color: #4b5563;
+          font-size: 18px;
         }
 
-        p.meta span.star {
-          color: #fbbf24;
-          margin-right: 4px;
+        .meta {
+          color: #555;
+          font-size: 14px;
         }
 
-        hr {
-          border: 0;
-          border-top: 1px solid #e5e7eb;
-          margin: 10px -4px 8px;
-        }
-
-                .desc-wrapper {
-          position: relative;
-          font-size: 16px;
+        .desc {
+          margin: 10px 0;
           color: #374151;
-          line-height: 1.5;
-          max-height: 84px;
-          overflow: hidden;
-          transition: max-height 0.2s ease;
-          margin-bottom: 0;       /* доош суманд зай үлдээгээд байна гэж үгүй болгоё */
         }
 
-        :host([expanded]) .desc-wrapper {
-          max-height: 200px;
+        button.profile-btn {
+          width: 100%;
+          padding: 10px;
+          border-radius: 12px;
+          border: none;
+          background: #111827;
+          color: #fff;
+          cursor: pointer;
+          font-size: 15px;
+        }
+
+        button.profile-btn:hover {
+          background: #1f2937;
+        }
+
+        /* MODAL */
+        .modal-backdrop {
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,.5);
+          display: none;
+          align-items: center;
+          justify-content: center;
+          z-index: 999;
+        }
+
+        .modal-backdrop.active {
+          display: flex;
+        }
+
+        .modal {
+          background: #fff;
+          border-radius: 20px;
+          padding: 24px;
+          width: 90%;
+          max-width: 420px;
+          position: relative;
+          max-height: 85vh;
           overflow-y: auto;
         }
 
-        .desc-wrapper p {
-          margin: 0;
-        }
-
-        button.toggle {
-          position: absolute;     /* картын дотор тогтмол байрлалтай болно */
-          left: 50%;
-          bottom: 12px;
-          transform: translateX(-50%);
+        .close {
+          position: absolute;
+          top: 12px;
+          right: 16px;
           border: none;
           background: none;
+          font-size: 24px;
           cursor: pointer;
-          font-size: 22px;
+          color: #666;
           line-height: 1;
-          color: #4b5563;
-          padding: 0;
         }
 
-        button.toggle:hover {
-          color: #111827;
+        .close:hover {
+          color: #111;
         }
 
-        /* Mobile Responsiveness */
-        @media (max-width: 768px) {
-          figure.avatar {
-            width: 70px;
-            height: 70px;
-          }
-
-          h3.name {
-            font-size: 21px;
-          }
-
-          p.meta {
-            font-size: 16px;
-          }
-
-          .desc-wrapper {
-            font-size: 17px;
-          }
-
-          button.toggle {
-            font-size: 24px;
-            padding: 4px;
-            min-width: 44px;
-            min-height: 44px;
-          }
+        .modal h3 {
+          margin-top: 0;
+          margin-bottom: 8px;
         }
 
-        @media (max-width: 480px) {
-          article.card {
-            padding: 14px 16px 10px;
-            padding-bottom: 44px;
-          }
-
-          figure.avatar {
-            width: 64px;
-            height: 64px;
-          }
-
-          h3.name {
-            font-size: 19px;
-          }
+        .modal p {
+          margin: 8px 0;
         }
 
+        .modal a {
+          color: #2563eb;
+          text-decoration: none;
+        }
+
+        .modal a:hover {
+          text-decoration: underline;
+        }
+
+        .socials {
+          margin: 12px 0;
+        }
+
+        .socials a {
+          margin-right: 12px;
+          display: inline-block;
+        }
+
+        h4 {
+          margin-top: 20px;
+          margin-bottom: 10px;
+          font-size: 16px;
+        }
+
+        .review {
+          border-top: 1px solid #eee;
+          margin-top: 12px;
+          padding-top: 12px;
+        }
+
+        .review:first-of-type {
+          margin-top: 8px;
+        }
+
+        .review b {
+          display: block;
+          margin-bottom: 4px;
+        }
+
+        .review p {
+          margin: 4px 0 0 0;
+          color: #555;
+        }
       </style>
 
       <article class="card">
-        <header class="top">
-          <figure class="avatar">
-            ${pic ? `<img src="${pic}" alt="${name} зураг" />` : ""}
-          </figure>
-          <section>
-            <h3 class="name">${name}</h3>
-            <p class="meta">
-              <span class="star">★</span>${rating}
-              &nbsp;&nbsp;${jobs}
-            </p>
-          </section>
+        <header>
+          <figure>${pic ? `<img src="${pic}" alt="${name}" />` : ""}</figure>
+          <div>
+            <h3>${name}</h3>
+            <div class="meta">★ ${rating} · ${jobs}</div>
+          </div>
         </header>
 
-        <hr />
+        <p class="desc">${description}</p>
 
-        <div class="desc-wrapper">
-          <p>${description}</p>
-        </div>
-
-        <button class="toggle" type="button" aria-label="Дэлгэрүүлэх">
-          ▼
-        </button>
+        <button class="profile-btn">Профайл харах</button>
       </article>
+
+      <div class="modal-backdrop">
+        <div class="modal">
+          <button class="close" aria-label="Close">✕</button>
+
+          <h3>${name}</h3>
+          <p>★ ${rating} · ${jobs}</p>
+
+          ${phone ? `<p>📞 <a href="tel:${phone}">${phone}</a></p>` : ""}
+
+          ${facebook || instagram ? `
+            <div class="socials">
+              ${facebook ? `<a href="${facebook}" target="_blank" rel="noopener">Facebook</a>` : ""}
+              ${instagram ? `<a href="${instagram}" target="_blank" rel="noopener">Instagram</a>` : ""}
+            </div>
+          ` : ""}
+
+          <h4>Сэтгэгдлүүд</h4>
+          ${
+            reviews.length === 0
+              ? "<p>Сэтгэгдэл алга</p>"
+              : reviews
+                  .map(
+                    (r) => `
+                <div class="review">
+                  <b>${r.user} ★${r.rating}</b>
+                  <p>${r.comment}</p>
+                </div>
+              `
+                  )
+                  .join("")
+          }
+        </div>
+      </div>
     `;
 
-    const button = this.shadowRoot.querySelector("button.toggle");
-    button.addEventListener("click", () => {
-      const expanded = this.hasAttribute("expanded");
-      if (expanded) {
-        this.removeAttribute("expanded");
-        button.textContent = "▼";
-      } else {
-        this.setAttribute("expanded", "");
-        button.textContent = "▲";
-      }
-    });
+    this.modal = this.shadowRoot.querySelector(".modal-backdrop");
+    this.openBtn = this.shadowRoot.querySelector(".profile-btn");
+    this.closeBtn = this.shadowRoot.querySelector(".close");
+
+    this.openBtn.onclick = this.openModal;
+    this.closeBtn.onclick = this.closeModal;
+    this.modal.onclick = (e) => e.target === this.modal && this.closeModal();
   }
 }
 
