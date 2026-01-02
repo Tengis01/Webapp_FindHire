@@ -7,7 +7,7 @@ import Worker from './models/Worker.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const MONGO_URI = 'mongodb://localhost:27017/findhire';
+const MONGO_URI = 'mongodb+srv://roott:12345@cluster0.qrsusnj.mongodb.net/findhire?retryWrites=true&w=majority';
 const DATA_PATH = path.join(__dirname, '../public/data/workers.json');
 
 const seedData = async () => {

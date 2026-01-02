@@ -11,7 +11,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 
-const JWT_SECRET = "your_super_secret_key_change_in_production"; // In real app, use env var
+const JWT_SECRET = process.env.JWT_SECRET || "your_super_secret_key_change_in_production"; // In real app, use env var
 
 
 const __filename = fileURLToPath(import.meta.url);
@@ -21,8 +21,9 @@ const __dirname = dirname(__filename);
 const rootDir = process.cwd();
 
 const app = express();
-const PORT = 3001;
-const MONGO_URI = 'mongodb://localhost:27017/findhire';
+const PORT = process.env.PORT || 3001;
+// const MONGO_URI = 'mongodb://localhost:27017/findhire';
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://roott:12345@cluster0.qrsusnj.mongodb.net/findhire?retryWrites=true&w=majority';
 
 // Global error handling to prevent server crashes
 process.on('uncaughtException', (err) => console.error('Uncaught Exception:', err));

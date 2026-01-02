@@ -1,0 +1,5 @@
+ERROR: {
+  "message": "Worker validation failed: userId: Path `userId` is required.",
+  "errors": {},
+  "_message": "Worker validation failed"
+}
