@@ -49,10 +49,12 @@ window.addEventListener("DOMContentLoaded", () => {
 
     for (const worker of workers) {
       const card = document.createElement("ch-mini-job-card");
+      if (worker._id) card.setAttribute("id", worker._id); // MongoDB ID
       card.setAttribute("name", worker.name);
       card.setAttribute("rating", worker.rating);
       card.setAttribute("jobs", worker.jobs);
       card.setAttribute("description", worker.description);
+      if (worker.category) card.setAttribute("category", worker.category);
       if (worker.pic) card.setAttribute("pic", worker.pic);
       if (worker.phone) card.setAttribute("phone", worker.phone);
       if (worker.reviews) card.setAttribute("reviews", JSON.stringify(worker.reviews));

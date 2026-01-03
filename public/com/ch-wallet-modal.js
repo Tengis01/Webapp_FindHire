@@ -66,7 +66,7 @@ class ChWalletModal extends HTMLElement {
   }
 
   async confirmPayment() {
-    const amount = 50000; // Fixed demo amount
+    const amount = this.topupAmount || 50000; // Use stored amount
 
     try {
       const res = await fetch('/api/wallet/topup', {
@@ -254,6 +254,12 @@ class ChWalletModal extends HTMLElement {
           <div class="balance-label">Одоогийн үлдэгдэл</div>
           <div class="balance-amount">${formatted}₮</div>
         </div>
+        
+        <div style="margin-bottom: 20px;">
+            <label style="display:block; margin-bottom: 8px; font-weight: 500;">Цэнэглэх дүн</label>
+            <input type="number" id="topup-amount" value="100000" style="width:100%; padding: 12px; font-size: 18px; border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box;" />
+        </div>
+
         <button class="topup-btn">Данс цэнэглэх</button>
       `;
     } else if (this.state === 'banks') {
@@ -292,7 +298,9 @@ class ChWalletModal extends HTMLElement {
     const topupBtn = this.shadowRoot.querySelector('.topup-btn');
     if (topupBtn) {
       topupBtn.addEventListener('click', () => {
-        console.log('Topup button clicked!');
+        const input = this.shadowRoot.querySelector('#topup-amount');
+        this.topupAmount = input ? Number(input.value) : 50000;
+        console.log('Topup button clicked! Amount:', this.topupAmount);
         this.showBankSelection();
       });
     }

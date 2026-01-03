@@ -6,6 +6,11 @@ const workSchema = new mongoose.Schema({
         ref: 'User',
         required: true
     },
+    workerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Worker', // or User if referencing the user ID of the worker
+        required: false
+    },
     title: {
         type: String,
         required: true,
@@ -27,6 +32,10 @@ const workSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    scheduledDate: {
+        type: Date,
+        required: false
+    },
     isDeal: {
         type: Boolean,
         default: false
@@ -41,7 +50,7 @@ const workSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['OPEN', 'ASSIGNED', 'COMPLETED', 'CANCELLED'],
+        enum: ['OPEN', 'REQUESTED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'],
         default: 'OPEN'
     },
     createdAt: {
