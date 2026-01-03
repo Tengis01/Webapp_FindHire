@@ -7,6 +7,15 @@ class ChMiniJobCard extends HTMLElement {
     this.openModal = this.openModal.bind(this);
     this.closeModal = this.closeModal.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
+    this.handleBackdropClick = this.handleBackdropClick.bind(this);
+  }
+
+  static get observedAttributes() {
+    return ["phone", "name", "rating", "jobs", "description", "pic", "facebook", "instagram", "reviews"];
+  }
+
+  attributeChangedCallback() {
+    this.render();
   }
 
   connectedCallback() {
@@ -15,33 +24,80 @@ class ChMiniJobCard extends HTMLElement {
 
   disconnectedCallback() {
     document.removeEventListener("keydown", this.onKeyDown);
+    // Clean up event listeners
+    if (this.openBtn) {
+      this.openBtn.removeEventListener('click', this.openModal);
+    }
+    if (this.closeBtn) {
+      this.closeBtn.removeEventListener('click', this.closeModal);
+    }
+    if (this.modal) {
+      this.modal.removeEventListener('click', this.handleBackdropClick);
+    }
   }
 
   openModal() {
     this.modal.classList.add("active");
     document.addEventListener("keydown", this.onKeyDown);
+    
+    // Focus management for accessibility
+    const firstFocusable = this.shadowRoot.querySelector('.close');
+    if (firstFocusable) {
+      firstFocusable.focus();
+    }
+    
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
   }
 
   closeModal() {
     this.modal.classList.remove("active");
     document.removeEventListener("keydown", this.onKeyDown);
+    
+    // Return focus to trigger button
+    if (this.openBtn) {
+      this.openBtn.focus();
+    }
+    
+    // Restore body scroll
+    document.body.style.overflow = '';
   }
 
+  handleBackdropClick(e) {
+    if (e.target === this.modal) {
+      this.closeModal();
+    }
+  }
 
   onKeyDown(e) {
-    if (e.key === "Escape") this.closeModal();
+    if (e.key === "Escape") {
+      this.closeModal();
+    }
+  }
+
+  // Sanitize text content to prevent XSS
+  sanitizeText(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
   }
 
   render() {
     const pic = this.getAttribute("pic") || "";
-    const name = this.getAttribute("name") || "Нэр оруулаагүй";
-    const rating = this.getAttribute("rating") || "0.0";
-    const jobs = this.getAttribute("jobs") || "0 🤝";
-    const description = this.getAttribute("description") || "";
-    const phone = this.getAttribute("phone") || "";
+    const name = this.sanitizeText(this.getAttribute("name") || "Нэр оруулаагүй");
+    const rating = this.sanitizeText(this.getAttribute("rating") || "0.0");
+    const jobs = this.sanitizeText(this.getAttribute("jobs") || "0 🤝");
+    const description = this.sanitizeText(this.getAttribute("description") || "");
+    const phone = this.sanitizeText(this.getAttribute("phone") || "");
     const facebook = this.getAttribute("facebook") || "";
     const instagram = this.getAttribute("instagram") || "";
-    const reviews = JSON.parse(this.getAttribute("reviews") || "[]");
+    
+    let reviews = [];
+    try {
+      reviews = JSON.parse(this.getAttribute("reviews") || "[]");
+    } catch (e) {
+      console.error('Invalid reviews JSON:', e);
+    }
 
     this.shadowRoot.innerHTML = /* html */ `
       <style>
@@ -52,7 +108,7 @@ class ChMiniJobCard extends HTMLElement {
 
         article.card {
           background: #fff;
-          border-radius: 20px;
+          border-radius: 9px;
           border: 1px solid #e5e7eb;
           box-shadow: 0 10px 25px rgba(0,0,0,.1);
           padding: 16px;
@@ -68,10 +124,11 @@ class ChMiniJobCard extends HTMLElement {
         figure {
           width: 60px;
           height: 60px;
-          border-radius: 14px;
+          border-radius: 10px;
           overflow: hidden;
           background: #111;
           margin: 0;
+          flex-shrink: 0;
         }
 
         figure img {
@@ -95,34 +152,37 @@ class ChMiniJobCard extends HTMLElement {
           color: #374151;
         }
 
-   button.profile-btn {
-  width: 100%;
-  padding: 10px 12px;          /* босоо + хэвтээ зайг ялгав */
-  border-radius: 7px;         /* илүү зөөлөн */
-  border: 1px solid #1f2937; ;
-  background: #f3f4f6;        /* зөөлөн саарал */
-  margin-top: 14px;
-  color: #000000ff;
-  cursor: pointer;
+        button.profile-btn {
+          width: 100%;
+          padding: 10px 12px;
+          border-radius: 7px;
+          border: 1px solid #1f2937;
+          background: #f3f4f6;
+          margin-top: 14px;
+          color: #000000ff;
+          cursor: pointer;
+          font-size: 14px;
+          font-weight: 500;
+          transition: background 0.2s ease,
+                      transform 0.15s ease,
+                      box-shadow 0.15s ease;
+        }
 
-  font-size: 14px;             /* уншихад илүү сайн */
-  font-weight: 500;
+        button.profile-btn:hover {
+          background: #e5e7eb;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
 
-  transition: background 0.2s ease,
-              transform 0.15s ease,
-              box-shadow 0.15s ease;
-}
+        button.profile-btn:active {
+          transform: translateY(0);
+          box-shadow: none;
+        }
 
-    button.profile-btn:hover {
-  background: #1f2937;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-}
-
-button.profile-btn:active {
-  transform: translateY(0);
-  box-shadow: none;
-}
+        button.profile-btn:focus-visible {
+          outline: 2px solid #2563eb;
+          outline-offset: 2px;
+        }
 
         /* MODAL */
         .modal-backdrop {
@@ -133,6 +193,7 @@ button.profile-btn:active {
           align-items: center;
           justify-content: center;
           z-index: 999;
+          padding: 16px;
         }
 
         .modal-backdrop.active {
@@ -141,15 +202,14 @@ button.profile-btn:active {
 
         .modal {
           background: #fff;
-          border-radius: 20px;
+          border-radius: 10px;
           padding: 24px;
-          width: 90%;
+          width: 100%;
           max-width: 420px;
           max-height: 85vh;
           position: relative;
           box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-          overflow: hidden;
-
+          overflow-y: auto;
         }
 
         .close {
@@ -162,10 +222,18 @@ button.profile-btn:active {
           cursor: pointer;
           color: #666;
           line-height: 1;
+          padding: 4px;
+          border-radius: 4px;
         }
 
         .close:hover {
           color: #111;
+          background: #f3f4f6;
+        }
+
+        .close:focus-visible {
+          outline: 2px solid #2563eb;
+          outline-offset: 2px;
         }
 
         .modal h3 {
@@ -192,8 +260,6 @@ button.profile-btn:active {
           padding-bottom: 16px;
           border-bottom: 1px solid #e5e7eb;
         }
-
-     
 
         .modal p {
           margin: 8px 0;
@@ -240,98 +306,72 @@ button.profile-btn:active {
           font-style: italic;
         }
 
-    .review p {
-  margin: 0;
-  color: #555;
-  font-size: 14px;
-  line-height: 1.5;
-
- 
-}
-        .review:last-of-type {
-          margin-bottom: 0;
+        .review {
+          padding: 8px 10px;
+          border-radius: 8px;
+          background: #f9fafb;
         }
-.reviews-container {
-  max-height: 90px;
-  overflow-y: auto;
-  padding-right: 6px;
 
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+        .review b {
+          display: block;
+          margin-bottom: 4px;
+          font-size: 14px;
+          color: #111;
+        }
 
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-}
-.contact-info {
-  margin: 10px 0;
-  font-size: 15px;
-  font-weight: 500;
-}
+        .review p {
+          margin: 0;
+          color: #555;
+          font-size: 14px;
+          line-height: 1.5;
+        }
 
-.contact-info a {
-  color: #111;
-  text-decoration: none;
-}
+        .reviews-container {
+          max-height: 200px;
+          overflow-y: auto;
+          padding-right: 6px;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior: contain;
+        }
 
-.contact-info a:hover {
-  text-decoration: underline;
-}
+        .contact-info {
+          margin: 12px 0 0 0;
+          font-size: 14px;
+          font-weight: 500;
+        }
 
+        .contact-info a {
+          color: #111;
+          text-decoration: none;
+        }
 
+        .contact-info a:hover {
+          text-decoration: underline;
+        }
 
-/* Scrollbar – цэвэрхэн харагдана */
-.reviews-container::-webkit-scrollbar {
-  width: 6px;
-}
+        /* Scrollbar */
+        .reviews-container::-webkit-scrollbar {
+          width: 6px;
+        }
 
-.reviews-container::-webkit-scrollbar-thumb {
-  background: #d1d5db;
-  border-radius: 4px;
-}
+        .reviews-container::-webkit-scrollbar-thumb {
+          background: #d1d5db;
+          border-radius: 4px;
+        }
 
-.reviews-container::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
-}
-.contact-info {
-  margin: 12px 0;
-  font-size: 15px;
-  font-weight: 500;
-}
+        .reviews-container::-webkit-scrollbar-thumb:hover {
+          background: #9ca3af;
+        }
 
-.contact-info a {
-  color: #111;
-  text-decoration: none;
-}
-
-.contact-info a:hover {
-  text-decoration: underline;
-}
-
-
-
-.review {
-  padding: 8px 10px;
-  border-radius: 8px;
-  background: #f9fafb;
-}
-
-
-.review b {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 14px;
-  color: #111;
-}
-
-.review p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.5;
-  color: #555;
-}
-
-
+        @media (max-width: 480px) {
+          .modal {
+            padding: 20px;
+            max-height: 90vh;
+          }
+        }
       </style>
 
       <article class="card">
@@ -343,64 +383,63 @@ button.profile-btn:active {
           </div>
         </header>
 
-
         <button class="profile-btn">Мэдээлэл харах</button>
       </article>
 
       <div class="modal-backdrop">
-        <div class="modal">
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
           <button class="close" aria-label="Close">✕</button>
 
           <header>
             <figure>${pic ? `<img src="${pic}" alt="${name}" />` : ""}</figure>
             <div>
-              <h3>${name}</h3>
+              <h3 id="modal-title">${name}</h3>
               <div class="meta">★ ${rating} · ${jobs}</div>
+              ${phone ? `<div class="contact-info">📞 <a href="tel:${phone}">${phone}</a></div>` : ""}
             </div>
           </header>
 
           ${description ? `<p class="desc">${description}</p>` : ""}
-        
-          ${phone ? `<p class="contact-info">📞 <a href="tel:${phone}">${phone}</a></p>` : ""}
-
+          
           ${facebook || instagram ? `
             <div class="socials">
-              ${facebook ? `<a href="${facebook}" target="_blank" rel="noopener">📘 Facebook</a>` : ""}
-              ${instagram ? `<a href="${instagram}" target="_blank" rel="noopener">📷 Instagram</a>` : ""}
+              ${facebook ? `<a href="${facebook}" target="_blank" rel="noopener noreferrer">Facebook</a>` : ""}
+              ${instagram ? `<a href="${instagram}" target="_blank" rel="noopener noreferrer">Instagram</a>` : ""}
             </div>
           ` : ""}
-
+        
           <h4>Сэтгэгдлүүд</h4>
-<div class="reviews-container">
-  ${reviews.length === 0
-      ? "<p class='no-reviews'>Сэтгэгдэл алга</p>"
-      : reviews
-          .map(
-            (r) => `
-              <div class="review">
-                <b>${r.user} ★${r.rating}</b>
-                <p>${r.comment}</p>
-              </div> 
-            `
-          )
-          .join("")
-  }
-</div>
-
-
-</div>
-
+          <div class="reviews-container">
+            ${reviews.length === 0
+              ? "<p class='no-reviews'>Сэтгэгдэл алга</p>"
+              : reviews
+                  .map(r => {
+                    const userName = this.sanitizeText(r.user || 'Anonymous');
+                    const userRating = this.sanitizeText(String(r.rating || '0'));
+                    const comment = this.sanitizeText(r.comment || '');
+                    
+                    return `
+                      <div class="review">
+                        <b>${userName} ★${userRating}</b>
+                        <p>${comment}</p>
+                      </div>
+                    `;
+                  })
+                  .join("")
+            }
+          </div>
         </div>
       </div>
     `;
 
+    // Set up event listeners
     this.modal = this.shadowRoot.querySelector(".modal-backdrop");
     this.openBtn = this.shadowRoot.querySelector(".profile-btn");
     this.closeBtn = this.shadowRoot.querySelector(".close");
 
-    this.openBtn.onclick = this.openModal;
-    this.closeBtn.onclick = this.closeModal;
-    this.modal.onclick = (e) => e.target === this.modal && this.closeModal();
+    this.openBtn.addEventListener('click', this.openModal);
+    this.closeBtn.addEventListener('click', this.closeModal);
+    this.modal.addEventListener('click', this.handleBackdropClick);
   }
 }
 

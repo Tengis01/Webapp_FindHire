@@ -7,6 +7,9 @@ async function loadWorkers() {
 
   workers.forEach(w => {
     const card = document.createElement("ch-mini-job-card");
+    console.log("PHONE:", w.phone);
+    
+  
 
     card.setAttribute("name", w.name);
     card.setAttribute("rating", w.rating);
@@ -14,15 +17,12 @@ async function loadWorkers() {
     card.setAttribute("description", w.description);
     card.setAttribute("category", w.category);
     card.setAttribute("experience", w.experience);
+    card.setAttribute("phone", w.phone);
+
     card.setAttribute(
       "availability",
       JSON.stringify(w.availability)
     );
-
-    if (w.phone) card.setAttribute("phone", w.phone);
-    if (w.email) card.setAttribute("email", w.email);
-
-
     container.appendChild(card);
   });
 }
