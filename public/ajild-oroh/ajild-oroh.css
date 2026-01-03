@@ -105,6 +105,89 @@ transform: scale(1.1);
 color: var(--brand);
 background-color: var(--card);
 }
+/* =========================
+   📱 Mobile Responsive
+   ========================= */
+@media (max-width: 768px) {
+
+  body {
+    padding: 24px 12px;
+  }
+
+  form {
+    grid-template-columns: 1fr;   /* 2 багана → 1 багана */
+    width: 100%;
+    margin-top: 40px;
+    padding: 20px;
+    border-radius: 20px;
+  }
+
+  form h1 {
+    font-size: 22px;
+  }
+
+  label {
+    font-size: 15px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="number"],
+  input[type="tel"],
+  input[type="password"],
+  select,
+  textarea {
+    font-size: 16px; /* iOS zoom bug-оос сэргийлнэ */
+    padding: 12px;
+  }
+
+  textarea {
+    min-height: 120px;
+  }
+
+  .radio-group legend {
+    font-size: 16px;
+  }
+
+  .radio-group label {
+    font-size: 14px;
+  }
+
+  #subcategory-options label {
+    font-size: 14px;
+  }
+
+  .button {
+    margin-top: 20px;
+  }
+
+  .submit {
+    width: 100%;
+    font-size: 18px;
+    padding: 14px;
+  }
+
+  .submit:hover {
+    transform: none; /* mobile дээр scale эвгүй */
+  }
+}
+
+/* 📱 Extra small devices */
+@media (max-width: 480px) {
+
+  form {
+    padding: 16px;
+  }
+
+  form h1 {
+    font-size: 20px;
+  }
+
+  .radio-group div {
+    gap: 6px;
+  }
+}
+
 
 
 

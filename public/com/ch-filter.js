@@ -147,6 +147,17 @@ class ChFilter extends HTMLElement {
           }
         }
 
+        @media (max-width: 640px) {
+          :host {
+            height: auto !important;
+            overflow: visible !important;
+          }
+          .filters {
+            height: auto !important;
+             overflow-y: visible !important;
+          }
+        }
+
         @media (max-width: 480px) {
           .filters {
             padding: 16px;
@@ -178,6 +189,16 @@ class ChFilter extends HTMLElement {
           Шүүлтүүр
           <span class="clear-btn" id="clear-btn">Цэвэрлэх</span>
         </h3>
+
+        <!-- Sort Section -->
+        <div class="filter-group">
+          <h4>Эрэмбэлэх</h4>
+          <select id="sort-select" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #d1d5db; background: #fff; font-family: inherit;">
+            <option value="default">Энгийн</option>
+            <option value="name-asc">Нэр (А-Я)</option>
+            <option value="rating-desc">Үнэлгээ (Өндөр-Бага)</option>
+          </select>
+        </div>
 
         <div class="filter-group" id="subcat-group" style="display: none;">
           <h4>Засвар төрөл</h4>
@@ -251,6 +272,18 @@ class ChFilter extends HTMLElement {
     if (clearBtn) {
       clearBtn.addEventListener("click", () => {
         this.clearFilters();
+      });
+    }
+
+    // Sort Select
+    const sortSelect = this.shadowRoot.querySelector("#sort-select");
+    if (sortSelect) {
+      sortSelect.addEventListener("change", () => {
+        this.dispatchEvent(new CustomEvent("sort-changed", {
+          detail: { sort: sortSelect.value },
+          bubbles: true,
+          composed: true
+        }));
       });
     }
   }

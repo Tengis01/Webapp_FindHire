@@ -1,5 +1,5 @@
 ERROR: {
-  "message": "Worker validation failed: userId: Path `userId` is required.",
+  "message": "User validation failed: role: `Admin` is not a valid enum value for path `role`.",
   "errors": {},
-  "_message": "Worker validation failed"
+  "_message": "User validation failed"
 }

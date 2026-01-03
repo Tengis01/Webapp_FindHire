@@ -37,6 +37,9 @@ window.addEventListener("DOMContentLoaded", () => {
     };
   }
 
+  let cachedWorkers = [];
+  let currentSort = 'default';
+
   function renderCards(workers) {
     while (popup.firstChild) {
       popup.firstChild.remove();
@@ -54,6 +57,18 @@ window.addEventListener("DOMContentLoaded", () => {
 
       popup.appendChild(card);
     }
+  }
+
+  function applySortAndRender() {
+    let sorted = [...cachedWorkers];
+
+    if (currentSort === 'name-asc') {
+      sorted.sort((a, b) => a.name.localeCompare(b.name, 'mn'));
+    } else if (currentSort === 'rating-desc') {
+      sorted.sort((a, b) => Number(b.rating) - Number(a.rating));
+    }
+
+    renderCards(sorted);
   }
 
   async function fetchWorkers(updateURL = true) {
@@ -94,7 +109,9 @@ window.addEventListener("DOMContentLoaded", () => {
       const workers = await res.json();
       console.log('Received workers:', workers.length);
 
-      renderCards(workers);
+      // Cache and Render
+      cachedWorkers = workers;
+      applySortAndRender();
 
       if (updateURL) {
         const url = new URL(window.location);
@@ -140,7 +157,8 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     } catch (err) {
       console.error('Error fetching workers:', err);
-      renderCards([]);
+      cachedWorkers = [];
+      applySortAndRender();
     }
   }
 
@@ -149,6 +167,13 @@ window.addEventListener("DOMContentLoaded", () => {
   popup.addEventListener('filter-changed', (e) => {
     console.log('Filter changed:', e.detail);
     fetchWorkers(true);
+  });
+
+  // Sort changed listener
+  popup.addEventListener('sort-changed', (e) => {
+    console.log('Sort changed:', e.detail);
+    currentSort = e.detail.sort;
+    applySortAndRender();
   });
 
   // URL-ээс параметрүүдийг уншиж popup нээх

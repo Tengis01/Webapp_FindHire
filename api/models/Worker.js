@@ -14,6 +14,9 @@ const workerSchema = new mongoose.Schema({
     subcategories: { type: [String], required: true },
     experience: { type: Number, required: true },
     availability: { type: [String], required: true },
+    phone: { type: String, required: true },
+    address: { type: String, required: true },
+    subdistrict: { type: String, required: true },
 });
 
 const Worker = mongoose.model('Worker', workerSchema);
