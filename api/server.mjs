@@ -233,6 +233,7 @@ app.get("/api/workers", async (req, res) => {
       jobs: `${w.jobs} ${w.emoji || "🤝"}`,
       description: w.description,
       pic: w.pic || "",
+      phone: w.phone || "",
       category: w.category,
       subcategories: w.subcategories,
     }));
@@ -258,6 +259,7 @@ app.get("/api/popular", async (req, res) => {
       jobs: `${w.jobs} ${w.emoji || "🤝"}`,
       description: w.description,
       pic: w.pic || "",
+      phone: w.phone || "",
       category: w.category,
       subcategories: w.subcategories,
     }));

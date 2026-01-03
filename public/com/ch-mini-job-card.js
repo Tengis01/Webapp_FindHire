@@ -9,12 +9,12 @@ class ChMiniJobCard extends HTMLElement {
     this.onKeyDown = this.onKeyDown.bind(this);
   }
   static get observedAttributes() {
-  return ["phone", "name", "rating", "jobs", "description"];
-}
+    return ["phone", "name", "rating", "jobs", "description"];
+  }
 
-attributeChangedCallback() {
-  this.render();
-}
+  attributeChangedCallback() {
+    this.render();
+  }
 
 
   connectedCallback() {
@@ -317,6 +317,37 @@ button.profile-btn:active {
 .contact-info a:hover {
   text-decoration: underline;
 }
+
+.phone-link {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 6px 12px;
+  background: #f3f4f6;
+  border-radius: 8px;
+  color: #374151;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.phone-link:hover {
+  background: #e5e7eb;
+}
+
+/* Mobile: Make it clear this is clickable */
+@media (hover: none) {
+  .phone-link {
+    background: #dbeafe;
+    color: #2563eb;
+    border: 1px solid #93c5fd;
+  }
+  
+  .phone-link:active {
+    background: #bfdbfe;
+  }
+}
+
 .review {
   padding: 8px 10px;
   border-radius: 8px;
@@ -361,7 +392,7 @@ button.profile-btn:active {
             <div>
               <h3>${name}</h3>
               <div class="meta">★ ${rating} · ${jobs}</div>
-                ${phone ? `<div class="meta">📞 ${phone}</div>` : ""}
+              ${phone ? `<a href="tel:${phone}" class="phone-link">📞 ${phone}</a>` : ""}
 
             </div>
           </header>
@@ -372,8 +403,8 @@ button.profile-btn:active {
           <h4>Сэтгэгдлүүд</h4>
 <div class="reviews-container">
   ${reviews.length === 0
-      ? "<p class='no-reviews'>Сэтгэгдэл алга</p>"
-      : reviews
+        ? "<p class='no-reviews'>Сэтгэгдэл алга</p>"
+        : reviews
           .map(
             (r) => `.
               <div class="review">
@@ -383,7 +414,7 @@ button.profile-btn:active {
             `
           )
           .join("")
-  }
+      }
 </div>
 
 

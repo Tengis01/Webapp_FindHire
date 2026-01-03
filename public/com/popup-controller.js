@@ -54,6 +54,7 @@ window.addEventListener("DOMContentLoaded", () => {
       card.setAttribute("jobs", worker.jobs);
       card.setAttribute("description", worker.description);
       if (worker.pic) card.setAttribute("pic", worker.pic);
+      if (worker.phone) card.setAttribute("phone", worker.phone);
 
       popup.appendChild(card);
     }
