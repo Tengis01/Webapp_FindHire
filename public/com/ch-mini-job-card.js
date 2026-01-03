@@ -155,43 +155,42 @@ attributeChangedCallback() {
         button.profile-btn:hover { background:#1f2937; color:#fff; }
 
         .modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.5);
+          position: fixed;
+          inset: 0;
+          background: rgba(0,0,0,.5);
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+          display: flex;
+          align-items: center;
+          justify-content: center;
 
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.30s ease;
-}
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.30s ease;
+        }
 
-.modal-backdrop.active {
-  opacity: 1;
-  pointer-events: auto;
-}
+        .modal-backdrop.active {
+          opacity: 1;
+          pointer-events: auto;
+        }
 
-.modal {
-  background: #fff;
-  border-radius: 20px;
-  padding: 24px;
-  width: 90%;
-  max-width: 420px;
+        .modal {
+          background: #fff;
+          border-radius: 20px;
+          padding: 24px;
+          width: 90%;
+          max-width: 420px;
 
-  transform: scale(0.88) translateY(10px);
-  opacity: 0;
-  transition:
-    transform 0.30s ease,
-    opacity 0.30s ease;
-}
+          transform: scale(0.88) translateY(10px);
+          opacity: 0;
+          transition:
+            transform 0.30s ease,
+            opacity 0.30s ease;
+        }
 
-.modal-backdrop.active .modal {
-  transform: scale(1) translateY(0);
-  opacity: 1;
-}
-
+        .modal-backdrop.active .modal {
+          transform: scale(1) translateY(0);
+          opacity: 1;
+        }
     
         .close {
           position:absolute; top:12px; right:16px;
@@ -231,149 +230,76 @@ attributeChangedCallback() {
           font-style: italic;
         }
 
-    .review p {
-  margin: 0;
-  color: #555;
-  font-size: 14px;
-  line-height: 1.5;
+        .review p {
+          margin: 0;
+          color: #555;
+          font-size: 14px;
+          line-height: 1.5;
+        }
 
- 
-}
         .review:last-of-type {
           margin-bottom: 0;
         }
-.reviews-container {
-  max-height: 90px;
-  overflow-y: auto;
-  padding-right: 6px;
 
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+        .reviews-container {
+          max-height: 90px;
+          overflow-y: auto;
+          padding-right: 6px;
 
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-}
-.contact-info {
-  margin: 10px 0;
-  font-size: 15px;
-  font-weight: 500;
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 8px;
-}
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
 
-.contact-info a {
-  color: #111;
-  text-decoration: none;
-}
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior: contain;
+        }
 
-.contact-info a:hover {
-  text-decoration: underline;
-}
+        .contact-info {
+          margin: 10px 0;
+          font-size: 15px;
+          font-weight: 500;
+          border-bottom: 1px solid #e5e7eb;
+          padding-bottom: 8px;
+        }
 
+        .contact-info a {
+          color: #111;
+          text-decoration: none;
+        }
 
+        .contact-info a:hover {
+          text-decoration: underline;
+        }
 
-/* Scrollbar – цэвэрхэн харагдана */
-.reviews-container::-webkit-scrollbar {
-  width: 6px;
-}
+        .reviews-container::-webkit-scrollbar {
+          width: 6px;
+        }
 
-.reviews-container::-webkit-scrollbar-thumb {
-  background: #d1d5db;
-  border-radius: 4px;
-}
+        .reviews-container::-webkit-scrollbar-thumb {
+          background: #d1d5db;
+          border-radius: 4px;
+        }
 
-.reviews-container::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
-}
-.contact-info {
-  margin: 12px 0;
-  font-size: 15px;
-  font-weight: 500;
-}
+        .reviews-container::-webkit-scrollbar-thumb:hover {
+          background: #9ca3af;
+        }
 
-.contact-info a {
-  color: #111;
-  text-decoration: none;
-}
+        .review {
+          padding: 8px 10px;
+          border-radius: 8px;
+          background: #f9fafb;
+        }
 
-.contact-info a:hover {
-  text-decoration: underline;
-}
-.review {
-  padding: 8px 10px;
-  border-radius: 8px;
-  background: #f9fafb;
-}
-.review b {
-  display: block;
-  margin-bottom: 4px;
-  font-size: 14px;
-  color: #111;
-}
-
-.review p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.5;
-  color: #555;
-}
-
-
+        .review b {
+          display: block;
+          margin-bottom: 4px;
+          font-size: 14px;
+          color: #111;
+        }
       </style>
 
-      <article class="card">
-        <header>
-          <figure>${pic ? `<img src="${pic}" alt="${name}" />` : ""}</figure>
-          <div>
-            <h3>${name}</h3>
-            <div class="meta">★ ${rating} · ${jobs}</div>
-          </div>
-        </header>
-
-
-        <button class="profile-btn">Мэдээлэл харах</button>
-      </article>
-
-      <div class="modal-backdrop">
-        <div class="modal">
-          <button class="close" aria-label="Close">✕</button>
-
-          <header>
-            <figure>${pic ? `<img src="${pic}" alt="${name}" />` : ""}</figure>
-            <div>
-              <h3>${name}</h3>
-              <div class="meta">★ ${rating} · ${jobs}</div>
-                ${phone ? `<div class="meta">📞 ${phone}</div>` : ""}
-
-            </div>
-          </header>
-
-          ${description ? `<p class="desc">${description}</p>` : ""}
-        
-        
-          <h4>Сэтгэгдлүүд</h4>
-<div class="reviews-container">
-  ${reviews.length === 0
-      ? "<p class='no-reviews'>Сэтгэгдэл алга</p>"
-      : reviews
-          .map(
-            (r) => `.
-              <div class="review">
-                <b>${r.user} ★${r.rating}</b>
-                <p>${r.comment}</p>
-              </div> 
-            `
-          )
-          .join("")
-  }
-</div>
-
-
-</div>
-
-        </div>
-      </div>
+      ${this.renderCard(headerHtml)}
+      ${this.renderModal({ headerHtml, description: data.description, reviewsHtml })}
     `;
 
     this.modal = this.shadowRoot.querySelector(".modal-backdrop");
