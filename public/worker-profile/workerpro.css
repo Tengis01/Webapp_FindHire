@@ -1,0 +1,124 @@
+:root{
+  --brand:#213448;
+  --ink:#1f2937;
+  --muted:#6b7280;
+  --line:#e5e7eb;
+  --soft:#f8f9fa;
+  --card:#ffffff;
+  --shadow:0 6px 18px rgba(0,0,0,.06);
+  --radius:14px;
+}
+body {
+    background-color: var(--soft);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--ink);
+    padding: 40px 20px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.profile-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.image-section {
+    padding: 30px;
+    text-align: center;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(to bottom, #ffffff, var(--soft));
+}
+
+.avatar-wrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 15px;
+}
+
+.avatar-wrapper img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--brand);
+}
+
+.upload-btn {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background: var(--brand);
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.upload-btn:hover {
+    transform: scale(1.1);
+}
+
+.info-section {
+    padding: 30px;
+}
+
+.edit-group {
+    margin-bottom: 20px;
+}
+
+.edit-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: var(--brand);
+}
+
+.edit-group input, .edit-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.edit-group input:focus {
+    outline: none;
+    border-color: var(--brand);
+}
+
+.save-btn {
+    width: 100%;
+    background-color: var(--brand);
+    color: white;
+    padding: 14px;
+    border: none;
+    border-radius: var(--radius);
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.save-btn:hover {
+    opacity: 0.9;
+}
+
+#display-job {
+    color: var(--muted);
+    font-size: 0.9rem;
+}
