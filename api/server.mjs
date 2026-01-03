@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 import process from "node:process";
 import mongoose from "mongoose";
+import Review from "./models/Review.js";
 import Worker from "./models/Worker.js";
 import User from "./models/User.js";
 import Work from "./models/Work.js";
@@ -226,26 +227,53 @@ app.get("/api/workers", async (req, res) => {
 
     const workers = await Worker.find(query);
     console.log(`Found ${workers.length} workers`);
+    
+    // Fetch all reviews once (or optimized in real app) to distribute
+    const allReviews = await Review.find().limit(200);
 
     // Format response
-    const formatted = workers.map((w) => ({
-      name: w.name,
-      rating: String(w.rating),
-      jobs: `${w.jobs} ${w.emoji || "🤝"}`,
-      description: w.description,
-      pic: w.pic || "",
-      phone: w.phone || "",
-      category: w.category,
-      subcategories: w.subcategories,
-      phone: w.phone,
-      availability: w.availability,
-    }));
+    const formatted = workers.map((w) => {
+        // Assign random 1-10 reviews
+        const numReviews = Math.floor(Math.random() * 10) + 1;
+        const shuffled = allReviews.sort(() => 0.5 - Math.random());
+        const workerReviews = shuffled.slice(0, numReviews).map(r => ({
+            user: r.user,
+            rating: r.rating,
+            comment: r.text, // Frontend expects 'comment'
+            phone: "" // Optional
+        }));
+
+        return {
+          name: w.name,
+          rating: String(w.rating),
+          jobs: `${w.jobs} ${w.emoji || "🤝"}`,
+          description: w.description,
+          pic: w.pic || "",
+          phone: w.phone || "",
+          category: w.category,
+          subcategories: w.subcategories,
+          phone: w.phone,
+          availability: w.availability,
+          reviews: workerReviews
+        };
+    });
 
     res.json(formatted);
   } catch (err) {
     console.error("API Error:", err);
     res.status(500).json({ error: err.message });
   }
+});
+
+// GET /api/reviews - Return random 60 reviews
+app.get("/api/reviews", async (req, res) => {
+    try {
+        const reviews = await Review.aggregate([{ $sample: { size: 60 } }]);
+        res.json(reviews);
+    } catch (err) {
+        console.error("Reviews API Error:", err);
+        res.status(500).json({ error: err.message });
+    }
 });
 
 // Популяр ажилчдын API

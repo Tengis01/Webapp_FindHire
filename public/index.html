@@ -64,6 +64,7 @@
     <section class="features" id="features-section" aria-label="Манай зорилго"></section>
 
     <!-- Popular -->
+    <h2 style="width: 100%; max-width: 1320px; margin: 36px auto 24px; font-size: 28px; color: #213448; text-align: left; border-left: 5px solid #213448; padding-left: 15px;">Алдартай ажлууд</h2>
     <section class="popular" id="popular-section" aria-label="Алдартай ажилтнууд"></section>
 
     <!-- Available Jobs (Phase 1) -->
@@ -71,8 +72,12 @@
 
     <ch-popup-screen id="profiles-popup"></ch-popup-screen>
 
-    <!-- Reviews (жишээ 3) -->
-    <section class="reviews" id="reviews-section" aria-label="Сэтгэгдэл"></section>
+    <!-- Reviews -->
+    <script type="module" src="./com/ch-review.js"></script>
+    <section class="reviews" aria-label="Сэтгэгдэл" style="padding: 20px 0;">
+       <h2 style="font-size: 28px; color: #213448; margin-bottom: 24px; text-align: left; border-left: 5px solid #213448; padding-left: 15px;">Хэрэглэгчдийн сэтгэгдэл</h2>
+       <ch-review></ch-review>
+    </section>
 
   </main>
 

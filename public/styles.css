@@ -447,13 +447,10 @@ form button svg {
 
 /* ==== Reviews – popular-той ижил өргөн, илүү дээд зай ==== */
 .reviews {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 22px;
+  display: block;
   width: 100%;
   max-width: 1320px;
   margin: 68px auto 84px;
-  align-items: stretch;
   position: relative;
 }
 

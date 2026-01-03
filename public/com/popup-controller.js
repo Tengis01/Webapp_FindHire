@@ -55,6 +55,7 @@ window.addEventListener("DOMContentLoaded", () => {
       card.setAttribute("description", worker.description);
       if (worker.pic) card.setAttribute("pic", worker.pic);
       if (worker.phone) card.setAttribute("phone", worker.phone);
+      if (worker.reviews) card.setAttribute("reviews", JSON.stringify(worker.reviews));
 
       popup.appendChild(card);
     }
