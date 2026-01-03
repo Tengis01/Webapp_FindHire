@@ -107,6 +107,7 @@ class CHFooter extends HTMLElement {
   .footer-contact p {
     font-size: 13px;
   }
+  
 
   .footer-bottom {
     padding: 12px;
@@ -115,7 +116,7 @@ class CHFooter extends HTMLElement {
 }
 </style>
     <footer class="site-footer">
-  <div class="footer-container">
+    <div class="footer-container">
 
     <div class="footer-about">
       <h3>FindHire</h3>
@@ -135,12 +136,28 @@ class CHFooter extends HTMLElement {
       </ul>
     </div>
 
-    <div class="footer-contact">
-      <h4>Холбоо барих</h4>
-      <p>📍 Улаанбаатар, Монгол улс</p>
-      <p>📞 +976 7000-0000</p>
-      <p>✉️ info@findhire.mn</p>
-    </div>
+    <footer class="footer-contact">
+  <h4>Холбоо барих</h4>
+
+  <address>
+    <ul>
+      <li>
+        <span aria-hidden="true">📍</span>
+        Улаанбаатар, Монгол улс
+      </li>
+
+      <li>
+        <span aria-hidden="true">📞</span>
+        <a href="tel:+97670000000">+976 7000-0000</a>
+      </li>
+
+      <li>
+        <span aria-hidden="true">✉️</span>
+        <a href="mailto:info@findhire.mn">info@findhire.mn</a>
+      </li>
+    </ul>
+  </address>
+</footer>
 
   </div>
 
