@@ -26,6 +26,9 @@
   <script type="module" src="./load/load_review.js"></script>
   <script type="module" src="./load/load-popupscreen.js"></script>
   <script type="module" src="./load/load-search.js"></script>
+  <script type="module" src="./com/ch-fab.js"></script>
+  <script type="module" src="./com/ch-work-request.js"></script>
+  <script type="module" src="./com/ch-available-jobs.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
   <title>FindHire web</title>
 </head>
@@ -61,12 +64,18 @@
     <!-- Popular -->
     <section class="popular" id="popular-section" aria-label="Алдартай ажилтнууд"></section>
 
+    <!-- Available Jobs (Phase 1) -->
+    <ch-available-jobs></ch-available-jobs>
+
     <ch-popup-screen id="profiles-popup"></ch-popup-screen>
 
     <!-- Reviews (жишээ 3) -->
     <section class="reviews" id="reviews-section" aria-label="Сэтгэгдэл"></section>
-    
+
   </main>
+
+  <ch-fab></ch-fab>
+  <ch-work-request></ch-work-request>
 
 </body>
 <ch-footer></ch-footer>

@@ -7,6 +7,7 @@ import process from "node:process";
 import mongoose from "mongoose";
 import Worker from "./models/Worker.js";
 import User from "./models/User.js";
+import Work from "./models/Work.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
@@ -402,6 +403,14 @@ app.post("/api/auth/signup/worker", async (req, res) => {
     // If user typed Latin-Mongolian "Sharav", we get "Sh". 
     // If user typed Cyrillic "Шарав", we get "Ш". Correct.
 
+    // Extract subdistrict from address (last part after comma)
+    // Format: "City, District, Subdistrict" -> take last part
+    let subdistrict = "N/A";
+    if (address && address.includes(',')) {
+      const parts = address.split(',').map(p => p.trim());
+      subdistrict = parts[parts.length - 1] || "N/A";
+    }
+
     const worker = new Worker({
       userId: savedUser._id,
       id: nextId,
@@ -413,7 +422,10 @@ app.post("/api/auth/signup/worker", async (req, res) => {
       category,
       subcategories: Array.isArray(subcategories) ? subcategories : [subcategories],
       experience: Number(experience) || 0,
-      availability: Array.isArray(availability) ? availability : [availability]
+      availability: Array.isArray(availability) ? availability : [availability],
+      phone: phone || "",
+      address: address || "",
+      subdistrict: subdistrict
     });
 
     await worker.save();
@@ -494,6 +506,109 @@ app.put("/api/workers/profile", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
+// 7. Work Request API
+
+// Create Work (User only)
+app.post('/api/work', async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findById(decoded.userId);
+
+    // Strict Checks
+    if (!user) return res.status(401).json({ error: "User not found" });
+    if (user.role !== 'User') return res.status(403).json({ error: "Only Users can post work requests" });
+
+    const { title, description, price, hasFood, image, category, subcategories, isDeal } = req.body;
+
+    // Validation
+    if (!title || !description || !category) {
+      return res.status(400).json({ error: "Title, description, and category are required" });
+    }
+
+    const work = new Work({
+      userId: user._id,
+      title,
+      description,
+      category,
+      subcategories: Array.isArray(subcategories) ? subcategories : [],
+      price: Number(price) || 0,
+      isDeal: Boolean(isDeal),
+      hasFood: Boolean(hasFood),
+      image: image || "",
+      status: 'OPEN'
+    });
+
+    await work.save();
+    console.log(`New Work Created: ${title} (${category}) by ${user.email}`);
+
+    res.status(201).json({ message: "Work request created", work });
+
+  } catch (err) {
+    console.error("Create Work Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get Works (For Home Page)
+app.get('/api/work', async (req, res) => {
+  try {
+    // Determine sort content
+    // Fetch works sorted by newest first
+    const works = await Work.find({ status: 'OPEN' })
+      .sort({ createdAt: -1 })
+      .populate('userId', 'firstname lastname role') // Fetch user name
+      .exec();
+
+    const formatted = works.map(w => {
+      // Handle User Name display
+      let userName = "Unknown User";
+      if (w.userId) {
+        // Smart Initials logic again
+        const fname = w.userId.firstname || "";
+        const lname = w.userId.lastname || "";
+
+        let initial = lname.charAt(0).toUpperCase();
+        if (/^(sh|ch|ts|kh)/i.test(lname)) {
+          initial = lname.substring(0, 2);
+          initial = initial.charAt(0).toUpperCase() + initial.charAt(1).toLowerCase();
+        }
+        if (lname) {
+          userName = `${initial}.${fname}`;
+        } else {
+          userName = fname;
+        }
+      }
+
+      return {
+        _id: w._id,
+        title: w.title,
+        description: w.description,
+        category: w.category,
+        subcategories: w.subcategories,
+        price: w.price,
+        isDeal: w.isDeal,
+        hasFood: w.hasFood,
+        image: w.image,
+        createdAt: w.createdAt,
+        user: {
+          name: userName,
+          role: w.userId ? w.userId.role : 'User'
+        }
+      };
+    });
+
+    res.json(formatted);
+
+  } catch (err) {
+    console.error("Get Works Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 const server = app.listen(PORT, () => {
   console.log("");
