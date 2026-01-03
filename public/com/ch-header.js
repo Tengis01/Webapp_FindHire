@@ -2,6 +2,7 @@ class ChHeader extends HTMLElement {
   constructor() {
     super();
     this.user = null;
+    this.balance = 0;
   }
 
   connectedCallback() {
@@ -13,11 +14,28 @@ class ChHeader extends HTMLElement {
       const res = await fetch('/api/auth/me');
       const data = await res.json();
       this.user = data.user;
+
+      // Fetch balance if logged in
+      if (this.user) {
+        await this.fetchBalance();
+      }
+
       this.render();
     } catch (err) {
       console.error("Auth check failed", err);
-      this.user = null; // Treat as logged out
+      this.user = null;
       this.render();
+    }
+  }
+
+  async fetchBalance() {
+    try {
+      const res = await fetch('/api/wallet/balance');
+      const data = await res.json();
+      this.balance = data.balance || 0;
+    } catch (err) {
+      console.error("Balance fetch failed", err);
+      this.balance = 0;
     }
   }
 
@@ -27,9 +45,18 @@ class ChHeader extends HTMLElement {
     // Determine what to show in the right side of nav
     let rightNavHtml = '';
     if (isLogged) {
-      // Show Profile Icon
+      // Show Wallet + Profile Icon
       const initial = this.user.firstname ? this.user.firstname[0].toUpperCase() : 'U';
+      const formattedBalance = this.balance.toLocaleString('en-US');
       rightNavHtml = `
+            <li class="wallet-item">
+                <button id="wallet-btn" class="wallet-btn" aria-label="Wallet">
+                    <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+                    </svg>
+                    <span class="balance-badge">${formattedBalance}₮</span>
+                </button>
+            </li>
             <li class="profile-item">
                 <button id="profile-btn" class="profile-btn" aria-label="Profile">
                     ${initial}
@@ -174,6 +201,38 @@ class ChHeader extends HTMLElement {
         border-color: #CBD5E1;
     }
 
+    /* Wallet Button */
+    .wallet-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        background: rgba(46, 125, 50, 0.1);
+        border: 1px solid rgba(46, 125, 50, 0.3);
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.3s;
+        color: #2e7d32;
+        font-size: 14px;
+        font-weight: 600;
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.4); }
+        50% { box-shadow: 0 0 0 6px rgba(46, 125, 50, 0); }
+    }
+
+    .wallet-btn:hover {
+        background: rgba(46, 125, 50, 0.15);
+        border-color: rgba(46, 125, 50, 0.5);
+        transform: translateY(-1px);
+    }
+
+    .balance-badge {
+        white-space: nowrap;
+    }
+
       /* Mobile Responsiveness */
       @media (max-width: 768px) {
         ch-header header {
@@ -273,19 +332,33 @@ class ChHeader extends HTMLElement {
     <div class="header-spacer"></div>
     `;
 
-    // Add Event Listener to Profile Button
+    // Add Event Listeners
     if (isLogged) {
-      const btn = this.querySelector('#profile-btn');
-      btn.addEventListener('click', () => {
-        // Dispatch event or find popup directly
-        // Option 1: find custom element in DOM
-        const popup = document.querySelector('ch-profile-popup');
-        if (popup) {
-          popup.open(this.user);
-        } else {
-          console.warn('Profile popup component not found in DOM');
-        }
-      });
+      // Wallet button
+      const walletBtn = this.querySelector('#wallet-btn');
+      if (walletBtn) {
+        walletBtn.addEventListener('click', () => {
+          const walletModal = document.querySelector('ch-wallet-modal');
+          if (walletModal) {
+            walletModal.open();
+          } else {
+            console.warn('Wallet modal not found in DOM');
+          }
+        });
+      }
+
+      // Profile button
+      const profileBtn = this.querySelector('#profile-btn');
+      if (profileBtn) {
+        profileBtn.addEventListener('click', () => {
+          const popup = document.querySelector('ch-profile-popup');
+          if (popup) {
+            popup.open(this.user);
+          } else {
+            console.warn('Profile popup component not found in DOM');
+          }
+        });
+      }
     }
   }
 }

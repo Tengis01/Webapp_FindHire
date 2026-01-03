@@ -8,6 +8,7 @@ import mongoose from "mongoose";
 import Worker from "./models/Worker.js";
 import User from "./models/User.js";
 import Work from "./models/Work.js";
+import Transaction from "./models/Transaction.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
@@ -605,6 +606,73 @@ app.get('/api/work', async (req, res) => {
 
   } catch (err) {
     console.error("Get Works Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 8. Wallet API
+
+// Get current user balance
+app.get('/api/wallet/balance', async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findById(decoded.userId).select('balance');
+
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    res.json({ balance: user.balance || 0 });
+  } catch (err) {
+    console.error("Get Balance Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Top up wallet (simulated)
+app.post('/api/wallet/topup', async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findById(decoded.userId);
+
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const { amount, method } = req.body;
+
+    // Validate amount
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: "Invalid amount" });
+    }
+
+    // Update balance
+    user.balance = (user.balance || 0) + Number(amount);
+    await user.save();
+
+    // Create transaction record
+    const transaction = new Transaction({
+      userId: user._id,
+      amount: Number(amount),
+      type: 'topup',
+      method: method || 'Unknown',
+      status: 'completed',
+      description: `Top-up via ${method || 'Unknown'}`
+    });
+    await transaction.save();
+
+    console.log(`Wallet top-up: ${user.email} +${amount}₮ via ${method}`);
+
+    res.json({
+      message: "Top-up successful",
+      balance: user.balance,
+      transaction: transaction._id
+    });
+
+  } catch (err) {
+    console.error("Top-up Error:", err);
     res.status(500).json({ error: err.message });
   }
 });
