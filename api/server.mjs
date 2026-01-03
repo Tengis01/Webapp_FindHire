@@ -164,8 +164,8 @@ app.use(express.static(rootDir));
 // Ажилчдыг шүүж авах API
 app.get("/api/workers", async (req, res) => {
   try {
-    const { main, sub, search, experience, availability, ratingRange } = req.query;
-    console.log("API Request:", { main, sub, search, experience, availability, ratingRange });
+    const { main, sub, search, experience, availability, ratingRange, phone } = req.query;
+    console.log("API Request:", { main, sub, search, experience, availability, ratingRange, phone });
 
     const query = {};
 
@@ -193,7 +193,8 @@ app.get("/api/workers", async (req, res) => {
         { name: regex },
         { description: regex },
         { category: regex },
-        { subcategories: { $in: [regex] } }
+        { subcategories: { $in: [regex] } },
+        { phone: regex } // Search by phone as well
       ];
     }
 
@@ -235,6 +236,8 @@ app.get("/api/workers", async (req, res) => {
       pic: w.pic || "",
       category: w.category,
       subcategories: w.subcategories,
+      phone: w.phone,
+      availability: w.availability,
     }));
 
     res.json(formatted);
