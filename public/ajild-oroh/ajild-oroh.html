@@ -16,6 +16,13 @@
 
   <form id="jobApplicationForm">
     <h1>Ажлын маягт</h1>
+    <!-- e-Mongolia нэвтрэх хэсэг -->
+    <div class="emongolia-section">
+      <button type="button" class="emongolia-btn" onclick="loginWithEMongolia()">
+        <span class="emongolia-icon">eM</span>
+        e-Mongolia-аар автоматаар бөглөх
+      </button>
+    </div>
     <div class="first">
       <label for="last">Овог</label>
       <input type="text" id="last" name="last" placeholder="Өөрийн овог" required>
@@ -221,7 +228,6 @@
   document.getElementById('dugaar').addEventListener('input', function (e) {
     this.value = this.value.replace(/[^0-9]/g, '');
   });
-
 
 </script>
 
