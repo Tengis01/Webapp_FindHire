@@ -35,8 +35,25 @@ for worker in data['workers']:
     # Add experience field
     worker['experience'] = extract_experience(worker['description'])
     
+
     # Add availability field
     worker['availability'] = generate_availability()
+
+    # Add random phone number (8 digits, starts with 6, 8, or 9)
+    prefix = random.choice(['6', '8', '9'])
+    rest = ''.join([str(random.randint(0, 9)) for _ in range(7)])
+    worker['phone'] = prefix + rest
+
+    # Add address and subdistrict
+    districts = [
+        "Хан-Уул", "Баянзүрх", "Сүхбаатар", "Сонгинохайрхан", 
+        "Баянгол", "Чингэлтэй", "Налайх", "Багануур", "Багахангай"
+    ]
+    district = random.choice(districts)
+    worker['address'] = f"Улаанбаатар, {district} дүүрэг"
+    
+    sub_num = random.randint(1, 50)
+    worker['subdistrict'] = f"{sub_num}-р хороо"
 
 # Write back to file with nice formatting
 with open('public/data/workers.json', 'w', encoding='utf-8') as f:

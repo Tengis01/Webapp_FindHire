@@ -35,7 +35,7 @@ const seedData = async () => {
                 lastname: 'User',
                 email: 'admin@findhire.com',
                 password: 'hashed_dummy_password', // won't work for login but works for ref
-                role: 'Admin',
+                role: 'User',
                 phone: '99119911',
                 address: 'Ulaanbaatar'
             });
