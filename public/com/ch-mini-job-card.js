@@ -9,12 +9,13 @@ class ChMiniJobCard extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ["phone", "name", "rating", "jobs", "description", "reviews", "pic"];
-  }
+  return ["phone", "name", "rating", "jobs", "description"];
+}
 
-  attributeChangedCallback() {
-    this.render();
-  }
+attributeChangedCallback() {
+  this.render();
+}
+
 
   connectedCallback() {
     this.render();
@@ -204,34 +205,175 @@ class ChMiniJobCard extends HTMLElement {
           border-bottom:1px solid #e5e7eb;
         }
 
-        h4 { margin:16px 0 10px; }
-
-        .reviews-container {
-          max-height:90px;
-          overflow-y:auto;
-          display:flex;
-          flex-direction:column;
-          gap:12px;
+        .socials a {
+          margin-right: 16px;
+          display: inline-block;
+          padding: 8px 16px;
+          background: #f3f4f6;
+          border-radius: 8px;
+          font-size: 14px;
+          transition: background 0.2s;
         }
 
-        .review {
-          padding:8px 10px;
-          background:#f9fafb;
-          border-radius:8px;
+        .socials a:hover {
+          background: #e5e7eb;
         }
 
-        .review b { display:block; margin-bottom:4px; }
-        .review p { margin:0; font-size:14px; color:#555; }
+        h4 {
+          margin-top: 20px;
+          margin-bottom: 12px;
+          font-size: 16px;
+          color: #111;
+        }
 
-        .no-reviews { color:#9ca3af; font-style:italic; }
+        .no-reviews {
+          color: #9ca3af;
+          font-style: italic;
+        }
+
+    .review p {
+  margin: 0;
+  color: #555;
+  font-size: 14px;
+  line-height: 1.5;
+
+ 
+}
+        .review:last-of-type {
+          margin-bottom: 0;
+        }
+.reviews-container {
+  max-height: 90px;
+  overflow-y: auto;
+  padding-right: 6px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+.contact-info {
+  margin: 10px 0;
+  font-size: 15px;
+  font-weight: 500;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 8px;
+}
+
+.contact-info a {
+  color: #111;
+  text-decoration: none;
+}
+
+.contact-info a:hover {
+  text-decoration: underline;
+}
+
+
+
+/* Scrollbar – цэвэрхэн харагдана */
+.reviews-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.reviews-container::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 4px;
+}
+
+.reviews-container::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+.contact-info {
+  margin: 12px 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.contact-info a {
+  color: #111;
+  text-decoration: none;
+}
+
+.contact-info a:hover {
+  text-decoration: underline;
+}
+.review {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #f9fafb;
+}
+.review b {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 14px;
+  color: #111;
+}
+
+.review p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #555;
+}
+
+
       </style>
 
-      ${this.renderCard(headerHtml)}
-      ${this.renderModal({
-        headerHtml,
-        description: data.description,
-        reviewsHtml,
-      })}
+      <article class="card">
+        <header>
+          <figure>${pic ? `<img src="${pic}" alt="${name}" />` : ""}</figure>
+          <div>
+            <h3>${name}</h3>
+            <div class="meta">★ ${rating} · ${jobs}</div>
+          </div>
+        </header>
+
+
+        <button class="profile-btn">Мэдээлэл харах</button>
+      </article>
+
+      <div class="modal-backdrop">
+        <div class="modal">
+          <button class="close" aria-label="Close">✕</button>
+
+          <header>
+            <figure>${pic ? `<img src="${pic}" alt="${name}" />` : ""}</figure>
+            <div>
+              <h3>${name}</h3>
+              <div class="meta">★ ${rating} · ${jobs}</div>
+                ${phone ? `<div class="meta">📞 ${phone}</div>` : ""}
+
+            </div>
+          </header>
+
+          ${description ? `<p class="desc">${description}</p>` : ""}
+        
+        
+          <h4>Сэтгэгдлүүд</h4>
+<div class="reviews-container">
+  ${reviews.length === 0
+      ? "<p class='no-reviews'>Сэтгэгдэл алга</p>"
+      : reviews
+          .map(
+            (r) => `.
+              <div class="review">
+                <b>${r.user} ★${r.rating}</b>
+                <p>${r.comment}</p>
+              </div> 
+            `
+          )
+          .join("")
+  }
+</div>
+
+
+</div>
+
+        </div>
+      </div>
     `;
 
     this.modal = this.shadowRoot.querySelector(".modal-backdrop");

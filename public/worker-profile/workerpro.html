@@ -4,9 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/public/worker-profile/workerpro.css">
+    <script type="module" src="/public/com/ch-toast.js"></script>
     <title>Document</title>
 </head>
 <body>
-    
+    <ch-toast></ch-toast>
+    <div class="container">
+    <div class="profile-card">
+        <div class="image-section">
+            <div class="avatar-wrapper">
+                <img id="profile-img" src="https://via.placeholder.com/150" alt="Profile">
+                <label for="upload-photo" class="upload-btn">
+                    <i class="fas fa-camera"></i>
+                </label>
+                <input type="file" id="upload-photo" accept="image/*" hidden>
+            </div>
+            <h2 id="display-name">Таны нэр</h2>
+            <p id="display-job">Мэргэжил / Чиглэл</p>
+        </div>
+
+        <div class="info-section">
+            <div class="edit-group">
+                <label>Бүтэн нэр</label>
+                <input type="text" id="input-name" placeholder="Нэрээ оруулна уу">
+            </div>
+            <div class="edit-group">
+                <label>Мэргэжил</label>
+                <input type="text" id="input-job" placeholder="Жишээ нь: Гэрийн үйлчлэгч">
+            </div>
+            <div class="edit-group">
+                <label>Би өөрийнхөө тухай</label>
+                <textarea id="input-bio" rows="4" placeholder="Таны туршлага..."></textarea>
+            </div>
+            <button class="save-btn" onclick="saveProfile()">Мэдээллийг хадгалах</button>
+        </div>
+    </div>
+</div>
+<script>
+    // Зураг солих функц
+document.getElementById('upload-photo').addEventListener('change', function(event) {
+    const reader = new FileReader();
+    reader.onload = function() {
+        document.getElementById('profile-img').src = reader.result;
+    };
+    reader.readAsDataURL(event.target.files[0]);
+});
+
+// Мэдээлэл хадгалах функц
+function saveProfile() {
+    const name = document.getElementById('input-name').value;
+    const job = document.getElementById('input-job').value;
+
+    if(name) document.getElementById('display-name').innerText = name;
+    if(job) document.getElementById('display-job').innerText = job;
+
+    alert("Профайл амжилттай шинэчлэгдлээ!");
+}
+</script>
 </body>
 </html>
