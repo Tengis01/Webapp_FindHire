@@ -204,6 +204,12 @@ class ChAvailableJobs extends HTMLElement {
             </div>
         `;
             grid.appendChild(card);
+            
+            // Add click listener
+            card.addEventListener('click', () => {
+                 const modal = document.querySelector('ch-job-details-modal');
+                 if (modal) modal.open(job._id);
+            });
         });
     }
 }
