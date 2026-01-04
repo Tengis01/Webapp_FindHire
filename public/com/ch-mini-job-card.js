@@ -378,7 +378,7 @@ attributeChangedCallback() {
       modalActions.innerHTML = `
         <button class="action-btn call-btn">Залгах</button>
         <button class="action-btn hire-btn">
-          <span>🤝</span> Ажилд авах
+         Ажилд авах
         </button>
       `;
       modalContent.appendChild(modalActions);
