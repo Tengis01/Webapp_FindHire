@@ -40,8 +40,22 @@ app.use(cors());
 
 // Connect to MongoDB
 mongoose.connect(MONGO_URI)
-  .then(() => console.log("MongoDB Connected"))
-  .catch(err => console.error("MongoDB Connection Error:", err));
+  .then(async () => {
+    console.log("MongoDB Connected");
+
+    /* Seed/Update Tenger's balance for testing
+    try {
+        const tenger = await User.findOne({ email: "tenger@gmail.com" });
+        if (tenger) {
+            tenger.balance = 1000000;
+            await tenger.save();
+            console.log("Updated Tenger's balance to 1,000,000₮");
+        }
+    } catch (err) {
+        console.error("Seed error:", err);
+    }*/
+  })
+  .catch(err => console.log(err));
 
 // Routes-ийг static файлаас өмнө тодорхойлох
 // Helper to create flexible regex for Mongolian/English search
@@ -207,7 +221,9 @@ app.get("/api/workers", async (req, res) => {
       }
     }
 
-    // Availability filter
+    // Availability filter (and hide busy)
+    query.isBusy = { $ne: true };
+
     if (availability) {
       const days = availability.split(',').map(d => d.trim().toLowerCase());
       if (days.length > 0) {
@@ -244,6 +260,7 @@ app.get("/api/workers", async (req, res) => {
         }));
 
         return {
+          _id: w._id, // MongoDB ID for hiring
           name: w.name,
           rating: String(w.rating),
           jobs: `${w.jobs} ${w.emoji || "🤝"}`,
@@ -285,6 +302,7 @@ app.get("/api/popular", async (req, res) => {
       .limit(15);
 
     const formatted = workers.map((w) => ({
+      _id: w._id,
       name: w.name,
       rating: String(w.rating),
       jobs: `${w.jobs} ${w.emoji || "🤝"}`,
@@ -639,6 +657,195 @@ app.get('/api/work', async (req, res) => {
 
   } catch (err) {
     console.error("Get Works Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// 7b. Hiring & Transaction APIs
+
+// POST /api/hire (User requests Worker)
+app.post('/api/hire', async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findById(decoded.userId);
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const { workerId, title, description, price, date, image } = req.body;
+
+    // Validate Worker
+    const worker = await Worker.findById(workerId);
+    if (!worker) return res.status(404).json({ error: "Worker not found" });
+
+    const work = new Work({
+      userId: user._id,
+      workerId: worker._id,
+      title,
+      description,
+      category: worker.category, // Inherit worker's category
+      price: Number(price) || 0,
+      scheduledDate: new Date(date),
+      image: image || "",
+      status: 'REQUESTED'
+    });
+
+    await work.save();
+    console.log(`Hire Request: ${user.email} -> ${worker.name}`);
+    res.status(201).json({ message: "Request sent", work });
+
+  } catch (err) {
+    console.error("Hire Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// GET /api/my-works (Fetch relevant jobs for Profile)
+app.get('/api/my-works', async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findById(decoded.userId);
+    
+    let query = {};
+    
+    if (user.role === 'Worker') {
+        const worker = await Worker.findOne({ userId: user._id });
+        if (worker) {
+            // Jobs where I am the worker
+            query.workerId = worker._id;
+        } else {
+             return res.json([]);
+        }
+    } else {
+        // Jobs where I am the creator
+        query.userId = user._id;
+    }
+
+    const works = await Work.find(query)
+      .populate('userId', 'firstname lastname phone')
+      .populate('workerId', 'name phone')
+      .sort({ createdAt: -1 });
+
+    res.json(works);
+
+  } catch (err) {
+    console.error("My Works Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/work/:id/respond (Worker Accepts/Declines)
+app.post('/api/work/:id/respond', async (req, res) => {
+  try {
+    const { action } = req.body; // 'accept' or 'decline'
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+    
+    // Check if worker
+    const work = await Work.findById(req.params.id);
+    if (!work) return res.status(404).json({ error: "Work not found" });
+
+    if (action === 'decline') {
+        work.status = 'CANCELLED';
+        await work.save();
+        return res.json({ message: "Request declined", work });
+    }
+
+    if (action === 'accept') {
+        // Update price if worker negotiated a different price
+        const { price: negotiatedPrice } = req.body;
+        if (negotiatedPrice && negotiatedPrice > 0) {
+            work.price = negotiatedPrice;
+            console.log(`Price negotiated: ${work.price}₮`);
+        }
+        
+        // NO MONEY DEDUCTED YET - will be charged on completion
+        // Just update status
+        work.status = 'IN_PROGRESS';
+        await work.save();
+
+        const worker = await Worker.findById(work.workerId);
+        worker.isBusy = true; // Mark as busy
+        await worker.save();
+
+        return res.json({ message: "Ажил зөвшөөрөгдлөө", work });
+    }
+
+  } catch (err) {
+    console.error("Respond Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// POST /api/work/:id/complete (User confirms completion)
+app.post('/api/work/:id/complete', async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+    
+    const work = await Work.findById(req.params.id);
+    if (!work) return res.status(404).json({ error: "Work not found" });
+
+    if (work.status !== 'IN_PROGRESS') {
+        return res.status(400).json({ error: "Job is not in progress" });
+    }
+
+    // Get User and Worker
+    const user = await User.findById(work.userId);
+    const worker = await Worker.findById(work.workerId);
+    const workerUser = await User.findById(worker.userId);
+
+    // 1. Check User Balance
+    if (user.balance < work.price) {
+        return res.status(400).json({ error: "Хэрэглэгчийн дансанд хангалттай мөнгө байхгүй байна" });
+    }
+
+    // 2. Transfer Money: User -> Worker
+    user.balance -= work.price;
+    await user.save();
+
+    workerUser.balance += work.price;
+    await workerUser.save();
+
+    // 3. Create Transaction Records
+    // User payment
+    const userTx = new Transaction({
+        userId: user._id,
+        amount: -work.price,
+        type: 'payment',
+        method: 'Work Payment',
+        status: 'completed',
+        description: `Төлбөр: ${work.title}`
+    });
+    await userTx.save();
+
+    // Worker receiving payment
+    const workerTx = new Transaction({
+        userId: workerUser._id,
+        amount: work.price,
+        type: 'refund', // Using refund to represent incoming money
+        method: 'Work Payment',
+        status: 'completed',
+        description: `Орлого: ${work.title}`
+    });
+    await workerTx.save();
+
+    // 4. Update Statuses
+    work.status = 'COMPLETED';
+    await work.save();
+
+    worker.isBusy = false; // Mark as free
+    worker.jobs += 1; // Increment job count
+    await worker.save();
+
+    res.json({ message: "Ажил дууссан. Төлбөр амжилттай шилжлээ!", work });
+
+  } catch (err) {
+    console.error("Complete Error:", err);
     res.status(500).json({ error: err.message });
   }
 });

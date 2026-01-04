@@ -314,6 +314,49 @@ attributeChangedCallback() {
     this.openBtn.onclick = this.openModal;
     this.closeBtn.onclick = this.closeModal;
     this.modal.onclick = (e) => e.target === this.modal && this.closeModal();
+
+    // Add Hire Now button to modal template and attach event listener
+    const modalContent = this.shadowRoot.querySelector(".modal");
+    if (modalContent) {
+      const modalActions = document.createElement('div');
+      modalActions.className = 'modal-actions';
+      modalActions.innerHTML = `
+        <button class="action-btn call-btn">📞 Call Now</button>
+        <button class="action-btn hire-btn">
+          <span>🤝</span> Ажилд авах
+        </button>
+      `;
+      modalContent.appendChild(modalActions);
+
+      const hireBtn = modalActions.querySelector('.hire-btn');
+      if (hireBtn) {
+        hireBtn.onclick = () => {
+          this.closeModal();
+          const hiringModal = document.querySelector('ch-hiring-modal');
+          if (hiringModal) {
+            hiringModal.open({
+              id: this.getAttribute('id'),
+              name: this.getAttribute('name'),
+              category: this.getAttribute('category') || 'General'
+            });
+          } else {
+            console.error("Hiring Modal not found");
+          }
+        };
+      }
+
+      const callBtn = modalActions.querySelector('.call-btn');
+      if (callBtn) {
+        callBtn.onclick = () => {
+          const phoneNumber = this.getAttribute("phone");
+          if (phoneNumber) {
+            window.open(`tel:${phoneNumber}`);
+          } else {
+            console.warn("Phone number not available for calling.");
+          }
+        };
+      }
+    }
   }
 }
 

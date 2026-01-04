@@ -15,6 +15,10 @@ const workerSchema = new mongoose.Schema({
     phone: { type: String, required: true },
     address: { type: String, required: true },
     subdistrict: { type: String, required: true },
+    isBusy: {
+        type: Boolean,
+        default: false
+    },
 });
 
 const Worker = mongoose.model('Worker', workerSchema);
