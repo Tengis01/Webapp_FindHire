@@ -106,10 +106,15 @@ class CHFooter extends HTMLElement {
   .footer-about h3 {
     font-size: 18px;
   }
-
+    .footer-contact a {
+    display: block;  
+    font-size: 13px;
+    justify-content: center;
+    width: 100%;
+  }
   .footer-about p,
   .footer-links a,
-  .footer-contact p {
+   {
     font-size: 13px;
   }
 
