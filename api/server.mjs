@@ -1026,11 +1026,33 @@ app.post('/api/work/:id/complete', async (req, res) => {
     await workerTx.save();
 
     // 4. Update Statuses
+    // 4. Update Statuses
     work.status = 'COMPLETED';
     await work.save();
 
-    worker.isBusy = false; // Mark as free
-    worker.jobs += 1; // Increment job count
+    // 5. Update Worker Stats & Review
+    const { rating, comment } = req.body;
+    
+    // Update Rating (Moving Average)
+    if (rating) {
+        const totalScore = (worker.rating * worker.jobs) + Number(rating);
+        const newJobsCount = worker.jobs + 1;
+        worker.rating = parseFloat((totalScore / newJobsCount).toFixed(1));
+    }
+    
+    worker.jobs += 1;
+    worker.isBusy = false; 
+
+    // Add Review if comment exists or just generic if rating provided
+    if (rating) {
+        worker.reviews.push({
+            user: `${user.lastname} ${user.firstname}`,
+            rating: Number(rating),
+            comment: comment || '',
+            date: new Date()
+        });
+    }
+
     await worker.save();
 
     res.json({ message: "Ажил дууссан. Төлбөр амжилттай шилжлээ!", work });

@@ -15,6 +15,12 @@ const workerSchema = new mongoose.Schema({
     phone: { type: String, required: true },
     address: { type: String, required: true },
     subdistrict: { type: String, required: true },
+    reviews: [{
+        user: String,
+        rating: Number,
+        comment: String,
+        date: { type: Date, default: Date.now }
+    }],
     isBusy: {
         type: Boolean,
         default: false

@@ -145,13 +145,17 @@ class ChProfilePopup extends HTMLElement {
 
   async completeWork(id) {
       const confirmModal = document.querySelector('ch-confirm-modal');
-      const confirmed = await confirmModal.show('Ажил бүрэн хийгдсэн гэдгийг баталгаажуулж, төлбөрийг шилжүүлэх үү?');
-      if(!confirmed) return;
+      const result = await confirmModal.showReview('Ажлыг дүгнэж, төлбөрийг шилжүүлэх үү?');
+      if(!result.confirmed) return;
 
       try {
         const res = await fetch(`/api/work/${id}/complete`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'}
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                rating: result.rating,
+                comment: result.comment
+            })
         });
         const data = await res.json();
         if(res.ok) {
