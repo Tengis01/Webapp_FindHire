@@ -122,7 +122,17 @@ body {
   color: #213448;
   font-weight: 600;
 }
-
+.contact-info a {
+  font-size: 18px;
+  color: #1f2937;
+  margin-bottom: 16px;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+}
+.contact-info a:hover {
+  color: #2563eb;
+}
 @media (max-width: 768px) {
   .hero-section h1 {
     font-size: 36px;

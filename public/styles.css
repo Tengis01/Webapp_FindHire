@@ -120,7 +120,7 @@ main .search-bar input {
   height: 45px;
   padding: 10px 42px 10px 14px;
   font-size: 16px;
-  border-radius: 24px;
+  border-radius: 11px;
   border: 1px solid black;
   box-sizing: border-box;
 }
@@ -145,7 +145,7 @@ main .search-bar i:hover {
   transition: all 0.3s ease-in;
   background-color: rgb(175, 175, 175);
   border: 0.3px solid black;
-  border-radius: 10px;
+  border-radius: 5px;
 }
 
 /* Hero */
