@@ -243,22 +243,9 @@ app.get("/api/workers", async (req, res) => {
 
     const workers = await Worker.find(query);
     console.log(`Found ${workers.length} workers`);
-    
-    // Fetch all reviews once (or optimized in real app) to distribute
-    const allReviews = await Review.find().limit(200);
 
     // Format response
     const formatted = workers.map((w) => {
-        // Assign random 1-10 reviews
-        const numReviews = Math.floor(Math.random() * 10) + 1;
-        const shuffled = allReviews.sort(() => 0.5 - Math.random());
-        const workerReviews = shuffled.slice(0, numReviews).map(r => ({
-            user: r.user,
-            rating: r.rating,
-            comment: r.text, // Frontend expects 'comment'
-            phone: "" // Optional
-        }));
-
         return {
           _id: w._id, // MongoDB ID for hiring
           name: w.name,
@@ -269,9 +256,8 @@ app.get("/api/workers", async (req, res) => {
           phone: w.phone || "",
           category: w.category,
           subcategories: w.subcategories,
-          phone: w.phone,
           availability: w.availability,
-          reviews: workerReviews
+          reviews: w.reviews || [] // Use actual worker reviews
         };
     });
 
@@ -287,9 +273,6 @@ app.get("/api/workers/:id", async (req, res) => {
   try {
     const worker = await Worker.findById(req.params.id).populate('userId', 'firstname lastname email phone');
     if (!worker) return res.status(404).json({ error: "Worker not found" });
-
-    // Fetch random reviews for demo
-    const reviews = await Review.aggregate([{ $sample: { size: 5 } }]);
     
     // Format similar to list but with more details if needed
     const data = {
@@ -304,11 +287,7 @@ app.get("/api/workers/:id", async (req, res) => {
         subcategories: worker.subcategories,
         phone: worker.userId ? worker.userId.phone : worker.phone,
         email: worker.userId ? worker.userId.email : "", 
-        reviews: reviews.map(r => ({
-             user: r.user,
-             rating: r.rating,
-             comment: r.text
-        }))
+        reviews: worker.reviews || [] // Use actual worker reviews
     };
 
     res.json(data);
