@@ -43,7 +43,18 @@ attributeChangedCallback() {
      RENDER HELPERS
      ========================= */
 
-  renderHeader({ pic, name, rating, jobs, phone }) {
+  renderHeader({ pic, name, rating, jobs, phone }, { showPhone = false, maskPhone = false } = {}) {
+    let phoneDisplay = "";
+    
+    if (showPhone && phone) {
+        let displayValue = phone;
+        if (maskPhone && phone.length >= 8) {
+            // Take first 4 digits and append XXXX
+            displayValue = phone.substring(0, 4) + "XXXX";
+        }
+        phoneDisplay = `<div class="meta">📞 ${displayValue}</div>`;
+    }
+
     return `
       <header>
         <figure class="avatar-container">
@@ -55,7 +66,7 @@ attributeChangedCallback() {
         <div>
           <h3>${name}</h3>
           <div class="meta">★ ${rating} · ${jobs}</div>
-          ${phone ? `<div class="meta">📞 ${phone}</div>` : ""}
+          ${phoneDisplay}
         </div>
       </header>
     `;
@@ -122,7 +133,12 @@ attributeChangedCallback() {
       reviews: JSON.parse(this.getAttribute("reviews") || "[]"),
     };
 
-    const headerHtml = this.renderHeader(data);
+    // Header for Front Card: No Phone
+    const cardHeader = this.renderHeader(data, { showPhone: false });
+    
+    // Header for Modal: Show Phone, Masked (First 4 digits + XXXX)
+    const modalHeader = this.renderHeader(data, { showPhone: true, maskPhone: true });
+    
     const reviewsHtml = this.renderReviews(data.reviews);
 
     this.shadowRoot.innerHTML = `
@@ -301,10 +317,49 @@ attributeChangedCallback() {
           font-size: 14px;
           color: #111;
         }
+
+        /* Modal Actions */
+        .modal-actions {
+          display: flex;
+          gap: 10px;
+          margin-top: 20px;
+          border-top: 1px solid #eee;
+          padding-top: 20px;
+        }
+
+        .action-btn {
+          flex: 1;
+          padding: 12px;
+          border: none;
+          border-radius: 10px;
+          font-weight: 600;
+          font-size: 14px;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          transition: all 0.2s;
+        }
+
+        .call-btn {
+          background: #e0f2fe;
+          color: #0284c7;
+        }
+
+        .hire-btn {
+          background: #213448;
+          color: white;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
       </style>
 
-      ${this.renderCard(headerHtml)}
-      ${this.renderModal({ headerHtml, description: data.description, reviewsHtml })}
+      ${this.renderCard(cardHeader)}
+      ${this.renderModal({ headerHtml: modalHeader, description: data.description, reviewsHtml })}
     `;
 
     this.modal = this.shadowRoot.querySelector(".modal-backdrop");
@@ -321,7 +376,7 @@ attributeChangedCallback() {
       const modalActions = document.createElement('div');
       modalActions.className = 'modal-actions';
       modalActions.innerHTML = `
-        <button class="action-btn call-btn">📞 Call Now</button>
+        <button class="action-btn call-btn">Залгах</button>
         <button class="action-btn hire-btn">
           <span>🤝</span> Ажилд авах
         </button>
