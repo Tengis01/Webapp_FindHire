@@ -140,11 +140,11 @@ main .search-bar i {
 
 main .search-bar i:hover {
   cursor: pointer;
-  color: #213448;
+  color: #e5e7eb;
   transform: translateY(-50%) scale(1.2);
   transition: all 0.3s ease-in;
-  background-color: rgb(175, 175, 175);
-  border: 0.3px solid black;
+  background-color: #213448;
+  
   border-radius: 5px;
 }
 

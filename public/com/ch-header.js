@@ -202,7 +202,7 @@ class ChHeader extends HTMLElement {
     }
 
     /* Wallet Button */
-    .wallet-btn {
+.wallet-btn {
         display: flex;
         align-items: center;
         gap: 8px;
@@ -216,6 +216,7 @@ class ChHeader extends HTMLElement {
         font-size: 14px;
         font-weight: 600;
         animation: pulse 2s infinite;
+        white-space: nowrap;
     }
 
     @keyframes pulse {

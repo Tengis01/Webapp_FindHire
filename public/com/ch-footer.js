@@ -144,7 +144,7 @@ class CHFooter extends HTMLElement {
       <h4>Холбоо барих</h4>
       <p>📍 Улаанбаатар, Монгол улс</p>
       <a href="#" class="phone-link">📞 +976 7000-0000</a>
-      <a href="#" class="social-link">🏠 FindHire facebok</a>
+      <a href="#" class="social-link">🏠 FindHire Facebook</a>
       <a href="#" class="email-link">✉️ info@findhire.mn</a>
     </div>
 
