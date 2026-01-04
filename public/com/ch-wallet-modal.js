@@ -245,6 +245,56 @@ class ChWalletModal extends HTMLElement {
     }
   }
 
+  async confirmWithdraw() {
+    const ibanInput = this.shadowRoot.querySelector('#withdraw-iban');
+    const amountInput = this.shadowRoot.querySelector('#withdraw-amount');
+    const iban = ibanInput ? ibanInput.value : '';
+    const amount = amountInput ? Number(amountInput.value) : 0;
+
+    if (iban.length !== 18) {
+      alert("Please enter a valid 18-digit Account Number");
+      return;
+    }
+
+    if (amount <= 0) {
+      alert("Please enter a valid amount");
+      return;
+    }
+
+    if (amount > this.balance) {
+      alert("Insufficient balance");
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/wallet/withdraw', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount, iban })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        const modal = this.shadowRoot.querySelector('.modal-content');
+        modal.classList.add('success-sparkle');
+        setTimeout(() => {
+          this.balance = data.balance;
+          this.state = 'balance';
+          this.render();
+          document.querySelector('ch-toast')?.show('Татлага амжилттай хийгдлээ!', 'success');
+          // Update header balance
+          const header = document.querySelector('ch-header');
+          if (header) header.checkAuth();
+        }, 1000);
+      } else {
+        document.querySelector('ch-toast')?.show(data.error, 'error');
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   renderContent() {
     if (this.state === 'balance') {
       const formatted = this.balance.toLocaleString('en-US');
@@ -260,8 +310,35 @@ class ChWalletModal extends HTMLElement {
             <input type="number" id="topup-amount" value="100000" style="width:100%; padding: 12px; font-size: 18px; border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box;" />
         </div>
 
-        <button class="topup-btn">Данс цэнэглэх</button>
+        <div style="display:flex; gap:10px;">
+            <button class="topup-btn" style="flex:1;">Данс цэнэглэх</button>
+            <button class="withdraw-btn" style="flex:1; background:#F8FAFC; color:#213448; border:1px solid #E2E8F0;">Таталт хийх</button>
+        </div>
       `;
+    } else if (this.state === 'withdraw') {
+      const formatted = this.balance.toLocaleString('en-US');
+      return `
+            <button class="back-btn">← Буцах</button>
+            <h2>Таталт хийх</h2>
+            <div class="balance-display">
+                 <div class="balance-label">Боломжит үлдэгдэл</div>
+                 <div class="balance-amount" style="font-size:32px;">${formatted}₮</div>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display:block; margin-bottom: 8px; font-weight: 500;">Дансны дугаар (IBAN)</label>
+                <input type="text" id="withdraw-iban" placeholder="XXXX XXXX XXXX" style="width:100%; padding: 12px; font-size: 16px; border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box;" />
+            </div>
+            
+            <div style="margin-bottom: 20px;">
+                <label style="display:block; margin-bottom: 8px; font-weight: 500;">Татах дүн</label>
+                <input type="number" id="withdraw-amount" placeholder="0.00" style="width:100%; padding: 12px; font-size: 18px; border: 1px solid #ddd; border-radius: 12px; box-sizing: border-box;" />
+            </div>
+            
+            <button class="confirm-withdraw-btn" style="width:100%; padding:16px; background:#213448; color:white; border:none; border-radius:12px; font-size:18px; font-weight:600; cursor:pointer;">
+                Зөвшөөрөх
+            </button>
+        `;
     } else if (this.state === 'banks') {
       return `
         <button class="back-btn">← Буцах</button>
@@ -295,18 +372,34 @@ class ChWalletModal extends HTMLElement {
 
   attachDynamicListeners() {
     // Attach listeners specific to current state
-    const topupBtn = this.shadowRoot.querySelector('.topup-btn');
-    if (topupBtn) {
-      topupBtn.addEventListener('click', () => {
-        const input = this.shadowRoot.querySelector('#topup-amount');
-        this.topupAmount = input ? Number(input.value) : 50000;
-        console.log('Topup button clicked! Amount:', this.topupAmount);
-        this.showBankSelection();
-      });
+    if (this.state === 'balance') {
+      const topupBtn = this.shadowRoot.querySelector('.topup-btn');
+      if (topupBtn) {
+        topupBtn.addEventListener('click', () => {
+          const input = this.shadowRoot.querySelector('#topup-amount');
+          this.topupAmount = input ? Number(input.value) : 50000;
+          this.showBankSelection();
+        });
+      }
+
+      const withdrawBtn = this.shadowRoot.querySelector('.withdraw-btn');
+      if (withdrawBtn) {
+        withdrawBtn.addEventListener('click', () => {
+          this.state = 'withdraw';
+          this.render();
+        });
+      }
+    } else if (this.state === 'withdraw') {
+      const backBtn = this.shadowRoot.querySelector('.back-btn');
+      if (backBtn) backBtn.addEventListener('click', () => { this.state = 'balance'; this.render(); });
+
+      const confirmWithdrawBtn = this.shadowRoot.querySelector('.confirm-withdraw-btn');
+      if (confirmWithdrawBtn) confirmWithdrawBtn.addEventListener('click', () => this.confirmWithdraw());
     }
 
+    // Common Listeners (Back btn for banks/qr)
     const backBtn = this.shadowRoot.querySelector('.back-btn');
-    if (backBtn) {
+    if (backBtn && (this.state === 'banks' || this.state === 'qr')) {
       backBtn.addEventListener('click', () => {
         this.state = this.state === 'qr' ? 'banks' : 'balance';
         this.render();

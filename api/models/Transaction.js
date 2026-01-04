@@ -12,7 +12,7 @@ const transactionSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['topup', 'payment', 'refund'],
+        enum: ['topup', 'payment', 'refund', 'withdrawal'],
         required: true
     },
     method: {

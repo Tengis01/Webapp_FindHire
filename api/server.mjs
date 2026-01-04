@@ -1108,6 +1108,58 @@ app.post('/api/wallet/topup', async (req, res) => {
   }
 });
 
+// Withdraw from wallet
+app.post('/api/wallet/withdraw', async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findById(decoded.userId);
+
+    if (!user) return res.status(404).json({ error: "User not found" });
+
+    const { amount, iban } = req.body;
+
+    // Validate amount
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ error: "Invalid amount" });
+    }
+
+    // Check Balance
+    if (user.balance < amount) {
+        return res.status(400).json({ error: "Insufficient balance" });
+    }
+
+    // Deduct balance
+    user.balance -= Number(amount);
+    await user.save();
+
+    // Create transaction record
+    const transaction = new Transaction({
+      userId: user._id,
+      amount: -Number(amount),
+      type: 'withdrawal',
+      method: `Bank Transfer (${iban})`,
+      status: 'completed', // In real app, might be 'pending'
+      description: `Withdrawal to ${iban}`
+    });
+    await transaction.save();
+
+    console.log(`Wallet withdrawal: ${user.email} -${amount}₮ to ${iban}`);
+
+    res.json({
+      message: "Withdrawal successful",
+      balance: user.balance,
+      transaction: transaction._id
+    });
+
+  } catch (err) {
+    console.error("Withdraw Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 const server = app.listen(PORT, () => {
   console.log("");
