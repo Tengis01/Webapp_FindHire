@@ -59,12 +59,17 @@ class CHFooter extends HTMLElement {
   color: #38bdf8;
 }
 
-.footer-contact p {
+.footer-contact a {
   font-size: 14px;
-  margin-bottom: 6px;
+  margin-bottom: 20px;
   color: #cbd5e1;
+  width: fit-content; 
+  display: block;
+  text-decoration: none;
 }
-
+.footer-contact a:hover {
+  color: #38bdf8;
+}
 .footer-bottom {
   background-color: #213448;;
   text-align: center;
@@ -138,8 +143,9 @@ class CHFooter extends HTMLElement {
     <div class="footer-contact">
       <h4>Холбоо барих</h4>
       <p>📍 Улаанбаатар, Монгол улс</p>
-      <p>📞 +976 7000-0000</p>
-      <p>✉️ info@findhire.mn</p>
+      <a href="#" class="phone-link">📞 +976 7000-0000</a>
+      <a href="#" class="social-link">🏠 FindHire facebok</a>
+      <a href="#" class="email-link">✉️ info@findhire.mn</a>
     </div>
 
   </div>
