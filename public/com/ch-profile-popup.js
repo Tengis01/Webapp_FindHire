@@ -24,11 +24,40 @@ class ChProfilePopup extends HTMLElement {
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') this.close();
     });
+    
+    // Listen for global show-worker-profile event
+    document.addEventListener('show-worker-profile', (e) => {
+        if(e.detail && e.detail.workerId) {
+            this.openPublic(e.detail.workerId);
+        }
+    });
   }
 
-  // API to open the drawer
+  // API to open the drawer (My Profile)
   open(data) {
     this.fetchDataAndOpen();
+  }
+  
+  // API to open Public Worker Profile
+  async openPublic(workerId) {
+      try {
+          const res = await fetch(`/api/workers/${workerId}`);
+          if(!res.ok) throw new Error("Worker not found");
+          
+          const workerData = await res.json();
+          this.renderPublicProfile(workerData);
+          
+          const backdrop = this.shadowRoot.querySelector('.backdrop');
+          const drawer = this.shadowRoot.querySelector('.drawer');
+          backdrop.classList.add('open');
+          requestAnimationFrame(() => {
+            drawer.classList.add('open');
+          });
+          
+      } catch(e) {
+          console.error(e);
+          document.querySelector('ch-toast')?.show("Failed to load profile", "error");
+      }
   }
 
   async fetchDataAndOpen() {
@@ -262,13 +291,20 @@ class ChProfilePopup extends HTMLElement {
         // Jobs Tab
         content.innerHTML = this.getJobsTemplate();
         
-        // Attach Job Actions
-        content.querySelectorAll('.accept-btn').forEach(b => b.onclick = () => this.respondToWork(b.dataset.id, 'accept'));
-        content.querySelectorAll('.decline-btn').forEach(b => b.onclick = () => this.respondToWork(b.dataset.id, 'decline'));
+        // Attach Job Actions (Request Flow)
+        content.querySelectorAll('.accept-request-btn').forEach(b => b.onclick = () => this.respondToWork(b.dataset.id, 'accept'));
+        content.querySelectorAll('.decline-request-btn').forEach(b => b.onclick = () => this.respondToWork(b.dataset.id, 'decline'));
+        
+        // Attach Applicant Actions (Hire Flow)
+        content.querySelectorAll('.accept-btn').forEach(b => b.onclick = () => this.hireWorker(b.dataset.jobId, b.dataset.workerId));
+        content.querySelectorAll('.detail-btn[data-worker-id]').forEach(b => b.onclick = () => {
+             document.dispatchEvent(new CustomEvent('show-worker-profile', { detail: { workerId: b.dataset.workerId } }));
+        });
+        
         content.querySelectorAll('.complete-btn').forEach(b => b.onclick = () => this.completeWork(b.dataset.id));
         
         // Detail Modal Actions
-        content.querySelectorAll('.detail-btn').forEach(b => {
+        content.querySelectorAll('.detail-btn[data-id]').forEach(b => {
           b.onclick = () => {
             const modal = content.querySelector(`.job-detail-modal[data-id="${b.dataset.id}"]`);
             if(modal) modal.style.display = 'flex';
@@ -289,6 +325,27 @@ class ChProfilePopup extends HTMLElement {
           };
         });
     }
+  }
+
+  async hireWorker(jobId, workerId) {
+      const confirmModal = document.querySelector('ch-confirm-modal');
+      const confirmed = await confirmModal.show("Та энэ ажилтныг сонгохдоо итгэлтэй байна уу?");
+      if(!confirmed) return;
+      
+      try {
+           const res = await fetch(`/api/work/${jobId}/hire/${workerId}`, { method: 'POST' });
+           const data = await res.json();
+           
+           if(res.ok) {
+               document.querySelector('ch-toast')?.show("Ажилтан сонгогдлоо!", "success");
+               this.fetchMyWorks().then(() => this.updateContent());
+           } else {
+               document.querySelector('ch-toast')?.show(data.error, "error");
+           }
+      } catch(e) {
+          console.error(e);
+          document.querySelector('ch-toast')?.show("Failed to hire", "error");
+      }
   }
   
   // ... (updateSubcategories, getUserTemplate, getWorkerTemplate same as before)
@@ -412,14 +469,67 @@ class ChProfilePopup extends HTMLElement {
       return this.myWorks.map(w => {
           const isMeWorker = this.user.role === 'Worker';
           const otherParty = isMeWorker ? w.userId : w.workerId;
-          const otherName = otherParty ? `${otherParty.lastname || ''} ${otherParty.firstname}` : 'Unknown';
+          
+          let otherName = 'Unknown';
+          if (otherParty) {
+              if (isMeWorker) {
+                 // I am worker, viewing User
+                 otherName = `${otherParty.lastname || ''} ${otherParty.firstname || ''}`.trim();
+              } else {
+                 // I am User, viewing Worker
+                 // Worker object has 'name', potentially 'firstname' if populated via User path, but usually 'name' from Worker model
+                 otherName = otherParty.name || `${otherParty.lastname || ''} ${otherParty.firstname || ''}`.trim();
+              }
+          }
+
           const otherPhone = otherParty ? otherParty.phone : '';
-          const date = new Date(w.createdAt).toLocaleDateString();
           
           let statusBadge = '';
           let actions = '';
+          let applicantsList = '';
 
           switch(w.status) {
+              case 'OPEN':
+                  statusBadge = '<span style="color:#10B981; background:#ECFDF5; padding:2px 8px; border-radius:12px; font-size:12px;">Нээлттэй</span>';
+                  if (!isMeWorker && w.applicants && w.applicants.length > 0) {
+                      // Show Applicants for User
+                      applicantsList = `
+                        <div style="margin-top:12px; border-top:1px solid #eee; padding-top:12px;">
+                            <div style="font-size:13px; font-weight:600; margin-bottom:8px;">Ирсэн саналууд (${w.applicants.length}):</div>
+                            <div style="display:flex; flex-direction:column; gap:8px;">
+                                ${w.applicants.map(app => {
+                                    if(app.status === 'REJECTED') return '';
+                                    const aw = app.workerId;
+                                    const dateStr = app.proposedDate ? new Date(app.proposedDate).toLocaleDateString() : '';
+                                    return `
+                                        <div style="display:flex; justify-content:space-between; align-items:center; background:#f9fafb; padding:8px; border-radius:8px; flex-wrap:wrap; gap:8px;">
+                                            <div>
+                                                <div style="font-weight:600; font-size:14px;">${aw.name}</div>
+                                                <div style="font-size:12px; color:#666;">
+                                                    ${app.price}₮ 
+                                                    ${dateStr ? `• 📅 ${dateStr}` : ''}
+                                                    ${app.message ? `• ${app.message}` : ''}
+                                                </div>
+                                            </div>
+                                            <div style="display:flex; gap:4px; flex-wrap:wrap;">
+                                                <button class="small-btn detail-btn" style="background:#6366F1; color:white;" data-worker-id="${aw._id}">Дэлгэрэнгүй</button>
+                                                <button class="small-btn accept-btn" style="background:#10B981; color:white;" data-job-id="${w._id}" data-worker-id="${aw.workerId ? aw.workerId : aw._id}">Сонгох</button>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                      `;
+                  } else if (isMeWorker) {
+                      // Worker view of open job (if they applied? or just listing?)
+                      // Typically my-works for Worker shows jobs they applied to.
+                      const myApp = w.applicants.find(a => a.workerId._id === this.workerProfile._id);
+                      if(myApp) {
+                          actions = `<span style="font-size:12px; color:#F59E0B;">Таны санал: ${myApp.price}₮ (${myApp.status})</span>`;
+                      }
+                  }
+                  break;
               case 'REQUESTED':
                   statusBadge = '<span style="color:#F59E0B; background:#FEF3C7; padding:2px 8px; border-radius:12px; font-size:12px;">Хүлээгдэж байна</span>';
                   if(isMeWorker) {
@@ -432,8 +542,8 @@ class ChProfilePopup extends HTMLElement {
                             <button class="small-btn detail-btn" data-id="${w._id}" style="background:#6366F1;">Дэлгэрэнгүй</button>
                           </div>
                           <div style="display:flex; gap:8px;">
-                            <button class="small-btn accept-btn" data-id="${w._id}">Зөвшөөрөх</button>
-                            <button class="small-btn decline-btn" data-id="${w._id}">Татгалзах</button>
+                            <button class="small-btn accept-request-btn" data-id="${w._id}">Зөвшөөрөх</button>
+                            <button class="small-btn decline-request-btn" data-id="${w._id}">Татгалзах</button>
                           </div>
                         </div>
                       `;
@@ -472,6 +582,7 @@ class ChProfilePopup extends HTMLElement {
                     Огноо: ${w.scheduledDate ? new Date(w.scheduledDate).toLocaleDateString() : 'Товлоогүй'}
                 </div>
                 ${actions}
+                ${applicantsList}
             </div>
             
             <!-- Details Modal for this job -->
@@ -563,6 +674,63 @@ class ChProfilePopup extends HTMLElement {
     this.shadowRoot.querySelector('.backdrop').addEventListener('click', () => this.close());
     this.shadowRoot.querySelector('.close-btn').addEventListener('click', () => this.close());
     this.shadowRoot.querySelector('.logout-btn').addEventListener('click', () => this.logout());
+  }
+
+  renderPublicProfile(worker) {
+     const content = this.shadowRoot.querySelector('#content');
+     const tabsContainer = this.shadowRoot.querySelector('.tabs');
+     if(tabsContainer) tabsContainer.innerHTML = ''; // No tabs for public view
+
+     const w = worker;
+     
+     content.innerHTML = `
+      <div class="profile-header">
+        <div class="avatar worker">${w.name ? w.name[0].toUpperCase() : 'W'}</div>
+        <h2>${w.name}</h2>
+        <span class="role-badge worker">Ажилтан</span>
+         <div class="stats-row">
+            <span>⭐ ${w.rating || '5.0'}</span>
+            <span>🤝 ${w.jobs || 0} ажил</span>
+         </div>
+      </div>
+      
+      <div class="info-group">
+        <label>Категори</label>
+        <p>${w.category || 'Мэдээлэл байхгүй'}</p>
+        <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;">
+           ${w.subcategories && w.subcategories.length > 0
+           ? w.subcategories.map(s => `<span style="background:#F1F5F9; color:#475569; padding:2px 8px; border-radius:12px; font-size:12px;">${s}</span>`).join('')
+           : '<span style="font-size:12px; color:#94A3B8;">Дэд категоригүй</span>'}
+        </div>
+      </div>
+      
+      <div class="info-group">
+        <label>Миний тухай</label>
+        <p>${w.description || 'Тайлбар оруулаагүй'}</p>
+      </div>
+      
+      <div class="info-group">
+        <label>Холбоо барих</label>
+        <p>📞 ${w.phone || 'Нууцалсан'}</p>
+        <p>📧 ${w.email || 'Нууцалсан'}</p>
+      </div>
+
+      <div class="info-group">
+        <label>Сэтгэгдлүүд</label>
+        ${w.reviews && w.reviews.length > 0 ? 
+            w.reviews.map(r => `
+                <div style="background:#f9fafb; padding:10px; border-radius:8px; margin-bottom:8px;">
+                    <div style="font-size:12px; font-weight:bold;">${r.user || 'User'} <span style="color:#F59E0B;">⭐ ${r.rating}</span></div>
+                     <div style="font-size:13px; color:#555;">${r.comment}</div>
+                </div>
+            `).join('') 
+            : '<p>Сэтгэгдэл байхгүй</p>'}
+      </div>
+      
+      <div class="actions">
+         <button class="action-btn cancel" onclick="this.getRootNode().host.close()">Хаах</button>
+      </div>
+     `;
   }
 
   getStyles() {

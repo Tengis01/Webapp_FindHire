@@ -282,6 +282,42 @@ app.get("/api/workers", async (req, res) => {
   }
 });
 
+// GET /api/workers/:id (Public Profile)
+app.get("/api/workers/:id", async (req, res) => {
+  try {
+    const worker = await Worker.findById(req.params.id).populate('userId', 'firstname lastname email phone');
+    if (!worker) return res.status(404).json({ error: "Worker not found" });
+
+    // Fetch random reviews for demo
+    const reviews = await Review.aggregate([{ $sample: { size: 5 } }]);
+    
+    // Format similar to list but with more details if needed
+    const data = {
+        _id: worker._id,
+        name: worker.name,
+        firstName: worker.userId ? worker.userId.firstname : "",
+        lastName: worker.userId ? worker.userId.lastname : "",
+        rating: String(worker.rating),
+        jobs: worker.jobs,
+        description: worker.description,
+        category: worker.category,
+        subcategories: worker.subcategories,
+        phone: worker.userId ? worker.userId.phone : worker.phone,
+        email: worker.userId ? worker.userId.email : "", 
+        reviews: reviews.map(r => ({
+             user: r.user,
+             rating: r.rating,
+             comment: r.text
+        }))
+    };
+
+    res.json(data);
+  } catch (err) {
+    console.error("Worker Detail Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // GET /api/reviews - Return random 60 reviews
 app.get("/api/reviews", async (req, res) => {
     try {
@@ -605,6 +641,160 @@ app.post('/api/work', async (req, res) => {
   }
 });
 
+// GET /api/work/:id (Detailed View)
+app.get('/api/work/:id', async (req, res) => {
+  try {
+    const work = await Work.findById(req.params.id)
+      .populate('userId', 'firstname lastname phone role')
+      .populate('applicants.workerId', 'name rating jobs pic userId')
+      .exec();
+
+    if (!work) return res.status(404).json({ error: "Work not found" });
+
+    const token = req.cookies.token;
+    let user = null;
+    let isWorker = false;
+    let isOwner = false;
+
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        user = await User.findById(decoded.userId);
+        if (user) {
+           isWorker = user.role === 'Worker';
+           isOwner = work.userId._id.toString() === user._id.toString();
+        }
+      } catch (e) { /* ignore invalid token */ }
+    }
+
+    const response = work.toObject();
+
+    // Privacy and Data Shaping
+    if (isOwner) {
+       // Owner sees everything, including applicants
+    } else {
+       // Others don't see applicants list detailed (or maybe just count)
+       // response.applicants = []; // Uncomment to hide applicants from others if needed
+       // But requirement says "User side profile work request must have delgerengui button which shows worker full profile"
+       // Only owner needs to see applicants to hire.
+    }
+
+    if (!isWorker && !isOwner) {
+        // Hide phone if not worker/owner
+        if (response.userId) response.userId.phone = "Hidden";
+    }
+
+    res.json(response);
+
+  } catch (err) {
+    console.error("Get Work Detail Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// POST /api/work/:id/apply (Worker Applies)
+app.post('/api/work/:id/apply', async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findById(decoded.userId);
+    if (!user || user.role !== 'Worker') return res.status(403).json({ error: "Only workers can apply" });
+
+    const worker = await Worker.findOne({ userId: user._id });
+    if (!worker) return res.status(404).json({ error: "Worker profile not found" });
+
+    const work = await Work.findById(req.params.id);
+    if (!work) return res.status(404).json({ error: "Work not found" });
+
+    const { price, message, date } = req.body;
+
+    // Check if already applied
+    const existing = work.applicants.find(a => a.workerId.toString() === worker._id.toString());
+    if (existing) {
+         return res.status(400).json({ error: "Already applied" });
+    }
+
+    work.applicants.push({
+        workerId: worker._id,
+        price: Number(price) || 0,
+        message: message || "",
+        proposedDate: date ? new Date(date) : null
+    });
+
+    // Determine status - if direct hire request from user?
+    // Current flow: User posts -> Worker applies
+    // If work was direct request, it shouldn't be in this flow usually, but handled by /hire
+    
+    // Auto-update status to REQUESTED if it was OPEN? 
+    // No, stays OPEN until User picks one.
+    
+    await work.save();
+    console.log(`Worker ${worker.name} applied to ${work.title}`);
+
+    res.json({ message: "Application sent", work });
+
+  } catch (err) {
+    console.error("Apply Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
+// POST /api/work/:id/hire/:workerId (User Selects Worker)
+app.post('/api/work/:id/hire/:workerId', async (req, res) => {
+  try {
+    const token = req.cookies.token;
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    const user = await User.findById(decoded.userId);
+
+    const work = await Work.findById(req.params.id);
+    if (!work) return res.status(404).json({ error: "Work not found" });
+
+    // Check Owner
+    if (work.userId.toString() !== user._id.toString()) {
+        return res.status(403).json({ error: "Not authorized to hire for this job" });
+    }
+
+    const workerId = req.params.workerId;
+    
+    // Validate applicant
+    const applicant = work.applicants.find(a => a.workerId.toString() === workerId);
+    if (!applicant) return res.status(404).json({ error: "Applicant not found" });
+
+    // Hire
+    work.workerId = workerId;
+    work.status = 'IN_PROGRESS';
+    work.price = applicant.price > 0 ? applicant.price : work.price; // Use negotiated price
+
+    // Mark other applicants as REJECTED (optional)
+    work.applicants.forEach(a => {
+        if (a.workerId.toString() !== workerId) {
+            a.status = 'REJECTED';
+        }
+    });
+
+    await work.save();
+    
+    // Mark Worker Busy
+    const worker = await Worker.findById(workerId);
+    if (worker) {
+        worker.isBusy = true;
+        await worker.save();
+    }
+
+    res.json({ message: "Worker hired successfully", work });
+
+  } catch (err) {
+    console.error("Hire Worker Error:", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Get Works (For Home Page)
 app.get('/api/work', async (req, res) => {
   try {
@@ -728,6 +918,7 @@ app.get('/api/my-works', async (req, res) => {
     const works = await Work.find(query)
       .populate('userId', 'firstname lastname phone')
       .populate('workerId', 'name phone')
+      .populate('applicants.workerId', 'name rating jobs pic userId') // Populate applicants for My Works view
       .sort({ createdAt: -1 });
 
     res.json(works);

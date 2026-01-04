@@ -44,6 +44,14 @@ const workSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    applicants: [{
+        workerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Worker' },
+        price: Number,
+        message: String,
+        proposedDate: { type: Date, required: false }, // New field
+        status: { type: String, enum: ['APPLIED', 'REJECTED'], default: 'APPLIED' },
+        createdAt: { type: Date, default: Date.now }
+    }],
     image: {
         type: String,
         default: '' // URL or path to image
